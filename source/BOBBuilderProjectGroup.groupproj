@@ -1,0 +1,180 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{DAD31DFB-4AB8-4403-B6BE-9CC79695A61D}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="builder\bobbuildergui.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="builder\bobbuilder.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="codesign\bobcodesign.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="compare\bobcompare.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="library\boblibrary.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="library\boblibrarygui.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="maptojdbg\bobmaptojdbg.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="resource\bobresource.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="md5\bobmd5.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="wixwrapper\bobwixwrapper.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="tests\bobtests.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="gitpuller\bobgitpuller.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="gitpuller\bobgitpullergui.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="bobbuildergui">
+        <MSBuild Projects="builder\bobbuildergui.dproj"/>
+    </Target>
+    <Target Name="bobbuildergui:Clean">
+        <MSBuild Projects="builder\bobbuildergui.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bobbuildergui:Make">
+        <MSBuild Projects="builder\bobbuildergui.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bobbuilder">
+        <MSBuild Projects="builder\bobbuilder.dproj"/>
+    </Target>
+    <Target Name="bobbuilder:Clean">
+        <MSBuild Projects="builder\bobbuilder.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bobbuilder:Make">
+        <MSBuild Projects="builder\bobbuilder.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bobcodesign">
+        <MSBuild Projects="codesign\bobcodesign.dproj"/>
+    </Target>
+    <Target Name="bobcodesign:Clean">
+        <MSBuild Projects="codesign\bobcodesign.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bobcodesign:Make">
+        <MSBuild Projects="codesign\bobcodesign.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bobcompare">
+        <MSBuild Projects="compare\bobcompare.dproj"/>
+    </Target>
+    <Target Name="bobcompare:Clean">
+        <MSBuild Projects="compare\bobcompare.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bobcompare:Make">
+        <MSBuild Projects="compare\bobcompare.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="boblibrary">
+        <MSBuild Projects="library\boblibrary.dproj"/>
+    </Target>
+    <Target Name="boblibrary:Clean">
+        <MSBuild Projects="library\boblibrary.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="boblibrary:Make">
+        <MSBuild Projects="library\boblibrary.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="boblibrarygui">
+        <MSBuild Projects="library\boblibrarygui.dproj"/>
+    </Target>
+    <Target Name="boblibrarygui:Clean">
+        <MSBuild Projects="library\boblibrarygui.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="boblibrarygui:Make">
+        <MSBuild Projects="library\boblibrarygui.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bobmaptojdbg">
+        <MSBuild Projects="maptojdbg\bobmaptojdbg.dproj"/>
+    </Target>
+    <Target Name="bobmaptojdbg:Clean">
+        <MSBuild Projects="maptojdbg\bobmaptojdbg.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bobmaptojdbg:Make">
+        <MSBuild Projects="maptojdbg\bobmaptojdbg.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bobresource">
+        <MSBuild Projects="resource\bobresource.dproj"/>
+    </Target>
+    <Target Name="bobresource:Clean">
+        <MSBuild Projects="resource\bobresource.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bobresource:Make">
+        <MSBuild Projects="resource\bobresource.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bobmd5">
+        <MSBuild Projects="md5\bobmd5.dproj"/>
+    </Target>
+    <Target Name="bobmd5:Clean">
+        <MSBuild Projects="md5\bobmd5.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bobmd5:Make">
+        <MSBuild Projects="md5\bobmd5.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bobwixwrapper">
+        <MSBuild Projects="wixwrapper\bobwixwrapper.dproj"/>
+    </Target>
+    <Target Name="bobwixwrapper:Clean">
+        <MSBuild Projects="wixwrapper\bobwixwrapper.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bobwixwrapper:Make">
+        <MSBuild Projects="wixwrapper\bobwixwrapper.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bobtests">
+        <MSBuild Projects="tests\bobtests.dproj"/>
+    </Target>
+    <Target Name="bobtests:Clean">
+        <MSBuild Projects="tests\bobtests.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bobtests:Make">
+        <MSBuild Projects="tests\bobtests.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bobgitpuller">
+        <MSBuild Projects="gitpuller\bobgitpuller.dproj"/>
+    </Target>
+    <Target Name="bobgitpuller:Clean">
+        <MSBuild Projects="gitpuller\bobgitpuller.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bobgitpuller:Make">
+        <MSBuild Projects="gitpuller\bobgitpuller.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="bobgitpullergui">
+        <MSBuild Projects="gitpuller\bobgitpullergui.dproj"/>
+    </Target>
+    <Target Name="bobgitpullergui:Clean">
+        <MSBuild Projects="gitpuller\bobgitpullergui.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bobgitpullergui:Make">
+        <MSBuild Projects="gitpuller\bobgitpullergui.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="bobbuildergui;bobbuilder;bobcodesign;bobcompare;boblibrary;boblibrarygui;bobmaptojdbg;bobresource;bobmd5;bobwixwrapper;bobtests;bobgitpuller;bobgitpullergui"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="bobbuildergui:Clean;bobbuilder:Clean;bobcodesign:Clean;bobcompare:Clean;boblibrary:Clean;boblibrarygui:Clean;bobmaptojdbg:Clean;bobresource:Clean;bobmd5:Clean;bobwixwrapper:Clean;bobtests:Clean;bobgitpuller:Clean;bobgitpullergui:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="bobbuildergui:Make;bobbuilder:Make;bobcodesign:Make;bobcompare:Make;boblibrary:Make;boblibrarygui:Make;bobmaptojdbg:Make;bobresource:Make;bobmd5:Make;bobwixwrapper:Make;bobtests:Make;bobgitpuller:Make;bobgitpullergui:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>

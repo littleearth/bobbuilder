@@ -1,0 +1,234 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build All Projects (Release)",
+            "type": "shell",
+            "command": "bobbuilder",
+            "args": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build All Projects (Debug)",
+            "type": "shell",
+            "command": "bobbuilder",
+            "args": [
+                "/CONFIGS:Debug"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean and Build All",
+            "type": "shell",
+            "command": "bobbuilder",
+            "args": [
+                "/CLEANUP:true"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build bobbuilder (Win32 Debug)",
+            "type": "shell",
+            "command": "bobbuilder",
+            "args": [
+                "/PROJECT:source\\builder\\bobbuilder.dproj",
+                "/PLATFORMS:Win32",
+                "/CONFIGS:Debug",
+                "/CLEANUP:false"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build bobbuilder (Win32 Release)",
+            "type": "shell",
+            "command": "bobbuilder",
+            "args": [
+                "/PROJECT:source\\builder\\bobbuilder.dproj",
+                "/PLATFORMS:Win32",
+                "/CONFIGS:Release",
+                "/CLEANUP:false"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build bobbuilder (All Platforms Release)",
+            "type": "shell",
+            "command": "bobbuilder",
+            "args": [
+                "/PROJECT:source\\builder\\bobbuilder.dproj",
+                "/PLATFORMS:Win32;Win64",
+                "/CONFIGS:Release",
+                "/CLEANUP:false"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build bobbuildergui (Win32 Debug)",
+            "type": "shell",
+            "command": "bobbuilder",
+            "args": [
+                "/PROJECT:source\\builder\\bobbuildergui.dproj",
+                "/PLATFORMS:Win32",
+                "/CONFIGS:Debug",
+                "/CLEANUP:false"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build bobbuildergui (Win32 Release)",
+            "type": "shell",
+            "command": "bobbuilder",
+            "args": [
+                "/PROJECT:source\\builder\\bobbuildergui.dproj",
+                "/PLATFORMS:Win32",
+                "/CONFIGS:Release",
+                "/CLEANUP:false"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build bobcodesign (Win32 Debug)",
+            "type": "shell",
+            "command": "bobbuilder",
+            "args": [
+                "/PROJECT:source\\codesign\\bobcodesign.dproj",
+                "/PLATFORMS:Win32",
+                "/CONFIGS:Debug",
+                "/CLEANUP:false"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build bobcompare (Win32 Debug)",
+            "type": "shell",
+            "command": "bobbuilder",
+            "args": [
+                "/PROJECT:source\\compare\\bobcompare.dproj",
+                "/PLATFORMS:Win32",
+                "/CONFIGS:Debug",
+                "/CLEANUP:false"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build bobmd5 (Win32 Debug)",
+            "type": "shell",
+            "command": "bobbuilder",
+            "args": [
+                "/PROJECT:source\\md5\\bobmd5.dproj",
+                "/PLATFORMS:Win32",
+                "/CONFIGS:Debug",
+                "/CLEANUP:false"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build bobwixwrapper (Win32 Debug)",
+            "type": "shell",
+            "command": "bobbuilder",
+            "args": [
+                "/PROJECT:source\\wixwrapper\\bobwixwrapper.dproj",
+                "/PLATFORMS:Win32",
+                "/CONFIGS:Debug",
+                "/CLEANUP:false"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Build Tests (Win32 Release)",
+            "type": "shell",
+            "command": "bobbuilder",
+            "args": [
+                "/PROJECT:source\\tests\\bobtests.dproj",
+                "/PLATFORMS:Win32",
+                "/CONFIGS:Release",
+                "/CLEANUP:false"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Clean Build All (Release)",
+            "type": "shell",
+            "command": "bobbuilder",
+            "args": [
+                "/CLEANUP:true",
+                "/CONFIGS:Release"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
+

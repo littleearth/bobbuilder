@@ -1,0 +1,130 @@
+# =====================================================================
+# GitLab CI/CD Configuration Example for BOBBuilder
+# =====================================================================
+# This is an EXAMPLE configuration file.
+# 
+# To use this in your project:
+# 1. Copy this file to your repository root as: .gitlab-ci.yml
+# 2. Configure required GitLab CI/CD variables (see README.md)
+# 3. Customize the configuration for your project
+#
+# This file will NOT trigger automatically from examples/cicd/
+# =====================================================================
+
+stages:
+  - init
+  - build
+  - upload
+  - release
+
+variables:
+  PACKAGE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${CI_COMMIT_TAG}/${CI_COMMIT_REF_NAME}"
+  RELEASE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases"
+  RELEASE_LINKS_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/releases/${CI_COMMIT_TAG}/assets/links"
+  VARIABLE_REGISTRY_URL: "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/variables"
+  CI_BUILDER_FILENAME: ${CI_BUILDER_FILENAME}
+  CI_VER_BUILD_NUMBER: ${CI_VER_BUILD_NUMBER}
+  CI_PIPELINE_IID_TOKEN: ${CI_PIPELINE_IID_TOKEN}
+
+
+auto_increment-staging:
+  stage: init
+  environment:
+    name: staging
+  script:
+  - $build_number=[int]$env:CI_VER_BUILD_NUMBER
+  - echo $build_number
+  - $build_number++
+  - echo $build_number
+  - $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+  - $headers.Add("PRIVATE-TOKEN", "${CI_PIPELINE_IID_TOKEN}")
+  - $headers.Add("Content-Type", "application/json")
+  - Invoke-RestMethod "${VARIABLE_REGISTRY_URL}/CI_VER_BUILD_NUMBER?value=${build_number}" -Method 'PUT'-Headers $headers
+  
+test:
+  stage: build
+  environment:
+    name: staging
+  script:
+    - $env:CI_BUILD_TAG="Build {0}" -f $env:CI_VER_BUILD_NUMBER
+    - bobbuilder.exe "$env:CI_BUILDER_FILENAME" /BUILDTYPE:Staging
+  artifacts:
+    name: "$env:CI_PROJECT_NAME-$env:CI_BUILD_NAME-$env:CI_BUILD_REF_NAME-$env:CI_BUILD_ID"
+    paths:
+      - build\\
+    when: always
+    expire_in: 5 mins
+production:
+  stage: build
+  environment:
+    name: production
+  script:
+     - $env:CI_BUILD_TAG="{0}" -f $env:CI_COMMIT_TAG
+     - bobbuilder.exe "$env:CI_BUILDER_FILENAME" /BUILDTYPE:Production
+  artifacts:
+    name: "$env:CI_PROJECT_NAME-$env:CI_BUILD_NAME-$env:CI_BUILD_REF_NAME-$env:CI_BUILD_ID"
+    when: always
+    paths:
+      - build\\
+    expire_in: 5 mins
+  only:
+  - tags
+  
+upload:
+  stage: upload
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - $folder = $env:CI_PROJECT_DIR+"\build\installer"
+    - echo $folder
+    - $folder = $long_path = (Get-Item -LiteralPath $folder).FullName
+    - echo $folder
+    - $files = Get-ChildItem "$folder" -include ('*.exe', '*.msi', '*.md5') -Recurse -ErrorAction SilentlyContinue -Force | Where-Object { $_.Attributes -ne "Directory"}
+    - $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+    - $headers.Add("JOB-TOKEN", "${CI_JOB_TOKEN}")
+    - $headers.Add("Content-Type", "application/json")
+    - |
+        foreach ($f in $files) {
+            $filename = $f.BaseName+$f.Extension
+            echo $f.FullName " -> "  ${PACKAGE_REGISTRY_URL}/${filename}
+            Invoke-RestMethod -Headers $headers -InFile $f.FullName -uri "${PACKAGE_REGISTRY_URL}/$filename" -Method put
+        }
+
+release:
+  stage: release
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - $folder = $env:CI_PROJECT_DIR+"\build\installer"
+    - echo $folder
+    - $headers = New-Object "System.Collections.Generic.Dictionary[[String],[String]]"
+    - $headers.Add("PRIVATE-TOKEN", "${CI_PIPELINE_IID_TOKEN}")
+    - $headers.Add("Content-Type", "application/json")
+    - $files = Get-ChildItem "$folder" -include ('*.exe', '*.msi') -Recurse -ErrorAction SilentlyContinue -Force | Where-Object { $_.Attributes -ne "Directory"}
+    - echo "Deleting copy of ${CI_COMMIT_TAG} release if it exists"
+    - echo ${RELEASE_REGISTRY_URL}/${CI_COMMIT_TAG}
+    - |
+      try {
+        Invoke-RestMethod "${RELEASE_REGISTRY_URL}/${CI_COMMIT_TAG}" -Method 'DELETE' -Headers $headers
+      } catch {
+        echo "StatusCode:" $_.Exception.Response.StatusCode.value__ 
+        echo "StatusDescription:" $_.Exception.Response.StatusDescription
+      }
+    - $release_message = ${CI_COMMIT_TAG_MESSAGE}
+    - $release_description = "Release ${CI_COMMIT_TAG} `r`n ${CI_COMMIT_TAG_MESSAGE}"
+    - $release_description = $release_description -replace [char]8211,"-"
+    - $release_description = $release_description -replace "[^`n`r -~]"
+    - $release_description = $release_description | ConvertTo-Json
+    - echo $release_description
+    - $release = "{`"name`":`"${CI_COMMIT_TAG}`",`"tag_name`":`"${CI_COMMIT_TAG}`",`"description`":$release_description}"
+    - echo $release
+    - echo "Creating release ${CI_COMMIT_TAG}"
+    - Invoke-RestMethod "${RELEASE_REGISTRY_URL}" -Method 'POST' -Headers $headers -Body $release
+    - |
+        foreach ($f in $files) {
+          $filename = $f.BaseName+$f.Extension
+          $package = "{`"name`":`"${filename}`",`"url`":`"${PACKAGE_REGISTRY_URL}/${filename}`",`"link_type`":`"package`"}"
+          echo $package
+          echo "Attaching release ${CI_COMMIT_TAG} link"
+          Invoke-RestMethod "${RELEASE_LINKS_REGISTRY_URL}" -Method 'POST' -Headers $headers -Body $package
+        }

@@ -1,0 +1,114 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch bobbuilder (Win32 Debug)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/build/tools/bin/Win32/Debug/bobbuilder.exe",
+            "runtimeArgs": [],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal",
+            "preLaunchTask": "Build bobbuilder (Win32 Debug)"
+        },
+        {
+            "name": "Launch bobbuilder (Win32 Debug) - No Build",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/build/tools/bin/Win32/Debug/bobbuilder.exe",
+            "runtimeArgs": [],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal"
+        },
+        {
+            "name": "Launch bobbuilder (Win32 Release)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/build/tools/bin/Win32/Release/bobbuilder.exe",
+            "runtimeArgs": [],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal",
+            "preLaunchTask": "Build bobbuilder (Win32 Release)"
+        },
+        {
+            "name": "Launch bobbuildergui (Win32 Debug)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/build/tools/bin/Win32/Debug/bobbuildergui.exe",
+            "runtimeArgs": [],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal",
+            "preLaunchTask": "Build bobbuildergui (Win32 Debug)"
+        },
+        {
+            "name": "Launch bobbuildergui (Win32 Debug) - No Build",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/build/tools/bin/Win32/Debug/bobbuildergui.exe",
+            "runtimeArgs": [],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal"
+        },
+        {
+            "name": "Launch bobbuildergui (Win32 Release)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/build/tools/bin/Win32/Release/bobbuildergui.exe",
+            "runtimeArgs": [],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal",
+            "preLaunchTask": "Build bobbuildergui (Win32 Release)"
+        },
+        {
+            "name": "Launch bobcodesign (Win32 Debug)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/build/tools/bin/Win32/Debug/bobcodesign.exe",
+            "runtimeArgs": [],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal",
+            "preLaunchTask": "Build bobcodesign (Win32 Debug)"
+        },
+        {
+            "name": "Launch bobcompare (Win32 Debug)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/build/tools/bin/Win32/Debug/bobcompare.exe",
+            "runtimeArgs": [],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal",
+            "preLaunchTask": "Build bobcompare (Win32 Debug)"
+        },
+        {
+            "name": "Launch bobmd5 (Win32 Debug)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/build/tools/bin/Win32/Debug/bobmd5.exe",
+            "runtimeArgs": [],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal",
+            "preLaunchTask": "Build bobmd5 (Win32 Debug)"
+        },
+        {
+            "name": "Launch bobwixwrapper (Win32 Debug)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/build/tools/bin/Win32/Debug/bobwixwrapper.exe",
+            "runtimeArgs": [],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal",
+            "preLaunchTask": "Build bobwixwrapper (Win32 Debug)"
+        },
+        {
+            "name": "Run Tests (Win32 Release)",
+            "type": "node",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}/build/tests/bin/Win32/Release/bobtests.exe",
+            "runtimeArgs": ["-exit:continue"],
+            "cwd": "${workspaceFolder}",
+            "console": "externalTerminal",
+            "preLaunchTask": "Build Tests (Win32 Release)"
+        }
+    ]
+}
+

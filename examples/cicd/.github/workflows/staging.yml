@@ -1,0 +1,98 @@
+# =====================================================================
+# GitHub Actions Workflow Example for BOBBuilder - Staging Build
+# =====================================================================
+# This is an EXAMPLE workflow file.
+# 
+# To use this in your project:
+# 1. Copy this file to: .github/workflows/staging.yml (at repo root)
+# 2. Configure required GitHub repository variables and secrets (see README.md)
+# 3. Customize the configuration for your project
+#
+# This file will NOT trigger automatically from examples/cicd/
+# =====================================================================
+
+name: Staging Build
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+env:
+  BUILDER_FILENAME: delphi-ci-test.builder
+  
+jobs:
+  increment-build-number:
+    runs-on: windows-latest
+    environment: staging
+    outputs:
+      build_number: ${{ steps.increment.outputs.build_number }}
+    steps:
+      - name: Increment Build Number
+        id: increment
+        shell: pwsh
+        run: |
+          $build_number = [int]"${{ vars.BUILD_NUMBER }}"
+          Write-Output "Current build number: $build_number"
+          $build_number++
+          Write-Output "New build number: $build_number"
+          
+          # Update repository variable using GitHub API
+          $headers = @{
+            "Accept" = "application/vnd.github+json"
+            "Authorization" = "Bearer ${{ secrets.PAT_TOKEN }}"
+            "X-GitHub-Api-Version" = "2022-11-28"
+          }
+          
+          $body = @{
+            "name" = "BUILD_NUMBER"
+            "value" = "$build_number"
+          } | ConvertTo-Json
+          
+          $url = "https://api.github.com/repos/${{ github.repository }}/actions/variables/BUILD_NUMBER"
+          
+          try {
+            Invoke-RestMethod -Uri $url -Method PATCH -Headers $headers -Body $body -ContentType "application/json"
+            Write-Output "Successfully updated BUILD_NUMBER variable"
+          } catch {
+            Write-Output "Error updating variable: $_"
+            exit 1
+          }
+          
+          echo "build_number=$build_number" >> $env:GITHUB_OUTPUT
+
+  build-staging:
+    runs-on: windows-latest
+    needs: increment-build-number
+    environment: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Build Environment
+        shell: pwsh
+        run: |
+          # Ensure bobbuilder.exe is in PATH or download/install it
+          # This assumes bobbuilder.exe is available in the system PATH
+          # You may need to add installation steps here
+          Write-Output "Setting up build environment..."
+          
+      - name: Build with BOBBuilder
+        shell: pwsh
+        env:
+          CI_BUILD_TAG: "Build ${{ needs.increment-build-number.outputs.build_number }}"
+          CI_VER_BUILD_NUMBER: ${{ needs.increment-build-number.outputs.build_number }}
+        run: |
+          Write-Output "Building with tag: $env:CI_BUILD_TAG"
+          bobbuilder.exe "$env:BUILDER_FILENAME" /BUILDTYPE:Staging
+          
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: staging-build-${{ github.sha }}
+          path: build/
+          retention-days: 5
+

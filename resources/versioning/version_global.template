@@ -1,0 +1,14 @@
+#define VER_FILEVERSION             :fileVersionMajor:,:fileVersionMinor:,:fileVersionRelease:,:fileVersionBuild:
+#define VER_FILEVERSION_STR         ":fileVersionMajor:.:fileVersionMinor:.:fileVersionRelease:.:fileVersionBuild:\0"
+
+#define VER_PRODUCTVERSION             :productVersionMajor:,:productVersionMinor:,:productVersionRelease:,:productVersionBuild:
+#define VER_PRODUCTVERSION_STR         ":productVersionMajor:.:productVersionMinor:.:productVersionRelease:.:productVersionBuild:\0"
+// Use file version for product version
+// #define VER_PRODUCTVERSION             :fileVersionMajor:,:fileVersionMinor:,:fileVersionRelease:,:fileVersionBuild:
+// #define VER_PRODUCTVERSION_STR         ":fileVersionMajor:.:fileVersionMinor:.:fileVersionRelease:.:fileVersionBuild:\0"
+
+#define VER_COMPANYNAME_STR ":companyName:\0"
+#define VER_LEGALCOPYRIGHT_STR ":legalCopyright:\0"
+#define VER_INTERNALNAME_STR ":internalName:\0"
+#define VER_PRODUCTNAME_STR ":productName:\0"
+#define VER_FILEDESCRIPTION_STR ":fileDescription:\0"

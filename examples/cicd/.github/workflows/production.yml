@@ -1,0 +1,111 @@
+# =====================================================================
+# GitHub Actions Workflow Example for BOBBuilder - Production Release
+# =====================================================================
+# This is an EXAMPLE workflow file.
+# 
+# To use this in your project:
+# 1. Copy this file to: .github/workflows/production.yml (at repo root)
+# 2. Configure required GitHub repository variables and secrets (see README.md)
+# 3. Customize the configuration for your project
+#
+# This file will NOT trigger automatically from examples/cicd/
+# =====================================================================
+
+name: Production Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - '*.*.*'
+  workflow_dispatch:
+
+env:
+  BUILDER_FILENAME: delphi-ci-test.builder
+  
+jobs:
+  build-production:
+    runs-on: windows-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Build Environment
+        shell: pwsh
+        run: |
+          # Ensure bobbuilder.exe is in PATH or download/install it
+          Write-Output "Setting up build environment..."
+          
+      - name: Build with BOBBuilder
+        shell: pwsh
+        env:
+          CI_BUILD_TAG: ${{ github.ref_name }}
+          CI_COMMIT_TAG: ${{ github.ref_name }}
+          CI_VER_BUILD_NUMBER: ${{ vars.BUILD_NUMBER }}
+        run: |
+          Write-Output "Building production release: $env:CI_BUILD_TAG"
+          bobbuilder.exe "$env:BUILDER_FILENAME" /BUILDTYPE:Production
+          
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-build-${{ github.ref_name }}
+          path: build/
+          retention-days: 5
+
+  create-release:
+    runs-on: windows-latest
+    needs: build-production
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+    steps:
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: production-build-${{ github.ref_name }}
+          path: build/
+          
+      - name: Find Release Files
+        id: find-files
+        shell: pwsh
+        run: |
+          $folder = "${{ github.workspace }}\build\installer"
+          Write-Output "Looking for release files in: $folder"
+          
+          if (Test-Path $folder) {
+            $files = Get-ChildItem "$folder" -Include ('*.exe', '*.msi', '*.md5') -Recurse -ErrorAction SilentlyContinue -Force | Where-Object { $_.Attributes -ne "Directory"}
+            Write-Output "Found $($files.Count) files for release"
+            
+            # List all files
+            foreach ($f in $files) {
+              Write-Output "  - $($f.Name)"
+            }
+          } else {
+            Write-Output "Installer folder not found"
+          }
+          
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## Release ${{ github.ref_name }}
+            
+            Automated release created from tag ${{ github.ref_name }}
+            
+            ### Build Information
+            - Build Number: ${{ vars.BUILD_NUMBER }}
+            - Commit: ${{ github.sha }}
+            - Workflow: ${{ github.run_number }}
+          files: |
+            build/installer/**/*.exe
+            build/installer/**/*.msi
+            build/installer/**/*.md5
+          draft: false
+          prerelease: false
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
