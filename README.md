@@ -183,10 +183,18 @@ See `.vscode/VSCODE-BUILDER.MD` for complete VS Code integration guide.
 
 **Method 1: Using BOB Builder (Self-Build)**
 
-If you have a working `bobbuilder.exe`:
+- Ensure Required External Libraries for Delphi are installed.
+- Install BOB Builder
+- Install InnoSetup (or disable group Installers)
+- Install WiX Toolset (or disable group Installers)
+- Create a LITTLEEARTH code sign profile that does nothing and ignores fails
 ```bash
-bobbuilder
+bobcodesign /MODE:ADDPROFILE /IGNOREFAIL:true /FILENAME:"cert.cert" /PASSWORD:secret /PROFILE:LITTLEEARTH
 ```
+   - Alternative options are create a /SELFSIGN:true profile for LITTLEEARTH
+   - Create your own perferred profile and adjust bobbuilder.builder and adjust or disable scripts "Code Signing Installers" and "Code Signing Binaries"
+- Build the entire project with `bobbuilder.exe` or `bobbuildergui.exe`
+- Build individual projects with /PROJECT:bobbuildergui
 
 **Method 2: Using VS Code**
 1. Open the workspace in VS Code
@@ -197,17 +205,6 @@ bobbuilder
 1. Open `source\BOBBuilderProjectGroup.groupproj`
 2. Build all projects (Shift+F9)
 
-**Method 4: Command Line with Delphi**
-```bash
-# Navigate to source directory
-cd source\builder
-
-# Compile console version
-dcc32.exe bobbuilder.dpr
-
-# Compile GUI version
-dcc32.exe bobbuildergui.dpr
-```
 
 ## Build Output
 
@@ -332,10 +329,6 @@ Required only for installer script compilation:
 Required only for code signing:
 - Included with Windows SDK
 - Configure path via `bobcodesign /MODE:SETSIGNTOOL /FILENAME:"C:\path\to\signtool.exe"`
-
-## License
-
-Copyright Little Earth Solutions. All rights reserved.
 
 ## Support
 
