@@ -3,10 +3,6 @@
 # BOB Builder - Build Automation Tool for Delphi
 [Little Earth Solutions](https://www.littleearthsolutions.net/ "Little Earth Solutions")
 
-I love supporting the **[EFF](https://eff.org)**.
-This is the *[Markdown Guide](https://www.markdownguide.org)*.
-See the section on [`code`](#code).
-
 ## Overview
 
 BOB Builder is a comprehensive command-line build automation tool designed specifically for Delphi projects. It streamlines the build process by managing compilation, versioning, resource generation, code signing, installer creation, and post-build processing through a single JSON configuration file.
