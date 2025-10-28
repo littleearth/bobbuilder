@@ -11,10 +11,10 @@ uses
   Bob.Common,
   Bob.Console,
   Lazy.Types,
-  BuilderSettings in 'BuilderSettings.pas',
-  Model.Build in 'Model.Build.pas',
-  ProjectBuilder in 'ProjectBuilder.pas',
-  BuildRunner in 'BuildRunner.pas';
+  Bob.BuilderSettings in 'Bob.BuilderSettings.pas',
+  Bob.BuilderModels in 'Bob.BuilderModels.pas',
+  Bob.ProjectBuilder in 'Bob.ProjectBuilder.pas',
+  Bob.BuilderRunner in 'Bob.BuilderRunner.pas';
 
 type
   TBuilderApplication = class(TBobConsoleApplication)

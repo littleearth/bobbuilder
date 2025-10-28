@@ -1,4 +1,4 @@
-unit Model.Build;
+unit Bob.BuilderModels;
 
 interface
 
@@ -23,6 +23,7 @@ type
     procedure Setstaging(const Value: TLZNullableBoolean);
   public
     procedure FromJSONValue(AJSONValue: TJSONValue); override;
+    function ToJSONValue: TJSONValue; override;
     property variableName: string read FvariableName write SetvariableName;
     property variableValue: string read FvariableValue write SetvariableValue;
     property development: TLZNullableBoolean read Fdevelopment
@@ -42,6 +43,7 @@ type
     procedure SetopenWith(const Value: string);
   public
     procedure FromJSONValue(AJSONValue: TJSONValue); override;
+    function ToJSONValue: TJSONValue; override;
     property filename: string read FfileName write SetfileName;
     property openWith: string read FopenWith write SetopenWith;
   end;
@@ -56,6 +58,7 @@ type
     procedure SetcleanupEnabled(const Value: Boolean);
   public
     procedure FromJSONValue(AJSONValue: TJSONValue); override;
+    function ToJSONValue: TJSONValue; override;
     property folder: string read Ffolder write Setfolder;
     property cleanupEnabled: Boolean read FcleanupEnabled
       write SetcleanupEnabled;
@@ -79,6 +82,7 @@ type
     procedure Setselective(const Value: TLZNullableBoolean);
   public
     procedure FromJSONValue(AJSONValue: TJSONValue); override;
+    function ToJSONValue: TJSONValue; override;
     property enabled: Boolean read Fenabled write Setenabled;
     property scriptName: string read FscriptName write Setname;
     property scriptSource: string read FscriptSource write SetscriptSource;
@@ -108,6 +112,7 @@ type
     procedure Setproperties(const Value: string);
   public
     procedure FromJSONValue(AJSONValue: TJSONValue); override;
+    function ToJSONValue: TJSONValue; override;
     property project: string read Fproject write Setproject;
     property platforms: string read Fplatforms write Setplatforms;
     property configs: string read Fconfigs write Setconfigs;
@@ -132,6 +137,7 @@ type
     procedure SetpostBuild(const Value: TLZNullableBoolean);
   public
     procedure FromJSONValue(AJSONValue: TJSONValue); override;
+    function ToJSONValue: TJSONValue; override;
     property params: string read Fparams write Setparams;
     property command: string read Fcommand write Setcommand;
     property folder: string read Ffolder write Setfolder;
@@ -151,6 +157,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
     procedure FromJSONValue(AJSONValue: TJSONValue); override;
+    function ToJSONValue: TJSONValue; override;
     property enabled: Boolean read Fenabled write Setenabled;
     property group: string read Fgroup write Setgroup;
     property projects: TProjects read FProjects;
@@ -169,6 +176,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
     procedure FromJSONValue(AJSONValue: TJSONValue); override;
+    function ToJSONValue: TJSONValue; override;
     property enabled: Boolean read Fenabled write Setenabled;
     property group: string read Fgroup write Setgroup;
     property projects: TTestProjects read FTestProjects;
@@ -196,6 +204,7 @@ type
     function GetscriptName: string;
   public
     procedure FromJSONValue(AJSONValue: TJSONValue); override;
+    function ToJSONValue: TJSONValue; override;
     property enabled: Boolean read Fenabled write Setenabled;
     property scriptName: string read GetscriptName write SetscriptName;
     property scriptType: string read FscriptType write SetscriptType;
@@ -219,6 +228,7 @@ type
     constructor Create; override;
     destructor Destroy; override;
     procedure FromJSONValue(AJSONValue: TJSONValue); override;
+    function ToJSONValue: TJSONValue; override;
     property enabled: Boolean read Fenabled write Setenabled;
     property group: string read Fgroup write Setgroup;
     property installScripts: TInstallScripts read FInstallScripts;
@@ -234,6 +244,7 @@ type
     procedure SetprocessFileName(const Value: string);
   public
     procedure FromJSONValue(AJSONValue: TJSONValue); override;
+    function ToJSONValue: TJSONValue; override;
     property processName: string read FprocessName write SetprocessName;
     property processFileName: string read FprocessFileName
       write SetprocessFileName;
@@ -440,6 +451,29 @@ begin
   end;
 end;
 
+function TVariable.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
+begin
+  LJSONObject := TJSONObject.Create;
+  try
+    LJSONObject.AddPair('variableName', FvariableName);
+    LJSONObject.AddPair('variableValue', FvariableValue);
+
+    if Fdevelopment.HasValue then
+      LJSONObject.AddPair('development', TJSONBool.Create(Fdevelopment.Value));
+    if Fstaging.HasValue then
+      LJSONObject.AddPair('staging', TJSONBool.Create(Fstaging.Value));
+    if Fproduction.HasValue then
+      LJSONObject.AddPair('production', TJSONBool.Create(Fproduction.Value));
+
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
+  end;
+end;
+
 { TFile }
 
 procedure TFile.FromJSONValue(AJSONValue: TJSONValue);
@@ -449,6 +483,21 @@ begin
   begin
     AJSONValue.TryGetValue<string>('filename', FfileName);
     AJSONValue.TryGetValue<string>('openWith', FopenWith);
+  end;
+end;
+
+function TFile.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
+begin
+  LJSONObject := TJSONObject.Create;
+  try
+    LJSONObject.AddPair('filename', FfileName);
+    LJSONObject.AddPair('openWith', FopenWith);
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
   end;
 end;
 
@@ -464,6 +513,21 @@ begin
   end;
 end;
 
+function TFolder.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
+begin
+  LJSONObject := TJSONObject.Create;
+  try
+    LJSONObject.AddPair('folder', Ffolder);
+    LJSONObject.AddPair('cleanupEnabled', TJSONBool.Create(FcleanupEnabled));
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
+  end;
+end;
+
 { TScript }
 
 procedure TScript.FromJSONValue(AJSONValue: TJSONValue);
@@ -476,6 +540,29 @@ begin
     AJSONValue.TryGetValue<string>('scriptSource', FscriptSource);
     Fstaging.FromJSON(AJSONValue, 'staging');
     Fproduction.FromJSON(AJSONValue, 'production');
+    Fselective.FromJSON(AJSONValue, 'selective');
+  end;
+end;
+
+function TScript.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
+begin
+  LJSONObject := TJSONObject.Create;
+  try
+    LJSONObject.AddPair('enabled', TJSONBool.Create(Fenabled));
+    LJSONObject.AddPair('scriptName', FscriptName);
+    LJSONObject.AddPair('scriptSource', FscriptSource);
+    if Fstaging.HasValue then
+      LJSONObject.AddPair('staging', TJSONBool.Create(Fstaging.Value));
+    if Fproduction.HasValue then
+      LJSONObject.AddPair('production', TJSONBool.Create(Fproduction.Value));
+    if Fselective.HasValue then
+      LJSONObject.AddPair('selective', TJSONBool.Create(Fselective.Value));
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
   end;
 end;
 
@@ -492,6 +579,30 @@ begin
     AJSONValue.TryGetValue<string>('properties', Fproperties);
     Fstaging.FromJSON(AJSONValue, 'staging');
     Fproduction.FromJSON(AJSONValue, 'production');
+    Fenabled.FromJSON(AJSONValue, 'enabled');
+  end;
+end;
+
+function TProject.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
+begin
+  LJSONObject := TJSONObject.Create;
+  try
+    LJSONObject.AddPair('project', Fproject);
+    LJSONObject.AddPair('platforms', Fplatforms);
+    LJSONObject.AddPair('configs', Fconfigs);
+    LJSONObject.AddPair('properties', Fproperties);
+    if Fstaging.HasValue then
+      LJSONObject.AddPair('staging', TJSONBool.Create(Fstaging.Value));
+    if Fproduction.HasValue then
+      LJSONObject.AddPair('production', TJSONBool.Create(Fproduction.Value));
+    if Fenabled.HasValue then
+      LJSONObject.AddPair('enabled', TJSONBool.Create(Fenabled.Value));
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
   end;
 end;
 
@@ -506,6 +617,38 @@ begin
     AJSONValue.TryGetValue<string>('command', Fcommand);
     AJSONValue.TryGetValue<string>('folder', Ffolder);
     FpostBuild.FromJSON(AJSONValue, 'postBuild');
+  end;
+end;
+
+function TTestProject.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
+begin
+  LJSONObject := TJSONObject.Create;
+  try
+    // Inherited fields from TProject
+    LJSONObject.AddPair('project', Fproject);
+    LJSONObject.AddPair('platforms', Fplatforms);
+    LJSONObject.AddPair('configs', Fconfigs);
+    LJSONObject.AddPair('properties', Fproperties);
+    if Fstaging.HasValue then
+      LJSONObject.AddPair('staging', TJSONBool.Create(Fstaging.Value));
+    if Fproduction.HasValue then
+      LJSONObject.AddPair('production', TJSONBool.Create(Fproduction.Value));
+    if Fenabled.HasValue then
+      LJSONObject.AddPair('enabled', TJSONBool.Create(Fenabled.Value));
+
+    // TTestProject specific fields
+    LJSONObject.AddPair('params', Fparams);
+    LJSONObject.AddPair('command', Fcommand);
+    LJSONObject.AddPair('folder', Ffolder);
+    if FpostBuild.HasValue then
+      LJSONObject.AddPair('postBuild', TJSONBool.Create(FpostBuild.Value));
+
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
   end;
 end;
 
@@ -533,6 +676,30 @@ begin
 
     if Assigned(FProjects) then
       FProjects.FromJSONValue(AJSONValue, False, 'projects');
+  end;
+end;
+
+function TProjectGroup.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
+  LArray: TJSONArray;
+  LIdx: Integer;
+begin
+  LJSONObject := TJSONObject.Create;
+  try
+    LJSONObject.AddPair('enabled', TJSONBool.Create(Fenabled));
+    LJSONObject.AddPair('group', Fgroup);
+
+    LArray := TJSONArray.Create;
+    if Assigned(FProjects) then
+      for LIdx := 0 to FProjects.Count - 1 do
+        LArray.AddElement(FProjects[LIdx].ToJSONValue);
+    LJSONObject.AddPair('projects', LArray);
+
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
   end;
 end;
 
@@ -573,6 +740,30 @@ begin
   end;
 end;
 
+function TTestProjectGroup.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
+  LArray: TJSONArray;
+  LIdx: Integer;
+begin
+  LJSONObject := TJSONObject.Create;
+  try
+    LJSONObject.AddPair('enabled', TJSONBool.Create(Fenabled));
+    LJSONObject.AddPair('group', Fgroup);
+
+    LArray := TJSONArray.Create;
+    if Assigned(FTestProjects) then
+      for LIdx := 0 to FTestProjects.Count - 1 do
+        LArray.AddElement(FTestProjects[LIdx].ToJSONValue);
+    LJSONObject.AddPair('projects', LArray);
+
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
+  end;
+end;
+
 { TInstallScript }
 
 procedure TInstallScript.FromJSONValue(AJSONValue: TJSONValue);
@@ -587,6 +778,28 @@ begin
     AJSONValue.TryGetValue<string>('params', Fparams);
     Fstaging.FromJSON(AJSONValue, 'staging');
     Fproduction.FromJSON(AJSONValue, 'production');
+  end;
+end;
+
+function TInstallScript.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
+begin
+  LJSONObject := TJSONObject.Create;
+  try
+    LJSONObject.AddPair('enabled', TJSONBool.Create(Fenabled));
+    LJSONObject.AddPair('scriptName', FscriptName);
+    LJSONObject.AddPair('scriptType', FscriptType);
+    LJSONObject.AddPair('filename', FfileName);
+    LJSONObject.AddPair('params', Fparams);
+    if Fstaging.HasValue then
+      LJSONObject.AddPair('staging', TJSONBool.Create(Fstaging.Value));
+    if Fproduction.HasValue then
+      LJSONObject.AddPair('production', TJSONBool.Create(Fproduction.Value));
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
   end;
 end;
 
@@ -617,6 +830,30 @@ begin
   end;
 end;
 
+function TInstallScriptGroup.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
+  LArray: TJSONArray;
+  LIdx: Integer;
+begin
+  LJSONObject := TJSONObject.Create;
+  try
+    LJSONObject.AddPair('enabled', TJSONBool.Create(Fenabled));
+    LJSONObject.AddPair('group', Fgroup);
+
+    LArray := TJSONArray.Create;
+    if Assigned(FInstallScripts) then
+      for LIdx := 0 to FInstallScripts.Count - 1 do
+        LArray.AddElement(FInstallScripts[LIdx].ToJSONValue);
+    LJSONObject.AddPair('installScripts', LArray);
+
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
+  end;
+end;
+
 { TProcess }
 
 procedure TProcess.FromJSONValue(AJSONValue: TJSONValue);
@@ -626,6 +863,21 @@ begin
   begin
     AJSONValue.TryGetValue<string>('processName', FprocessName);
     AJSONValue.TryGetValue<string>('processFileName', FprocessFileName);
+  end;
+end;
+
+function TProcess.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
+begin
+  LJSONObject := TJSONObject.Create;
+  try
+    LJSONObject.AddPair('processName', FprocessName);
+    LJSONObject.AddPair('processFileName', FprocessFileName);
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
   end;
 end;
 
@@ -646,6 +898,28 @@ begin
     AJSONValue.TryGetValue<string>('productVersionRelease',
       FproductVersionRelease);
     AJSONValue.TryGetValue<string>('productVersionBuild', FproductVersionBuild);
+  end;
+end;
+
+function TVersionInformation.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
+begin
+  LJSONObject := TJSONObject.Create;
+  try
+    LJSONObject.AddPair('filename', FfileName);
+    LJSONObject.AddPair('fileVersionMajor', FfileVersionMajor);
+    LJSONObject.AddPair('fileVersionMinor', FfileVersionMinor);
+    LJSONObject.AddPair('fileVersionRelease', FfileVersionRelease);
+    LJSONObject.AddPair('fileVersionBuild', FfileVersionBuild);
+    LJSONObject.AddPair('productVersionMajor', FproductVersionMajor);
+    LJSONObject.AddPair('productVersionMinor', FproductVersionMinor);
+    LJSONObject.AddPair('productVersionRelease', FproductVersionRelease);
+    LJSONObject.AddPair('productVersionBuild', FproductVersionBuild);
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
   end;
 end;
 
@@ -1092,25 +1366,133 @@ end;
 { TBuildProject }
 
 function TBuildProject.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
+  LArray: TJSONArray;
+  LIdx: Integer;
 begin
-  // ToJSONValue not implemented - this project only reads configuration files
-  Result := nil;
-end;
+  LJSONObject := TJSONObject.Create;
+  try
+    // Project information (first to match original JSON structure)
+    if Assigned(FprojectInformation) then
+      LJSONObject.AddPair('projectInformation',
+        FprojectInformation.ToJSONValue);
 
-{ TVersionInformation }
+    // Basic properties
+    LJSONObject.AddPair('logFolder', FlogFolder);
+    LJSONObject.AddPair('defaultProjectGroups', FdefaultProjectGroups);
+    LJSONObject.AddPair('defaultInstallScriptGroups',
+      FdefaultInstallScriptGroups);
+    LJSONObject.AddPair('defaultTestProjectGroups', FdefaultTestProjectGroups);
+    LJSONObject.AddPair('defaultBuildCompleteScripts',
+      FdefaultBuildCompleteScripts);
 
-function TVersionInformation.ToJSONValue: TJSONValue;
-begin
-  // ToJSONValue not implemented - this project only reads configuration files
-  Result := nil;
+    // Nullable boolean for gitpull
+    if Fgitpull.HasValue then
+      LJSONObject.AddPair('gitpull', TJSONBool.Create(Fgitpull.Value));
+
+    // Collection properties - serialize as JSON arrays
+    LArray := TJSONArray.Create;
+    if Assigned(Fvariables) then
+      for LIdx := 0 to Fvariables.Count - 1 do
+        LArray.AddElement(Fvariables[LIdx].ToJSONValue);
+    LJSONObject.AddPair('variables', LArray);
+
+    LArray := TJSONArray.Create;
+    if Assigned(FbuildFolders) then
+      for LIdx := 0 to FbuildFolders.Count - 1 do
+        LArray.AddElement(FbuildFolders[LIdx].ToJSONValue);
+    LJSONObject.AddPair('buildFolders', LArray);
+
+    LArray := TJSONArray.Create;
+    if Assigned(FTestProjectGroups) then
+      for LIdx := 0 to FTestProjectGroups.Count - 1 do
+        LArray.AddElement(FTestProjectGroups[LIdx].ToJSONValue);
+    LJSONObject.AddPair('testProjectGroups', LArray);
+
+    LArray := TJSONArray.Create;
+    if Assigned(FProjectGroups) then
+      for LIdx := 0 to FProjectGroups.Count - 1 do
+        LArray.AddElement(FProjectGroups[LIdx].ToJSONValue);
+    LJSONObject.AddPair('projectGroups', LArray);
+
+    LArray := TJSONArray.Create;
+    if Assigned(FpostCleanupScripts) then
+      for LIdx := 0 to FpostCleanupScripts.Count - 1 do
+        LArray.AddElement(FpostCleanupScripts[LIdx].ToJSONValue);
+    LJSONObject.AddPair('postCleanupScripts', LArray);
+
+    LArray := TJSONArray.Create;
+    if Assigned(FpreBuildScripts) then
+      for LIdx := 0 to FpreBuildScripts.Count - 1 do
+        LArray.AddElement(FpreBuildScripts[LIdx].ToJSONValue);
+    LJSONObject.AddPair('preBuildScripts', LArray);
+
+    LArray := TJSONArray.Create;
+    if Assigned(FpostBuildScripts) then
+      for LIdx := 0 to FpostBuildScripts.Count - 1 do
+        LArray.AddElement(FpostBuildScripts[LIdx].ToJSONValue);
+    LJSONObject.AddPair('postBuildScripts', LArray);
+
+    LArray := TJSONArray.Create;
+    if Assigned(FinstallScriptGroups) then
+      for LIdx := 0 to FinstallScriptGroups.Count - 1 do
+        LArray.AddElement(FinstallScriptGroups[LIdx].ToJSONValue);
+    LJSONObject.AddPair('installScriptGroups', LArray);
+
+    LArray := TJSONArray.Create;
+    if Assigned(FbuildCompleteScripts) then
+      for LIdx := 0 to FbuildCompleteScripts.Count - 1 do
+        LArray.AddElement(FbuildCompleteScripts[LIdx].ToJSONValue);
+    LJSONObject.AddPair('buildCompleteScripts', LArray);
+
+    LArray := TJSONArray.Create;
+    if Assigned(FcheckActiveProcesses) then
+      for LIdx := 0 to FcheckActiveProcesses.Count - 1 do
+        LArray.AddElement(FcheckActiveProcesses[LIdx].ToJSONValue);
+    LJSONObject.AddPair('checkActiveProcesses', LArray);
+
+    LArray := TJSONArray.Create;
+    if Assigned(FreviewFiles) then
+      for LIdx := 0 to FreviewFiles.Count - 1 do
+        LArray.AddElement(FreviewFiles[LIdx].ToJSONValue);
+    LJSONObject.AddPair('reviewFiles', LArray);
+
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
+  end;
 end;
 
 { TProjectInformation }
 
 function TProjectInformation.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
 begin
-  // ToJSONValue not implemented - this project only reads configuration files
-  Result := nil;
+  LJSONObject := TJSONObject.Create;
+  try
+    LJSONObject.AddPair('productName', FproductName);
+    LJSONObject.AddPair('internalName', FinternalName);
+    LJSONObject.AddPair('companyName', FcompanyName);
+    LJSONObject.AddPair('fileDescription', FfileDescription);
+    LJSONObject.AddPair('legalCopyright', FlegalCopyright);
+    LJSONObject.AddPair('companyURL', FcompanyURL);
+
+    if Assigned(FStagingVersion) then
+      LJSONObject.AddPair('stagingVersion', FStagingVersion.ToJSONValue);
+    if Assigned(FProductionVersion) then
+      LJSONObject.AddPair('productionVersion', FProductionVersion.ToJSONValue);
+    if Assigned(FDevelopmentVersion) then
+      LJSONObject.AddPair('developmentVersion',
+        FDevelopmentVersion.ToJSONValue);
+
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
+  end;
 end;
 
 end.

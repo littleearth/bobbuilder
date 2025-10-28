@@ -2,7 +2,7 @@ unit Bob.CodeSign;
 
 interface
 
-uses Classes, Windows, SysUtils, Lazy.Utils.Windows, Lazy.Types;
+uses Classes, Windows, SysUtils, Lazy.Utils.Windows, Lazy.Types, TlHelp32;
 
 const
   DEFAULT_SIGN_COMMAND_LINE =
@@ -20,12 +20,14 @@ type
     FFileName: TFileName;
     FCertificatePassword: string;
     FCertificateFileName: TFileName;
+    FPFXPassword: string;
     FCommandLine: string;
     FContainerName: string;
     FTimeStampServer: string;
     FFileDigest: string;
     FCSP: string;
     FIgnoreFail: boolean;
+    FSelfSign: boolean;
     procedure SetCertificateFileName(const Value: TFileName);
     procedure SetCertificatePassword(const Value: string);
     procedure SetFileName(const Value: TFileName);
@@ -35,6 +37,8 @@ type
     procedure SetTimeStampServer(const Value: string);
     procedure SetCSP(const Value: string);
     procedure SetIgnoreFail(const Value: boolean);
+    procedure SetPFXPassword(const Value: string);
+    procedure SetSelfSign(const Value: boolean);
   protected
     property FileName: TFileName read FFileName write SetFileName;
   public
@@ -53,6 +57,8 @@ type
     property ContainerName: string read FContainerName write SetContainerName;
     property CSP: string read FCSP write SetCSP;
     property IgnoreFail: boolean read FIgnoreFail write SetIgnoreFail;
+    property PFXPassword: string read FPFXPassword write SetPFXPassword;
+    property SelfSign: boolean read FSelfSign write SetSelfSign;
 
   end;
 
@@ -81,20 +87,24 @@ type
       ACertificatePassword: string; ACommandLine: string;
       ATimeStampServer: string; AFileDigest: string; AContainerName: string;
       ACSP: string; AIgnoreFail: boolean);
+    procedure AddProfilePFX(AProfileName: string; ACertificateFileName: TFileName;
+      APFXPassword: string; ACommandLine: string;
+      ATimeStampServer: string; AFileDigest: string; AIgnoreFail: boolean; ASelfSign: boolean);
     procedure DeleteProfile(AProfileName: string);
+    procedure ListProfiles(var AProfiles: TStringList);
+    function GetProfiles: TStringList;
     property Key: string read FKey write SetKey;
     property CodeSignFileName: TFileName read FCodeSignFileName
       write SetCodeSignFileName;
   end;
 
-  TCodeSignConsole = class(TCodeSign)
+    TCodeSignConsole = class(TCodeSign)
   private
     function CheckCommandParameter(var AMessage: string; var AMode: string;
       var AFilename: string; var AProfile: string; var APassword: string;
       var ARecurse: boolean): boolean;
     function GetUsage: string;
   protected
-    procedure Log(AMessage: string); override;
   public
     function Execute(var AMessage: string): boolean;
   end;
@@ -102,7 +112,7 @@ type
 implementation
 
 uses
-  Bob.Encryption, Lazy.CryptINI, System.IniFiles, Winapi.ShellAPI, Lazy.Token;
+  Bob.Encryption, Lazy.CryptINI, System.IniFiles, Winapi.ShellAPI, Lazy.Token, Bob.Common;
 
 const
   BASE_KEY = 'Tc0d3s1gn!';
@@ -132,10 +142,16 @@ begin
     LUsage.Add('   SETSIGNTOOL - /FILENAME to Set location of signtool.exe');
     LUsage.Add('   SIGN - Sign files specified in /FILENAME');
     LUsage.Add
-      ('   ADDPROFILE - Add profile with /FILENAME for certfificate /PASSWORD: and password /CONTAINER: for container name');
-    LUsage.Add('                 and /PROFILE: with profile name');
+      ('   ADDPROFILE - Add profile with /FILENAME for certificate file');
+    LUsage.Add('                 Use /FILENAME for certificate file (.pfx, .p12, .cer)');
+    LUsage.Add('                 Use /CONTAINERNAME for container-based certificates (with .cer)');
+    LUsage.Add('                 Use /PFXPASSWORD for PFX-based certificates (.pfx or .p12)');
+    LUsage.Add('                 Use /SELFSIGN:true to enable self-signing capability');
+    LUsage.Add('   DELPROFILE - Delete profile specified by /PROFILE');
+    LUsage.Add('   LISTPROFILES - List all configured profiles');
     LUsage.Add('');
-    LUsage.Add('- /FILENAME filename or filemask (eg *.dll)');
+    LUsage.Add('- /FILENAME filename or filemask (eg *.dll) or certificate file (.pfx, .p12, .cer)');
+    LUsage.Add('- /PFXPASSWORD password for PFX certificate (only for .pfx or .p12 files)');
     LUsage.Add('- /RECURSE recurse file mask for signing (default :true)');
     LUsage.Add('- /PROFILE Name of profile used in specified MODE');
     LUsage.Add
@@ -144,8 +160,8 @@ begin
       ('- /COMMANDLINE override command line for sign default. Variable below can also be included. blank for default.'
       + DEFAULT_SIGN_COMMAND_LINE);
     LUsage.Add
-      ('- /TIMESTAMPSERVER specify :timestampserver: in command line, blank for default. '
-      + DEFAULT_SIGN_TIMESTAMPSERVER);
+      ('- /TIMESTAMPSERVER specify :timestampserver: in command line. Can be omitted for self-signed certificates. '
+      + 'Default: ' + DEFAULT_SIGN_TIMESTAMPSERVER);
     LUsage.Add
       ('- /FILEDIGEST specify :filedigest: in command line, blank for default. '
       + DEFAULT_SIGN_FILEDIGEST);
@@ -156,21 +172,23 @@ begin
     LUsage.Add('');
     LUsage.Add('Examples:');
     LUsage.Add('   /MODE:SETSIGNTOOL /FILENAME:""C:\SignTool\SignTool.exe"');
-    LUsage.Add('   /MODE:SIGN /FILENAME:"C:\Build\*.exe /RECURSE:true');
+    LUsage.Add('   /MODE:SIGN /FILENAME:"C:\Build\*.exe /RECURSE:true /PROFILE:DEFAULT');
     LUsage.Add
       ('   /MODE:ADDPROFILE /FILENAME:"C:\BuildServer\CodeSign\certs\Cert.cer" /CONTAINERNAME:Sectigo_123456789 /PASSWORD:secret /PROFILE:DEFAULT');
+    LUsage.Add
+      ('   /MODE:ADDPROFILE /FILENAME:"C:\Certificates\codesign.pfx" /PFXPASSWORD:pfxpassword /SELFSIGN:true /PROFILE:SELFSIGN');
+    LUsage.Add('   /MODE:DELPROFILE /PROFILE:DEFAULT');
+    LUsage.Add('   /MODE:LISTPROFILES');
+    LUsage.Add('');
+    LUsage.Add('Creating a Self-Signed Certificate with PowerShell:');
+    LUsage.Add('   Run PowerShell as Administrator and execute:');
+    LUsage.Add('   $cert = New-SelfSignedCertificate -Type Custom -Subject "CN=Your Company Code Signing" -KeyUsage DigitalSignature -FriendlyName "MyCodeSignCert" -CertStoreLocation "Cert:\CurrentUser\My" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.3")');
+    LUsage.Add('   $password = ConvertTo-SecureString -String "YourPassword" -Force -AsPlainText');
+    LUsage.Add('   Export-PfxCertificate -cert "Cert:\CurrentUser\My\$($cert.Thumbprint)" -FilePath "C:\MyCert.pfx" -Password $password');
     Result := LUsage.Text;
   finally
     FreeAndNil(LUsage);
   end;
-end;
-
-procedure TCodeSignConsole.Log(AMessage: string);
-begin
-  inherited;
-{$IFDEF CONSOLE}
-  Writeln(AMessage);
-{$ENDIF}
 end;
 
 function TCodeSignConsole.CheckCommandParameter(var AMessage: string;
@@ -214,12 +232,22 @@ begin
 
   if SameText(AMode, 'ADDPROFILE') then
   begin
-    if (not TLZString.IsEmptyString(AProfile)) and
-      (not TLZString.IsEmptyString(AFilename)) and
-      (not TLZString.IsEmptyString(APassword)) then
+    if not TLZString.IsEmptyString(AProfile) and
+       (not TLZString.IsEmptyString(AFilename)) then
     begin
       LAdminRequired := true;
-      Result := true;
+      // Check if PFX-based (has PFXPASSWORD and .pfx or .p12 extension) or container-based (has PASSWORD and .cer or other extension)
+      TLZSystem.GetApplicationParameters('/PFXPASSWORD', LValue);
+      if not TLZString.IsEmptyString(LValue) and
+         (SameText(ExtractFileExt(AFilename), '.pfx') or 
+          SameText(ExtractFileExt(AFilename), '.p12')) then
+      begin
+        Result := true; // PFX-based profile
+      end
+      else if not TLZString.IsEmptyString(APassword) then
+      begin
+        Result := true; // Container-based profile
+      end;
     end;
   end;
 
@@ -230,6 +258,12 @@ begin
       LAdminRequired := true;
       Result := true;
     end;
+  end;
+
+  if SameText(AMode, 'LISTPROFILES') then
+  begin
+    LAdminRequired := false; // No admin required to list profiles
+    Result := true;
   end;
 
   if LAdminRequired and Result then
@@ -253,8 +287,8 @@ function TCodeSignConsole.Execute(var AMessage: string): boolean;
 var
   LMode, LFilename, LProfile, LPassword: string;
   LCommandLine, LTimeStampServer, LFileDigest, LContainerName, LCSP,
-    LIgnoreFailText: string;
-  LRecurse, LIgnoreFail: boolean;
+    LIgnoreFailText, LPFXPassword, LSelfSignText: string;
+  LRecurse, LIgnoreFail, LSelfSign: boolean;
 begin
   Result := CheckCommandParameter(AMessage, LMode, LFilename, LProfile,
     LPassword, LRecurse);
@@ -287,15 +321,32 @@ begin
         TLZSystem.GetApplicationParameters('/FILEDIGEST', LFileDigest);
         TLZSystem.GetApplicationParameters('/CONTAINERNAME', LContainerName);
         TLZSystem.GetApplicationParameters('/CSP', LCSP);
+        TLZSystem.GetApplicationParameters('/PFXPASSWORD', LPFXPassword);
         LIgnoreFail := false;
+        LSelfSign := false;
         if TLZSystem.GetApplicationParameters('/IGNOREFAIL', LIgnoreFailText)
         then
         begin
           LIgnoreFail := StrToBoolDef(LIgnoreFailText, LIgnoreFail);
         end;
+        if TLZSystem.GetApplicationParameters('/SELFSIGN', LSelfSignText) then
+        begin
+          LSelfSign := StrToBoolDef(LSelfSignText, LSelfSign);
+        end;
 
-        AddProfile(LProfile, LFilename, LPassword, LCommandLine,
-          LTimeStampServer, LFileDigest, LContainerName, LCSP, LIgnoreFail);
+        // Check if PFX-based (has PFXPASSWORD and .pfx or .p12 extension) or container-based
+        if (not TLZString.IsEmptyString(LPFXPassword)) and
+           (SameText(ExtractFileExt(LFilename), '.pfx') or 
+            SameText(ExtractFileExt(LFilename), '.p12')) then
+        begin
+          AddProfilePFX(LProfile, LFilename, LPFXPassword, LCommandLine,
+            LTimeStampServer, LFileDigest, LIgnoreFail, LSelfSign);
+        end
+        else
+        begin
+          AddProfile(LProfile, LFilename, LPassword, LCommandLine,
+            LTimeStampServer, LFileDigest, LContainerName, LCSP, LIgnoreFail);
+        end;
       end;
     end;
 
@@ -304,6 +355,15 @@ begin
       if SameText(LMode, 'DELPROFILE') then
       begin
         DeleteProfile(LProfile);
+        Log(Format('Deleted profile: %s', [LProfile]));
+      end;
+    end;
+
+    if Result then
+    begin
+      if SameText(LMode, 'LISTPROFILES') then
+      begin
+        Log(GetProfiles.Text);
       end;
     end;
   except
@@ -381,6 +441,32 @@ begin
     end;
     RenameFile(LSource, LDestination);
   end;
+end;
+
+procedure TCodeSign.ListProfiles(var AProfiles: TStringList);
+var
+  LProfileFiles: TStringList;
+  LIdx: integer;
+  LProfileName: string;
+begin
+  AProfiles.Clear;
+  LProfileFiles := TStringList.Create;
+  try
+    TLZFile.QuickFileSearch(GetSettingsFolder, '*' + PROFILE_EXT, false, LProfileFiles);
+    for LIdx := 0 to Pred(LProfileFiles.Count) do
+    begin
+      LProfileName := ChangeFileExt(ExtractFileName(LProfileFiles[LIdx]), '');
+      AProfiles.Add(LProfileName);
+    end;
+  finally
+    FreeAndNil(LProfileFiles);
+  end;
+end;
+
+function TCodeSign.GetProfiles: TStringList;
+begin
+  Result := TStringList.Create;
+  ListProfiles(Result);
 end;
 
 function TCodeSign.LoadProfile(AProfileName: string; var ACommandLine: string;
@@ -488,7 +574,7 @@ end;
 
 function TCodeSign.GetSettingsFolder: string;
 begin
-  Result := TLZFile.GetCommonAppDataFolder;
+  Result := TBobCommon.GetPublicSettingsFolder('bobcodesign');
   TLZFile.CheckDirectoryExists(Result, true);
 end;
 
@@ -595,23 +681,72 @@ begin
   end;
 end;
 
+
+procedure TCodeSign.AddProfilePFX(AProfileName: string;
+  ACertificateFileName: TFileName; APFXPassword: string; ACommandLine: string;
+  ATimeStampServer: string; AFileDigest: string; AIgnoreFail: boolean; ASelfSign: boolean);
+var
+  LProfile: TCodeSignProfile;
+  LSignCommand: string;
+begin
+  LProfile := TCodeSignProfile.Create;
+  try
+    LProfile.CertificateFileName := ACertificateFileName;
+    LProfile.PFXPassword := APFXPassword;
+    if TLZString.IsEmptyString(ACommandLine) then
+      LSignCommand := 'sign /t :timestampserver: /fd :filedigest: /f ":certificatefilename:" /p :pfxpassword:'
+    else
+      LSignCommand := ACommandLine;
+    LProfile.CommandLine := LSignCommand;
+    if not TLZString.IsEmptyString(ATimeStampServer) then
+    begin
+      LProfile.TimeStampServer := ATimeStampServer;
+    end;
+    if not TLZString.IsEmptyString(AFileDigest) then
+    begin
+      LProfile.FileDigest := AFileDigest;
+    end;
+    LProfile.IgnoreFail := AIgnoreFail;
+    LProfile.SelfSign := ASelfSign;
+    LProfile.Save(GetProfileFileName(AProfileName), Key);
+    Log(Format('Added PFX profile: %s (SelfSign: %s)', [AProfileName, BoolToStr(ASelfSign, true)]));
+  finally
+    FreeAndNil(LProfile);
+  end;
+end;
+
 { TCodeSignProfile }
 
 constructor TCodeSignProfile.Create;
 begin
   FCommandLine := DEFAULT_SIGN_COMMAND_LINE;
-  FTimeStampServer := DEFAULT_SIGN_TIMESTAMPSERVER;
+  FTimeStampServer := ''; // Empty by default - can be set if needed
   FFileDigest := DEFAULT_SIGN_FILEDIGEST;
   FContainerName := '';
   FCSP := DEFAULT_SIGN_CSP;
   FIgnoreFail := false;
+  FPFXPassword := '';
+  FSelfSign := false;
 end;
 
 function TCodeSignProfile.ParseCommandLine(AObfuscate: boolean): string;
 begin
   Result := FCommandLine;
-  Result := StringReplace(Result, ':timestampserver:', FTimeStampServer,
-    [rfReplaceAll, rfIgnoreCase]);
+  
+  // Handle timestamp server - only include /t if timestamp server is provided
+  if not TLZString.IsEmptyString(FTimeStampServer) then
+  begin
+    Result := StringReplace(Result, '/t :timestampserver:', 
+      '/t "' + FTimeStampServer + '"', [rfReplaceAll, rfIgnoreCase]);
+  end
+  else
+  begin
+    // Remove the /t parameter entirely if no timestamp server
+    Result := StringReplace(Result, '/t :timestampserver:', '', 
+      [rfReplaceAll, rfIgnoreCase]);
+    Result := StringReplace(Result, '  ', ' ', [rfReplaceAll, rfIgnoreCase]); // Clean up double spaces
+  end;
+  
   Result := StringReplace(Result, ':filedigest:', FFileDigest,
     [rfReplaceAll, rfIgnoreCase]);
   Result := StringReplace(Result, ':certificatefilename:', FCertificateFileName,
@@ -623,6 +758,8 @@ begin
       FCertificatePassword, [rfReplaceAll, rfIgnoreCase]);
   end;
   Result := StringReplace(Result, ':containername:', FContainerName,
+    [rfReplaceAll, rfIgnoreCase]);
+  Result := StringReplace(Result, ':pfxpassword:', FPFXPassword,
     [rfReplaceAll, rfIgnoreCase]);
 end;
 
@@ -636,6 +773,7 @@ begin
       'CertificatePassword', '');
     FCertificateFileName := LINIFile.ReadString('Profile',
       'CertificateFileName', '');
+    FPFXPassword := LINIFile.ReadString('Profile', 'PFXPassword', '');
     FCommandLine := LINIFile.ReadString('Profile', 'CommandLine', FCommandLine);
     FTimeStampServer := LINIFile.ReadString('Profile', 'TimeStampServer',
       FTimeStampServer);
@@ -644,6 +782,7 @@ begin
       FContainerName);
     FCSP := LINIFile.ReadString('Profile', 'CSP', FCSP);
     FIgnoreFail := LINIFile.ReadBool('Profile', 'IgnoreFail', FIgnoreFail);
+    FSelfSign := LINIFile.ReadBool('Profile', 'SelfSign', FSelfSign);
   finally
     FreeAndNil(LINIFile);
   end;
@@ -659,12 +798,14 @@ begin
       FCertificatePassword);
     LINIFile.WriteString('Profile', 'CertificateFileName',
       FCertificateFileName);
+    LINIFile.WriteString('Profile', 'PFXPassword', FPFXPassword);
     LINIFile.WriteString('Profile', 'CommandLine', FCommandLine);
     LINIFile.WriteString('Profile', 'TimeStampServer', FTimeStampServer);
     LINIFile.WriteString('Profile', 'FileDigest', FFileDigest);
     LINIFile.WriteString('Profile', 'ContainerName', FContainerName);
     LINIFile.WriteString('Profile', 'CSP', FCSP);
     LINIFile.WriteBool('Profile', 'IgnoreFail', FIgnoreFail);
+    LINIFile.WriteBool('Profile', 'SelfSign', FSelfSign);
     LINIFile.UpdateFile;
   finally
     FreeAndNil(LINIFile);
@@ -714,6 +855,16 @@ end;
 procedure TCodeSignProfile.SetTimeStampServer(const Value: string);
 begin
   FTimeStampServer := Value;
+end;
+
+procedure TCodeSignProfile.SetPFXPassword(const Value: string);
+begin
+  FPFXPassword := Value;
+end;
+
+procedure TCodeSignProfile.SetSelfSign(const Value: boolean);
+begin
+  FSelfSign := Value;
 end;
 
 end.

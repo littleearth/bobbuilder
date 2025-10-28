@@ -10,3 +10,4 @@ MapToJDPB - Alfian Dwi Hartanto
 Compare - SmashIcons
 MD5 - Pixelmeetup
 WIXWrapper - Freepik
+MDToRTF - Icon8

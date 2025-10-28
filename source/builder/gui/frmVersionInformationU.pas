@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics, System.UITypes,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  System.Actions, Vcl.ActnList, ProjectBuilder,  Vcl.Buttons;
+  System.Actions, Vcl.ActnList, Bob.ProjectBuilder,  Vcl.Buttons;
 
 type
   TOnFindControl = reference to function(AControl: TControl): boolean;

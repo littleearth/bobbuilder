@@ -1,4 +1,11 @@
+![Builder Logo](/images/logo_small.png)
+
 # BOB Builder - Build Automation Tool for Delphi
+[Little Earth Solutions](https://www.littleearthsolutions.net/ "Little Earth Solutions")
+
+I love supporting the **[EFF](https://eff.org)**.
+This is the *[Markdown Guide](https://www.markdownguide.org)*.
+See the section on [`code`](#code).
 
 ## Overview
 
@@ -202,7 +209,7 @@ cd source\builder
 # Compile console version
 dcc32.exe bobbuilder.dpr
 
-# Compile GUI version  
+# Compile GUI version
 dcc32.exe bobbuildergui.dpr
 ```
 

@@ -1,10 +1,11 @@
-unit BuildRunner;
+unit Bob.BuilderRunner;
 
 interface
 
 uses
-  Lazy.Types, Lazy.Utils, Classes, SysUtils, Winapi.Windows, Model.Build, Bob.Delphi.Model,
-  ProjectBuilder, Bob.Delphi, JclConsole, Bob.Common;
+  Lazy.Types, Lazy.Utils, Classes, SysUtils, Winapi.Windows, Bob.BuilderModels,
+  Bob.Delphi.Model,
+  Bob.ProjectBuilder, Bob.Delphi, JclConsole, Bob.Common;
 
 type
   TVTColor = (vtBlack, vtRed, vtGreen, vtYellow, vtBlue, vtMagenta, vtCyan,
@@ -214,16 +215,16 @@ function TBuildRunner.GetBuilderFile: TFileName;
 var
   LErrorMessage: string;
 begin
-  Result := TBobCommon.GetBuilderFile(LErrorMessage);
-  
-  if TLZString.IsEmptyString(Result) then
+  REsult := TBobCommon.GetBuilderFile(LErrorMessage);
+
+  if TLZString.IsEmptyString(REsult) then
   begin
     ConsoleError(LErrorMessage);
     Halt(1);
   end
   else
   begin
-    ConsoleLog('Using .builder file: ' + ExtractFileName(Result), vtCyan);
+    ConsoleLog('Using .builder file: ' + ExtractFileName(REsult), vtCyan);
   end;
 end;
 
@@ -261,15 +262,10 @@ begin
   begin
     FProjectGroup := LParamValue;
   end;
-  if TLZSystem.GetApplicationParameters('/PROJECT', LParamValue) then
+  if TLZSystem.GetApplicationParameters('/PROJECT', LParamValue) and
+    (TLZString.IsEmptyString(FProjectGroup)) then
   begin
     FProject := LParamValue;
-    // If /PROJECTGROUP was specified, /PROJECT might partially match and get "GROUP:..."
-    // Clear FProject if it looks like a partial match of /PROJECTGROUP
-    if Pos('GROUP:', UpperCase(FProject)) > 0 then
-    begin
-      FProject := '';
-    end;
   end;
   if TLZSystem.GetApplicationParameters('/PLATFORMS', LParamValue) then
   begin
@@ -472,7 +468,16 @@ begin
       LProject := FProject;
       LProjectGroup := FProjectGroup;
       if not TLZString.IsEmptyString(LProject) then
+      begin
+        if not LProject.EndsWith('.dproj', True) then
+        begin
+          Debug('Run', 'Project file does not end with .dproj, adding .dproj');
+          LProject := LProject + '.dproj';
+        end;
+
+        FProject := LProject;
         LProjectGroup := '';
+      end;
 
       if not TLZString.IsEmptyString(FProjectGroup + LProject) then
       begin

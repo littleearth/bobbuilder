@@ -42,6 +42,9 @@
         <Projects Include="gitpuller\bobgitpullergui.dproj">
             <Dependencies/>
         </Projects>
+        <Projects Include="mdtortf\bobmdtortf.dproj">
+            <Dependencies/>
+        </Projects>
     </ItemGroup>
     <ProjectExtensions>
         <Borland.Personality>Default.Personality.12</Borland.Personality>
@@ -167,14 +170,23 @@
     <Target Name="bobgitpullergui:Make">
         <MSBuild Projects="gitpuller\bobgitpullergui.dproj" Targets="Make"/>
     </Target>
+    <Target Name="bobmdtortf">
+        <MSBuild Projects="mdtortf\bobmdtortf.dproj"/>
+    </Target>
+    <Target Name="bobmdtortf:Clean">
+        <MSBuild Projects="mdtortf\bobmdtortf.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="bobmdtortf:Make">
+        <MSBuild Projects="mdtortf\bobmdtortf.dproj" Targets="Make"/>
+    </Target>
     <Target Name="Build">
-        <CallTarget Targets="bobbuildergui;bobbuilder;bobcodesign;bobcompare;boblibrary;boblibrarygui;bobmaptojdbg;bobresource;bobmd5;bobwixwrapper;bobtests;bobgitpuller;bobgitpullergui"/>
+        <CallTarget Targets="bobbuildergui;bobbuilder;bobcodesign;bobcompare;boblibrary;boblibrarygui;bobmaptojdbg;bobresource;bobmd5;bobwixwrapper;bobtests;bobgitpuller;bobgitpullergui;bobmdtortf"/>
     </Target>
     <Target Name="Clean">
-        <CallTarget Targets="bobbuildergui:Clean;bobbuilder:Clean;bobcodesign:Clean;bobcompare:Clean;boblibrary:Clean;boblibrarygui:Clean;bobmaptojdbg:Clean;bobresource:Clean;bobmd5:Clean;bobwixwrapper:Clean;bobtests:Clean;bobgitpuller:Clean;bobgitpullergui:Clean"/>
+        <CallTarget Targets="bobbuildergui:Clean;bobbuilder:Clean;bobcodesign:Clean;bobcompare:Clean;boblibrary:Clean;boblibrarygui:Clean;bobmaptojdbg:Clean;bobresource:Clean;bobmd5:Clean;bobwixwrapper:Clean;bobtests:Clean;bobgitpuller:Clean;bobgitpullergui:Clean;bobmdtortf:Clean"/>
     </Target>
     <Target Name="Make">
-        <CallTarget Targets="bobbuildergui:Make;bobbuilder:Make;bobcodesign:Make;bobcompare:Make;boblibrary:Make;boblibrarygui:Make;bobmaptojdbg:Make;bobresource:Make;bobmd5:Make;bobwixwrapper:Make;bobtests:Make;bobgitpuller:Make;bobgitpullergui:Make"/>
+        <CallTarget Targets="bobbuildergui:Make;bobbuilder:Make;bobcodesign:Make;bobcompare:Make;boblibrary:Make;boblibrarygui:Make;bobmaptojdbg:Make;bobresource:Make;bobmd5:Make;bobwixwrapper:Make;bobtests:Make;bobgitpuller:Make;bobgitpullergui:Make;bobmdtortf:Make"/>
     </Target>
     <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
 </Project>

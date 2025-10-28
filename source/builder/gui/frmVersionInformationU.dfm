@@ -25,11 +25,11 @@ object frmVersionInformation: TfrmVersionInformation
     Caption = 'Panel1'
     ShowCaption = False
     TabOrder = 2
-    ExplicitTop = 423
-    ExplicitWidth = 766
+    ExplicitTop = 389
+    ExplicitWidth = 754
     object Button1: TBitBtn
       AlignWithMargins = True
-      Left = 688
+      Left = 682
       Top = 3
       Width = 75
       Height = 29
@@ -38,10 +38,11 @@ object frmVersionInformation: TfrmVersionInformation
       Caption = 'Cancel'
       ParentDoubleBuffered = True
       TabOrder = 1
+      ExplicitLeft = 676
     end
     object Button2: TBitBtn
       AlignWithMargins = True
-      Left = 607
+      Left = 601
       Top = 3
       Width = 75
       Height = 29
@@ -50,6 +51,7 @@ object frmVersionInformation: TfrmVersionInformation
       Caption = 'Save'
       ParentDoubleBuffered = True
       TabOrder = 0
+      ExplicitLeft = 595
     end
   end
   object Panel17: TPanel
@@ -63,14 +65,14 @@ object frmVersionInformation: TfrmVersionInformation
     Caption = 'Panel17'
     ShowCaption = False
     TabOrder = 0
-    ExplicitWidth = 573
-    ExplicitHeight = 414
+    ExplicitWidth = 561
+    ExplicitHeight = 380
     object pnlVersionNumberDetails: TGridPanel
       AlignWithMargins = True
       Left = 3
       Top = 97
-      Width = 567
-      Height = 314
+      Width = 561
+      Height = 297
       Align = alClient
       BevelOuter = bvNone
       Caption = 'pnlVersionNumberDetails'
@@ -106,11 +108,13 @@ object frmVersionInformation: TfrmVersionInformation
         end>
       ShowCaption = False
       TabOrder = 1
+      ExplicitWidth = 555
+      ExplicitHeight = 280
       object Panel2: TPanel
         Left = 0
         Top = 0
-        Width = 567
-        Height = 105
+        Width = 561
+        Height = 99
         Align = alClient
         BevelOuter = bvNone
         Caption = 'Panel2'
@@ -127,8 +131,8 @@ object frmVersionInformation: TfrmVersionInformation
         object GridPanel2: TGridPanel
           Left = 0
           Top = 15
-          Width = 567
-          Height = 90
+          Width = 561
+          Height = 84
           Align = alClient
           BevelOuter = bvNone
           Caption = 'GridPanel2'
@@ -207,8 +211,8 @@ object frmVersionInformation: TfrmVersionInformation
             AlignWithMargins = True
             Left = 3
             Top = 3
-            Width = 107
-            Height = 39
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 0
@@ -216,7 +220,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 1
               Left = 0
               Top = 17
-              Width = 107
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 1
@@ -228,7 +232,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 1
               Left = 0
               Top = 0
-              Width = 107
+              Width = 106
               Height = 17
               Align = alTop
               Caption = 'File major'
@@ -239,10 +243,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel20: TPanel
             AlignWithMargins = True
-            Left = 116
+            Left = 115
             Top = 3
-            Width = 108
-            Height = 39
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 1
@@ -250,7 +254,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 2
               Left = 0
               Top = 17
-              Width = 108
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 1
@@ -262,7 +266,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 2
               Left = 0
               Top = 0
-              Width = 108
+              Width = 106
               Height = 17
               Align = alTop
               Caption = 'File minor'
@@ -273,10 +277,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel21: TPanel
             AlignWithMargins = True
-            Left = 230
+            Left = 227
             Top = 3
             Width = 107
-            Height = 39
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 2
@@ -307,10 +311,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel22: TPanel
             AlignWithMargins = True
-            Left = 343
+            Left = 340
             Top = 3
-            Width = 108
-            Height = 39
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 3
@@ -318,7 +322,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 4
               Left = 0
               Top = 17
-              Width = 108
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 1
@@ -330,7 +334,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 4
               Left = 0
               Top = 0
-              Width = 108
+              Width = 106
               Height = 17
               Align = alTop
               Caption = 'File build'
@@ -341,10 +345,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel23: TPanel
             AlignWithMargins = True
-            Left = 457
+            Left = 452
             Top = 3
-            Width = 107
-            Height = 39
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 4
@@ -352,7 +356,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 5
               Left = 0
               Top = 17
-              Width = 107
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 1
@@ -364,7 +368,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 4
               Left = 0
               Top = 0
-              Width = 107
+              Width = 106
               Height = 17
               Align = alTop
               Caption = 'Filename'
@@ -376,9 +380,9 @@ object frmVersionInformation: TfrmVersionInformation
           object Panel26: TPanel
             AlignWithMargins = True
             Left = 3
-            Top = 48
-            Width = 107
-            Height = 39
+            Top = 45
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 5
@@ -386,7 +390,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 6
               Left = 0
               Top = 17
-              Width = 107
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 1
@@ -398,7 +402,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 6
               Left = 0
               Top = 0
-              Width = 107
+              Width = 106
               Height = 17
               Align = alTop
               Caption = 'Product major'
@@ -409,10 +413,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel27: TPanel
             AlignWithMargins = True
-            Left = 116
-            Top = 48
-            Width = 108
-            Height = 39
+            Left = 115
+            Top = 45
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 6
@@ -420,7 +424,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 7
               Left = 0
               Top = 17
-              Width = 108
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 1
@@ -432,7 +436,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 7
               Left = 0
               Top = 0
-              Width = 108
+              Width = 106
               Height = 17
               Align = alTop
               Caption = 'Product minor'
@@ -443,10 +447,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel28: TPanel
             AlignWithMargins = True
-            Left = 230
-            Top = 48
+            Left = 227
+            Top = 45
             Width = 107
-            Height = 39
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 7
@@ -477,10 +481,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel29: TPanel
             AlignWithMargins = True
-            Left = 343
-            Top = 48
-            Width = 108
-            Height = 39
+            Left = 340
+            Top = 45
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 8
@@ -488,7 +492,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 9
               Left = 0
               Top = 17
-              Width = 108
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 1
@@ -500,7 +504,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 9
               Left = 0
               Top = 0
-              Width = 108
+              Width = 106
               Height = 17
               Align = alTop
               Caption = 'Product build'
@@ -513,9 +517,9 @@ object frmVersionInformation: TfrmVersionInformation
       end
       object Panel3: TPanel
         Left = 0
-        Top = 105
-        Width = 567
-        Height = 104
+        Top = 99
+        Width = 561
+        Height = 99
         Align = alClient
         BevelOuter = bvNone
         Caption = 'Panel3'
@@ -532,8 +536,8 @@ object frmVersionInformation: TfrmVersionInformation
         object GridPanel3: TGridPanel
           Left = 0
           Top = 15
-          Width = 567
-          Height = 89
+          Width = 561
+          Height = 84
           Align = alClient
           BevelOuter = bvNone
           Caption = 'GridPanel2'
@@ -617,8 +621,8 @@ object frmVersionInformation: TfrmVersionInformation
             AlignWithMargins = True
             Left = 3
             Top = 3
-            Width = 107
-            Height = 38
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 0
@@ -634,7 +638,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 1
               Left = 0
               Top = 15
-              Width = 107
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 0
@@ -644,10 +648,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel6: TPanel
             AlignWithMargins = True
-            Left = 116
+            Left = 115
             Top = 3
-            Width = 108
-            Height = 38
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 1
@@ -663,7 +667,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 2
               Left = 0
               Top = 15
-              Width = 108
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 0
@@ -673,10 +677,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel7: TPanel
             AlignWithMargins = True
-            Left = 230
+            Left = 227
             Top = 3
             Width = 107
-            Height = 38
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 2
@@ -702,10 +706,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel8: TPanel
             AlignWithMargins = True
-            Left = 343
+            Left = 340
             Top = 3
-            Width = 108
-            Height = 38
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 3
@@ -721,7 +725,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 4
               Left = 0
               Top = 15
-              Width = 108
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 0
@@ -731,10 +735,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel24: TPanel
             AlignWithMargins = True
-            Left = 457
+            Left = 452
             Top = 3
-            Width = 107
-            Height = 38
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 4
@@ -750,7 +754,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 5
               Left = 0
               Top = 15
-              Width = 107
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 0
@@ -761,9 +765,9 @@ object frmVersionInformation: TfrmVersionInformation
           object Panel35: TPanel
             AlignWithMargins = True
             Left = 3
-            Top = 47
-            Width = 107
-            Height = 39
+            Top = 45
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 5
@@ -779,7 +783,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 6
               Left = 0
               Top = 15
-              Width = 107
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 0
@@ -789,10 +793,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel36: TPanel
             AlignWithMargins = True
-            Left = 116
-            Top = 47
-            Width = 108
-            Height = 39
+            Left = 115
+            Top = 45
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 6
@@ -808,7 +812,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 7
               Left = 0
               Top = 15
-              Width = 108
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 0
@@ -818,10 +822,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel37: TPanel
             AlignWithMargins = True
-            Left = 230
-            Top = 47
+            Left = 227
+            Top = 45
             Width = 107
-            Height = 39
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 7
@@ -847,10 +851,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel38: TPanel
             AlignWithMargins = True
-            Left = 343
-            Top = 47
-            Width = 108
-            Height = 39
+            Left = 340
+            Top = 45
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 8
@@ -866,7 +870,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 9
               Left = 0
               Top = 15
-              Width = 108
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 0
@@ -876,10 +880,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel39: TPanel
             AlignWithMargins = True
-            Left = 457
-            Top = 47
-            Width = 107
-            Height = 39
+            Left = 452
+            Top = 45
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 9
@@ -888,9 +892,9 @@ object frmVersionInformation: TfrmVersionInformation
       end
       object Panel4: TPanel
         Left = 0
-        Top = 209
-        Width = 567
-        Height = 105
+        Top = 198
+        Width = 561
+        Height = 99
         Align = alClient
         BevelOuter = bvNone
         Caption = 'Panel3'
@@ -907,8 +911,8 @@ object frmVersionInformation: TfrmVersionInformation
         object GridPanel4: TGridPanel
           Left = 0
           Top = 15
-          Width = 567
-          Height = 90
+          Width = 561
+          Height = 84
           Align = alClient
           BevelOuter = bvNone
           Caption = 'GridPanel2'
@@ -992,8 +996,8 @@ object frmVersionInformation: TfrmVersionInformation
             AlignWithMargins = True
             Left = 3
             Top = 3
-            Width = 107
-            Height = 39
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 0
@@ -1009,7 +1013,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 1
               Left = 0
               Top = 15
-              Width = 107
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 0
@@ -1019,10 +1023,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel10: TPanel
             AlignWithMargins = True
-            Left = 116
+            Left = 115
             Top = 3
-            Width = 108
-            Height = 39
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 1
@@ -1038,7 +1042,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 2
               Left = 0
               Top = 15
-              Width = 108
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 0
@@ -1048,10 +1052,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel18: TPanel
             AlignWithMargins = True
-            Left = 230
+            Left = 227
             Top = 3
             Width = 107
-            Height = 39
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 2
@@ -1077,10 +1081,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel19: TPanel
             AlignWithMargins = True
-            Left = 343
+            Left = 340
             Top = 3
-            Width = 108
-            Height = 39
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 3
@@ -1096,7 +1100,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 4
               Left = 0
               Top = 15
-              Width = 108
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 0
@@ -1106,10 +1110,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel25: TPanel
             AlignWithMargins = True
-            Left = 457
+            Left = 452
             Top = 3
-            Width = 107
-            Height = 39
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 4
@@ -1125,7 +1129,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 5
               Left = 0
               Top = 15
-              Width = 107
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 0
@@ -1136,9 +1140,9 @@ object frmVersionInformation: TfrmVersionInformation
           object Panel30: TPanel
             AlignWithMargins = True
             Left = 3
-            Top = 48
-            Width = 107
-            Height = 39
+            Top = 45
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 5
@@ -1154,7 +1158,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 6
               Left = 0
               Top = 15
-              Width = 107
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 0
@@ -1164,10 +1168,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel31: TPanel
             AlignWithMargins = True
-            Left = 116
-            Top = 48
-            Width = 108
-            Height = 39
+            Left = 115
+            Top = 45
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 6
@@ -1183,7 +1187,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 7
               Left = 0
               Top = 15
-              Width = 108
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 0
@@ -1193,10 +1197,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel32: TPanel
             AlignWithMargins = True
-            Left = 230
-            Top = 48
+            Left = 227
+            Top = 45
             Width = 107
-            Height = 39
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 7
@@ -1222,10 +1226,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel33: TPanel
             AlignWithMargins = True
-            Left = 343
-            Top = 48
-            Width = 108
-            Height = 39
+            Left = 340
+            Top = 45
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 8
@@ -1241,7 +1245,7 @@ object frmVersionInformation: TfrmVersionInformation
               Tag = 9
               Left = 0
               Top = 15
-              Width = 108
+              Width = 106
               Height = 23
               Align = alTop
               TabOrder = 0
@@ -1251,10 +1255,10 @@ object frmVersionInformation: TfrmVersionInformation
           end
           object Panel34: TPanel
             AlignWithMargins = True
-            Left = 457
-            Top = 48
-            Width = 107
-            Height = 39
+            Left = 452
+            Top = 45
+            Width = 106
+            Height = 36
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 9
@@ -1265,7 +1269,7 @@ object frmVersionInformation: TfrmVersionInformation
     object GridPanel5: TGridPanel
       Left = 0
       Top = 0
-      Width = 573
+      Width = 567
       Height = 94
       Align = alTop
       BevelOuter = bvNone
@@ -1323,11 +1327,12 @@ object frmVersionInformation: TfrmVersionInformation
         end>
       ShowCaption = False
       TabOrder = 0
+      ExplicitWidth = 561
       object Panel11: TPanel
         AlignWithMargins = True
         Left = 3
         Top = 3
-        Width = 137
+        Width = 136
         Height = 41
         Align = alClient
         BevelOuter = bvNone
@@ -1343,7 +1348,7 @@ object frmVersionInformation: TfrmVersionInformation
         object editProductName: TEdit
           Left = 0
           Top = 15
-          Width = 137
+          Width = 136
           Height = 23
           Align = alTop
           TabOrder = 0
@@ -1353,9 +1358,9 @@ object frmVersionInformation: TfrmVersionInformation
       end
       object Panel12: TPanel
         AlignWithMargins = True
-        Left = 146
+        Left = 145
         Top = 3
-        Width = 138
+        Width = 136
         Height = 41
         Align = alClient
         BevelOuter = bvNone
@@ -1371,7 +1376,7 @@ object frmVersionInformation: TfrmVersionInformation
         object editFileDescription: TEdit
           Left = 0
           Top = 15
-          Width = 138
+          Width = 136
           Height = 23
           Align = alTop
           TabOrder = 0
@@ -1381,9 +1386,9 @@ object frmVersionInformation: TfrmVersionInformation
       end
       object Panel13: TPanel
         AlignWithMargins = True
-        Left = 290
+        Left = 287
         Top = 3
-        Width = 137
+        Width = 135
         Height = 41
         Align = alClient
         BevelOuter = bvNone
@@ -1399,7 +1404,7 @@ object frmVersionInformation: TfrmVersionInformation
         object editInternalName: TEdit
           Left = 0
           Top = 15
-          Width = 137
+          Width = 135
           Height = 23
           Align = alTop
           TabOrder = 0
@@ -1409,9 +1414,9 @@ object frmVersionInformation: TfrmVersionInformation
       end
       object Panel14: TPanel
         AlignWithMargins = True
-        Left = 433
+        Left = 428
         Top = 3
-        Width = 137
+        Width = 136
         Height = 41
         Align = alClient
         BevelOuter = bvNone
@@ -1427,7 +1432,7 @@ object frmVersionInformation: TfrmVersionInformation
         object editCompanyName: TEdit
           Left = 0
           Top = 15
-          Width = 137
+          Width = 136
           Height = 23
           Align = alTop
           TabOrder = 0
@@ -1439,7 +1444,7 @@ object frmVersionInformation: TfrmVersionInformation
         AlignWithMargins = True
         Left = 3
         Top = 50
-        Width = 137
+        Width = 136
         Height = 41
         Align = alClient
         BevelOuter = bvNone
@@ -1455,7 +1460,7 @@ object frmVersionInformation: TfrmVersionInformation
         object editLegalCopyright: TEdit
           Left = 0
           Top = 15
-          Width = 137
+          Width = 136
           Height = 23
           Align = alTop
           TabOrder = 0
@@ -1465,9 +1470,9 @@ object frmVersionInformation: TfrmVersionInformation
       end
       object Panel40: TPanel
         AlignWithMargins = True
-        Left = 146
+        Left = 145
         Top = 50
-        Width = 138
+        Width = 136
         Height = 41
         Align = alClient
         BevelOuter = bvNone
@@ -1483,7 +1488,7 @@ object frmVersionInformation: TfrmVersionInformation
         object editCompanyURL: TEdit
           Left = 0
           Top = 15
-          Width = 138
+          Width = 136
           Height = 23
           Align = alTop
           TabOrder = 0

@@ -1,10 +1,10 @@
-unit ProjectBuilder;
+unit Bob.ProjectBuilder;
 
 interface
 
 uses
-  Lazy.Types, Lazy.Utils, Classes, SysUtils, Winapi.Windows, Model.Build,
-  Bob.Delphi.Model, BuilderSettings, Lazy.Nullable;
+  Lazy.Types, Lazy.Utils, Classes, SysUtils, Winapi.Windows, Bob.BuilderModels,
+  Bob.Delphi.Model, Bob.BuilderSettings, Lazy.Nullable;
 
 type
   EProjectBuilderException = class(ELazyException);
@@ -169,6 +169,7 @@ type
       write SetBuildInstallGroupsEnabled;
     property Settings: TSettings read FSettings;
     property Project: TBuildProject read FBuildProject;
+    property Projectfolder : string read FProjectFolder;
     property OnProcessActive: TOnProcessActive read FOnProcessActive
       write SetOnProcessActive;
     property OnBuildComplete: TOnBuildComplete read FOnBuildComplete
@@ -1288,9 +1289,8 @@ begin
       LFileName := FileName;
     if TLZFile.IsValidFileName(LFileName) then
     begin
-      // AsJSON not available in TLZModel - skip JSON serialization
-      // LJSON.Text := FBuildProject.AsJSON(true);
-      // LJSON.SaveToFile(FileName);
+      LJSON.Text := FBuildProject.ToJSON(true);
+      LJSON.SaveToFile(LFileName);
     end
     else
     begin

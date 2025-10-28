@@ -152,9 +152,9 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="gui\frmBuilderU.pas">
             <Form>frmBuilder</Form>
         </DCCReference>
-        <DCCReference Include="Model.Build.pas"/>
-        <DCCReference Include="ProjectBuilder.pas"/>
-        <DCCReference Include="BuilderSettings.pas"/>
+        <DCCReference Include="Bob.BuilderModels.pas"/>
+        <DCCReference Include="Bob.ProjectBuilder.pas"/>
+        <DCCReference Include="Bob.BuilderSettings.pas"/>
         <DCCReference Include="gui\frmVersionInformationU.pas">
             <Form>frmVersionInformation</Form>
         </DCCReference>
@@ -165,6 +165,11 @@ $(PostBuildEvent)]]></PostBuildEvent>
         <DCCReference Include="gui\frmBuilderConfigEditorU.pas">
             <Form>frmBuilderConfigEditor</Form>
         </DCCReference>
+        <DCCReference Include="gui\frmModelEditorU.pas">
+            <Form>frmModelEditor</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Bob.BuilderTreeView.pas"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>

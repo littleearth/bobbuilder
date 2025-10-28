@@ -94,11 +94,10 @@ object frmBuilder: TfrmBuilder
             AlignWithMargins = True
             Left = 3
             Top = 3
-            Width = 795
+            Width = 31
             Height = 13
             Align = alTop
             Caption = 'Config'
-            ExplicitWidth = 31
           end
           object editFileName: TJvFilenameEdit
             AlignWithMargins = True
@@ -129,16 +128,15 @@ object frmBuilder: TfrmBuilder
           Caption = 'Delphi'
           ShowCaption = False
           TabOrder = 1
-          object Label3: TLabel
+          object lblDelphiVersion: TLabel
             AlignWithMargins = True
             Left = 3
             Top = 3
-            Width = 195
+            Width = 29
             Height = 13
             Align = alTop
             Caption = 'Delphi'
-            OnDblClick = Label3DblClick
-            ExplicitWidth = 29
+            OnDblClick = lblDelphiVersionDblClick
           end
           object comboDelphiVersions: TComboBox
             AlignWithMargins = True
@@ -152,21 +150,6 @@ object frmBuilder: TfrmBuilder
           end
         end
       end
-      object TreeViewBuilder: TJvTreeView
-        AlignWithMargins = True
-        Left = 3
-        Top = 60
-        Width = 807
-        Height = 359
-        Align = alClient
-        Checkboxes = True
-        Indent = 19
-        PopupMenu = PopupMenuTreeView
-        ReadOnly = True
-        TabOrder = 1
-        OnDblClick = TreeViewBuilderDblClick
-        OnNodeCheckedChange = TreeViewBuilderNodeCheckedChange
-      end
       object Panel3: TGroupBox
         AlignWithMargins = True
         Left = 816
@@ -177,7 +160,7 @@ object frmBuilder: TfrmBuilder
         Caption = 'Options'
         Color = clBtnFace
         ParentColor = False
-        TabOrder = 2
+        TabOrder = 1
         object Panel4: TPanel
           Left = 2
           Top = 15
@@ -303,22 +286,19 @@ object frmBuilder: TfrmBuilder
         AlignWithMargins = True
         Left = 12
         Top = 3
-        Width = 639
-        Height = 33
+        Width = 3
+        Height = 13
         Align = alClient
         Layout = tlCenter
-        ExplicitWidth = 3
-        ExplicitHeight = 13
       end
       object lblAnimation: TLabel
         AlignWithMargins = True
         Left = 3
         Top = 3
         Width = 3
-        Height = 33
+        Height = 13
         Align = alLeft
         Layout = tlCenter
-        ExplicitHeight = 13
       end
       object Button2: TBitBtn
         AlignWithMargins = True

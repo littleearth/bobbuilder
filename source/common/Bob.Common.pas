@@ -4,7 +4,6 @@ interface
 
 uses Classes, Windows, SysUtils, Lazy.Utils.Windows, Lazy.Types;
 
-
 type
   TBobCommon = class(TLZObject)
   public
@@ -14,8 +13,9 @@ type
       ARecurse: Boolean);
     class function GetBuilderFile(out AErrorMessage: string): TFileName;
     class function GetLogFileName(AApplicationName: string): TFileName;
+    class function GetPublicSettingsFolder(AApplicationName: string): string;
+    class function GetLocalSettingsFolder(AApplicationName: string): string;
   end;
-
 
 implementation
 
@@ -78,10 +78,20 @@ begin
   end;
 end;
 
+class function TBobCommon.GetLocalSettingsFolder(AApplicationName
+  : string): string;
+begin
+  Result := IncludeTrailingPathDelimiter
+    (TLZFile.GetKnownFolderPath(FOLDERID_LocalAppData) + 'bobbuilder');
+  Result := IncludeTrailingPathDelimiter(Result + AApplicationName);
+  TLZFile.CheckDirectoryExists(Result, true);
+end;
+
 class function TBobCommon.GetLogFileName(AApplicationName: string): TFileName;
 begin
   Result := TLZFile.GetKnownFolderPath(FOLDERID_LocalAppData);
   Result := IncludeTrailingPathDelimiter(Result + 'bobbuilder');
+  Result := IncludeTrailingPathDelimiter(Result + 'logs');
   if TLZFile.CheckDirectoryExists(Result, true) then
   begin
     Result := Result + AApplicationName + '.log';
@@ -90,6 +100,15 @@ begin
   begin
     Result := TLZFile.GetTempFile('bob');
   end;
+end;
+
+class function TBobCommon.GetPublicSettingsFolder(AApplicationName
+  : string): string;
+begin
+  Result := IncludeTrailingPathDelimiter
+    (TLZFile.GetKnownFolderPath(FOLDERID_ProgramData) + 'bobbuilder');
+  Result := IncludeTrailingPathDelimiter(Result + AApplicationName);
+  TLZFile.CheckDirectoryExists(Result, true);
 end;
 
 class function TBobCommon.GetBuilderFile(out AErrorMessage: string): TFileName;

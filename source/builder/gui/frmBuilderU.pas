@@ -7,10 +7,10 @@ uses
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, JvExComCtrls,
   JvProgressBar, Vcl.StdCtrls, Vcl.ExtCtrls,
-  ProjectBuilder, Bob.Delphi, System.Actions,
+  Bob.ProjectBuilder, Bob.Delphi, System.Actions,
   Vcl.ActnList, System.UITypes, Vcl.Mask, JvExMask, JvToolEdit, JvComCtrls,
   JvExControls, Vcl.Imaging.pngimage,
-  Vcl.Buttons, Vcl.Menus, System.Notification, Bob.Git;
+  Vcl.Buttons, Vcl.Menus, System.Notification, Bob.Git, Bob.BuilderTreeView;
 
 type
   TfrmBuilder = class(TForm)
@@ -27,7 +27,6 @@ type
     editFileName: TJvFilenameEdit;
     LabelPanel2: TPanel;
     comboDelphiVersions: TComboBox;
-    TreeViewBuilder: TJvTreeView;
     Panel3: TGroupBox;
     Panel4: TPanel;
     cbCleanupEnabled: TCheckBox;
@@ -54,7 +53,7 @@ type
     ActionGitPull: TAction;
     Button5: TButton;
     Label2: TLabel;
-    Label3: TLabel;
+    lblDelphiVersion: TLabel;
     Button6: TButton;
     ActionAbout: TAction;
     Button7: TButton;
@@ -86,22 +85,14 @@ type
     procedure ActionGitPullUpdate(Sender: TObject);
     procedure ActionAboutExecute(Sender: TObject);
     procedure ActionViewLogExecute(Sender: TObject);
-    procedure Label3DblClick(Sender: TObject);
+    procedure lblDelphiVersionDblClick(Sender: TObject);
   private
+    TreeViewBuilder: TBuilderTreeView;
     FAppActive: Boolean;
     FAutoClose: Boolean;
     FProjectBuilder: TProjectBuilder;
     FDelphiHelper: TDelphiHelper;
     FGitPuller: TBobGitPuller;
-    FTreeNodeProjectGroups: TTreeNode;
-    FTreeNodeTestProjectGroups: TTreeNode;
-    FTreeNodeInstallScripGroups: TTreeNode;
-    FTreeNodeBuildCompleteScripts: TTreeNode;
-    FTreeNodePreBuildScripts: TTreeNode;
-    FTreeNodePostBuildScripts: TTreeNode;
-    FTreeNodeReviewFiles: TTreeNode;
-    FTreeNodeVariables: TTreeNode;
-    FTreeNodeGitPull: TTreeNode;
     FAniFrame: integer;
     FLog: TStringList;
     function GetAniFrame: string;
@@ -139,7 +130,7 @@ implementation
 {$R *.dfm}
 
 uses
-  Vcl.Lazy.Utils.Windows, Lazy.Log, Lazy.Types, Model.Build,
+  Vcl.Lazy.Utils.Windows, Lazy.Log, Lazy.Types, Bob.BuilderModels,
   Lazy.Model, frmVersionInformationU, dmResourcesU, frmBuilderConfigEditorU,
   Bob.Common, Bob.AboutForm, Lazy.Dialogs, Lazy.ExceptionDialog;
 
@@ -405,6 +396,13 @@ end;
 
 procedure TfrmBuilder.FormCreate(Sender: TObject);
 begin
+  TreeViewBuilder := TBuilderTreeView.Create(Self);
+  TreeViewBuilder.Parent := pnlSettings;
+  TreeViewBuilder.Align := alClient;
+  TreeViewBuilder.OnNodeCheckedChange := TreeViewBuilderNodeCheckedChange;
+  TreeViewBuilder.OnDblClick := TreeViewBuilderDblClick;
+  TreeViewBuilder.PopupMenu := PopupMenuTreeView;
+
   FProjectBuilder := TProjectBuilder.Create;
   FDelphiHelper := TDelphiHelper.Create;
   FLog := TStringList.Create;
@@ -416,63 +414,8 @@ begin
 
   FGitPuller.OnPrompt := OnGitPrompt;
 
-  TreeViewBuilder.Items.Clear;
-
-  FTreeNodeGitPull := TreeViewBuilder.Items.Add(nil, 'Git Pull Before Build');
-  FTreeNodeGitPull.ImageIndex := 3;
-  FTreeNodeGitPull.SelectedIndex := 3;
-
-  FTreeNodeReviewFiles := TreeViewBuilder.Items.Add(nil, 'Review Files');
-  FTreeNodeReviewFiles.ImageIndex := 0;
-  FTreeNodeReviewFiles.SelectedIndex := 0;
-
-  FTreeNodeProjectGroups := TreeViewBuilder.Items.Add(nil, 'Project Groups');
-  FTreeNodeProjectGroups.ImageIndex := 1;
-  FTreeNodeProjectGroups.SelectedIndex := 1;
-  FTreeNodeProjectGroups.DeleteChildren;
-
-  FTreeNodeTestProjectGroups := TreeViewBuilder.Items.Add(nil,
-    'Test Project Groups');
-  FTreeNodeTestProjectGroups.ImageIndex := 1;
-  FTreeNodeTestProjectGroups.SelectedIndex := 1;
-  FTreeNodeTestProjectGroups.DeleteChildren;
-
-  FTreeNodeInstallScripGroups := TreeViewBuilder.Items.Add(nil,
-    'Install Script Groups');
-  FTreeNodeInstallScripGroups.ImageIndex := 2;
-  FTreeNodeInstallScripGroups.SelectedIndex := 2;
-  FTreeNodeInstallScripGroups.DeleteChildren;
-
-  FTreeNodeBuildCompleteScripts := TreeViewBuilder.Items.Add(nil,
-    'Build Complete Scripts');
-  FTreeNodeBuildCompleteScripts.ImageIndex := 3;
-  FTreeNodeBuildCompleteScripts.SelectedIndex := 3;
-  FTreeNodeBuildCompleteScripts.DeleteChildren;
-
-  FTreeNodePreBuildScripts := TreeViewBuilder.Items.Add(nil,
-    'Pre-Build Scripts');
-  FTreeNodePreBuildScripts.ImageIndex := 3;
-  FTreeNodePreBuildScripts.SelectedIndex := 3;
-  FTreeNodePreBuildScripts.DeleteChildren;
-
-  FTreeNodePostBuildScripts := TreeViewBuilder.Items.Add(nil,
-    'Post-Build Scripts');
-  FTreeNodePostBuildScripts.ImageIndex := 3;
-  FTreeNodePostBuildScripts.SelectedIndex := 3;
-  FTreeNodePostBuildScripts.DeleteChildren;
-
-  FTreeNodeVariables := TreeViewBuilder.Items.Add(nil, 'Variables');
-  FTreeNodeVariables.ImageIndex := 3;
-  FTreeNodeVariables.SelectedIndex := 3;
-  FTreeNodeVariables.DeleteChildren;
-
-  TreeViewBuilder.Checked[FTreeNodeTestProjectGroups] := True;
-  TreeViewBuilder.Checked[FTreeNodeProjectGroups] := True;
-  TreeViewBuilder.Checked[FTreeNodeInstallScripGroups] := True;
-  TreeViewBuilder.Checked[FTreeNodeBuildCompleteScripts] := True;
-  TreeViewBuilder.Checked[FTreeNodePreBuildScripts] := True;
-  TreeViewBuilder.Checked[FTreeNodePostBuildScripts] := True;
-  TreeViewBuilder.Checked[FTreeNodeGitPull] := False;
+  // Set up the TreeViewBuilder
+  TreeViewBuilder.ProjectBuilder := FProjectBuilder;
 
   FDelphiHelper.AsStrings(comboDelphiVersions.Items);
   if comboDelphiVersions.Items.Count > 0 then
@@ -558,16 +501,6 @@ begin
   begin
     cbCleanupEnabled.Checked := StrToBoolDef(LParamValue, True);
   end;
-  if TLZSystem.GetApplicationParameters('/BUILD-PROJECTS', LParamValue) then
-  begin
-    TreeViewBuilder.Checked[FTreeNodeProjectGroups] :=
-      StrToBoolDef(LParamValue, True);
-  end;
-  if TLZSystem.GetApplicationParameters('/BUILD-INSTALLATION', LParamValue) then
-  begin
-    TreeViewBuilder.Checked[FTreeNodeInstallScripGroups] :=
-      StrToBoolDef(LParamValue, True);
-  end;
   if TLZSystem.GetApplicationParameters('/DETAILED', LParamValue) then
   begin
     ShowDetails;
@@ -608,64 +541,12 @@ begin
 end;
 
 procedure TfrmBuilder.SetProjectSettings;
-var
-  LProjectGroup: TProjectGroup;
-  LProject: TProject;
-  LInstallGroup: TInstallScriptGroup;
-  LInstallScript: TInstallScript;
-  LScript: TScript;
-  LProjectGroupNode, LProjectNode: TTreeNode;
-  LProjectGroupIdx, LProjectIdx: integer;
 begin
   if IsProjectLoaded then
   begin
     FProjectBuilder.BuildType := TBuildType(comboBuildType.ItemIndex);
     FProjectBuilder.CleanupEnabled := cbCleanupEnabled.Checked;
-    FProjectBuilder.BuildProjectGroupsEnabled := TreeViewBuilder.Checked
-      [FTreeNodeProjectGroups];
-    FProjectBuilder.BuildInstallGroupsEnabled := TreeViewBuilder.Checked
-      [FTreeNodeInstallScripGroups];
-    FProjectBuilder.project.gitpull := TreeViewBuilder.Checked
-      [FTreeNodeGitPull];
-
-    // project group
-    for LProjectGroupIdx := 0 to Pred(FTreeNodeProjectGroups.Count) do
-    begin
-      LProjectGroupNode := FTreeNodeProjectGroups.Item[LProjectGroupIdx];
-      LProjectGroup := TProjectGroup(LProjectGroupNode.Data);
-      LProjectGroup.Enabled := TreeViewBuilder.Checked[LProjectGroupNode];
-      for LProjectIdx := 0 to Pred(LProjectGroupNode.Count) do
-      begin
-        LProjectNode := LProjectGroupNode.Item[LProjectIdx];
-        LProject := TProject(LProjectNode.Data);
-        LProject.Enabled := TreeViewBuilder.Checked[LProjectNode] and
-          LProjectGroup.Enabled;
-      end;
-    end;
-
-    // install
-    for LProjectGroupIdx := 0 to Pred(FTreeNodeInstallScripGroups.Count) do
-    begin
-      LProjectGroupNode := FTreeNodeInstallScripGroups.Item[LProjectGroupIdx];
-      LInstallGroup := TInstallScriptGroup(LProjectGroupNode.Data);
-      LInstallGroup.Enabled := TreeViewBuilder.Checked[LProjectGroupNode];
-      for LProjectIdx := 0 to Pred(LProjectGroupNode.Count) do
-      begin
-        LProjectNode := LProjectGroupNode.Item[LProjectIdx];
-        LInstallScript := TInstallScript(LProjectNode.Data);
-        LInstallScript.Enabled := TreeViewBuilder.Checked[LProjectNode] and
-          LInstallGroup.Enabled;
-      end;
-    end;
-
-    // completion scripts
-    for LProjectGroupIdx := 0 to Pred(FTreeNodeBuildCompleteScripts.Count) do
-    begin
-      LProjectGroupNode := FTreeNodeBuildCompleteScripts.Item[LProjectGroupIdx];
-      LScript := TScript(LProjectGroupNode.Data);
-      LScript.Enabled := TreeViewBuilder.Checked[LProjectGroupNode] and
-        TreeViewBuilder.Checked[FTreeNodeBuildCompleteScripts];
-    end;
+    TreeViewBuilder.SaveProject;
   end;
 end;
 
@@ -693,151 +574,8 @@ begin
 end;
 
 procedure TfrmBuilder.GetProjectSettings;
-var
-  LProjectGroup: TProjectGroup;
-  LProject: TProject;
-  LTestProjectGroup: TTestProjectGroup;
-  LTestProject: TTestProject;
-  LInstallGroup: TInstallScriptGroup;
-  LInstallScript: TInstallScript;
-  LScript: TScript;
-  LVariable: TVariable;
-  LFile: Tfile;
-  LProjectGroupNode, LProjectNode: TTreeNode;
 begin
-  TreeViewBuilder.Items.BeginUpdate;
-  try
-    // Clear all tree nodes before repopulating
-    FTreeNodeProjectGroups.DeleteChildren;
-    FTreeNodeTestProjectGroups.DeleteChildren;
-    FTreeNodeInstallScripGroups.DeleteChildren;
-    FTreeNodeBuildCompleteScripts.DeleteChildren;
-    FTreeNodePreBuildScripts.DeleteChildren;
-    FTreeNodePostBuildScripts.DeleteChildren;
-    FTreeNodeReviewFiles.DeleteChildren;
-    FTreeNodeVariables.DeleteChildren;
-
-    if IsProjectLoaded then
-    begin
-      TreeViewBuilder.Checked[FTreeNodeGitPull] :=
-        FProjectBuilder.project.gitpull.GetValueOrDefault(False);
-
-      for LFile in FProjectBuilder.project.reviewFiles do
-      begin
-        LProjectGroupNode := TreeViewBuilder.Items.AddChild
-          (FTreeNodeReviewFiles, ExtractFileName(LFile.FileName));
-        LProjectGroupNode.Data := LFile;
-        LProjectGroupNode.ImageIndex := FTreeNodeReviewFiles.ImageIndex;
-        LProjectGroupNode.SelectedIndex := LProjectGroupNode.ImageIndex;
-      end;
-
-      for LVariable in FProjectBuilder.project.variables do
-      begin
-        LProjectGroupNode := TreeViewBuilder.Items.AddChild(FTreeNodeVariables,
-          LVariable.variableName);
-        LProjectGroupNode.Data := LVariable;
-        LProjectGroupNode.ImageIndex := FTreeNodeVariables.ImageIndex;
-        LProjectGroupNode.SelectedIndex := FTreeNodeVariables.SelectedIndex;
-      end;
-
-      for LProjectGroup in FProjectBuilder.project.projectGroups do
-      begin
-        LProjectGroupNode := TreeViewBuilder.Items.AddChild
-          (FTreeNodeProjectGroups, LProjectGroup.group);
-        LProjectGroupNode.Data := LProjectGroup;
-        LProjectGroupNode.ImageIndex := FTreeNodeProjectGroups.ImageIndex;
-        LProjectGroupNode.SelectedIndex := LProjectGroupNode.ImageIndex;
-        TreeViewBuilder.Checked[LProjectGroupNode] := LProjectGroup.Enabled;
-        for LProject in LProjectGroup.projects do
-        begin
-          LProjectNode := TreeViewBuilder.Items.AddChild(LProjectGroupNode,
-            ExtractFileName(LProject.project));
-          LProjectNode.Data := LProject;
-          LProjectNode.ImageIndex := FTreeNodeProjectGroups.ImageIndex;
-          LProjectNode.SelectedIndex := LProjectGroupNode.ImageIndex;
-          TreeViewBuilder.Checked[LProjectNode] :=
-            LProject.Enabled.GetValueOrDefault(True);
-        end;
-      end;
-
-      for LTestProjectGroup in FProjectBuilder.project.testProjectGroups do
-      begin
-        LProjectGroupNode := TreeViewBuilder.Items.AddChild
-          (FTreeNodeTestProjectGroups, LTestProjectGroup.group);
-        LProjectGroupNode.Data := LTestProjectGroup;
-        LProjectGroupNode.ImageIndex := FTreeNodeTestProjectGroups.ImageIndex;
-        LProjectGroupNode.SelectedIndex := LProjectGroupNode.ImageIndex;
-        TreeViewBuilder.Checked[LProjectGroupNode] := LTestProjectGroup.Enabled;
-        for LTestProject in LTestProjectGroup.projects do
-        begin
-          LProjectNode := TreeViewBuilder.Items.AddChild(LProjectGroupNode,
-            ExtractFileName(LTestProject.project));
-          LProjectNode.Data := LTestProject;
-          LProjectNode.ImageIndex := FTreeNodeTestProjectGroups.ImageIndex;
-          LProjectNode.SelectedIndex := LProjectGroupNode.ImageIndex;
-          TreeViewBuilder.Checked[LProjectNode] :=
-            LTestProject.Enabled.GetValueOrDefault(True);
-        end;
-      end;
-
-      for LInstallGroup in FProjectBuilder.project.installScriptGroups do
-      begin
-        LProjectGroupNode := TreeViewBuilder.Items.AddChild
-          (FTreeNodeInstallScripGroups, LInstallGroup.group);
-        TreeViewBuilder.Checked[LProjectGroupNode] := LInstallGroup.Enabled;
-        LProjectGroupNode.Data := LInstallGroup;
-        LProjectGroupNode.ImageIndex := FTreeNodeInstallScripGroups.ImageIndex;
-        LProjectGroupNode.SelectedIndex := LProjectGroupNode.ImageIndex;
-        for LInstallScript in LInstallGroup.installScripts do
-        begin
-          LProjectNode := TreeViewBuilder.Items.AddChild(LProjectGroupNode,
-            LInstallScript.scriptName);
-          LProjectNode.Data := LInstallScript;
-          LProjectNode.ImageIndex := FTreeNodeInstallScripGroups.ImageIndex;
-          LProjectNode.SelectedIndex := LProjectGroupNode.ImageIndex;
-          TreeViewBuilder.Checked[LProjectNode] := LInstallScript.Enabled;
-        end;
-      end;
-
-      for LScript in FProjectBuilder.project.buildCompleteScripts do
-      begin
-        LProjectGroupNode := TreeViewBuilder.Items.AddChild
-          (FTreeNodeBuildCompleteScripts, LScript.scriptName);
-        LProjectGroupNode.Data := LScript;
-        LProjectGroupNode.ImageIndex :=
-          FTreeNodeBuildCompleteScripts.ImageIndex;
-        LProjectGroupNode.SelectedIndex := LProjectGroupNode.ImageIndex;
-        TreeViewBuilder.Checked[LProjectGroupNode] := LScript.Enabled;
-      end;
-
-      for LScript in FProjectBuilder.project.preBuildScripts do
-      begin
-        LProjectGroupNode := TreeViewBuilder.Items.AddChild
-          (FTreeNodePreBuildScripts, LScript.scriptName);
-        LProjectGroupNode.Data := LScript;
-        LProjectGroupNode.ImageIndex := FTreeNodePreBuildScripts.ImageIndex;
-        LProjectGroupNode.SelectedIndex := LProjectGroupNode.ImageIndex;
-        TreeViewBuilder.Checked[LProjectGroupNode] := LScript.Enabled;
-      end;
-
-      for LScript in FProjectBuilder.project.postBuildScripts do
-      begin
-        LProjectGroupNode := TreeViewBuilder.Items.AddChild
-          (FTreeNodePostBuildScripts, LScript.scriptName);
-        LProjectGroupNode.Data := LScript;
-        LProjectGroupNode.ImageIndex := FTreeNodePostBuildScripts.ImageIndex;
-        LProjectGroupNode.SelectedIndex := LProjectGroupNode.ImageIndex;
-        TreeViewBuilder.Checked[LProjectGroupNode] := LScript.Enabled;
-      end;
-    end;
-
-  finally
-    TreeViewBuilder.FullExpand;
-    if TreeViewBuilder.Items.Count > 0 then
-      TreeViewBuilder.Items[0].MakeVisible;
-    TreeViewBuilder.Items.EndUpdate;
-
-  end;
+  TreeViewBuilder.LoadProject;
 end;
 
 procedure TfrmBuilder.HideDetails;
@@ -860,7 +598,7 @@ begin
   REsult := Assigned(FProjectBuilder) and (FProjectBuilder.Loaded);
 end;
 
-procedure TfrmBuilder.Label3DblClick(Sender: TObject);
+procedure TfrmBuilder.lblDelphiVersionDblClick(Sender: TObject);
 begin
   TLZExceptionDialog.ForceException;
 end;
