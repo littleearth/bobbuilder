@@ -17,8 +17,12 @@ type
     function GetDelphiVerionByVersion(AVersion: integer): TDelphiVersion;
     function GetDelphiVersionByIndex(AIndex: integer): TDelphiVersion;
     procedure FindInstallations(AKey: string);
-    procedure AddVersion(AVersion: integer; ARootFolder: string;
-      ARegistryKey: string; AProductName: string; AExecutable: TFileName);
+    procedure AddVersion(
+      AVersion: integer;
+      ARootFolder: string;
+      ARegistryKey: string;
+      AProductName: string;
+      AExecutable: TFileName);
   public
     constructor Create; reintroduce;
     destructor Destroy; override;
@@ -75,8 +79,10 @@ begin
   end;
 end;
 
-procedure TDelphiHelper.AddVersion(AVersion: integer;
-  ARootFolder, ARegistryKey, AProductName: string; AExecutable: TFileName);
+procedure TDelphiHelper.AddVersion(
+  AVersion: integer;
+  ARootFolder, ARegistryKey, AProductName: string;
+  AExecutable: TFileName);
 var
   LDelphiVersion: TDelphiVersion;
 begin

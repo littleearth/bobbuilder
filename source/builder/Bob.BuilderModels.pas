@@ -71,28 +71,37 @@ type
     Fenabled: Boolean;
     FscriptSource: string;
     FscriptName: string;
-    Fproduction: TLZNullableBoolean;
-    Fstaging: TLZNullableBoolean;
-    Fselective: TLZNullableBoolean;
     procedure Setenabled(const Value: Boolean);
     procedure SetscriptSource(const Value: string);
     procedure Setname(const Value: string);
-    procedure Setproduction(const Value: TLZNullableBoolean);
-    procedure Setstaging(const Value: TLZNullableBoolean);
-    procedure Setselective(const Value: TLZNullableBoolean);
   public
     procedure FromJSONValue(AJSONValue: TJSONValue); override;
     function ToJSONValue: TJSONValue; override;
     property enabled: Boolean read Fenabled write Setenabled;
     property scriptName: string read FscriptName write Setname;
     property scriptSource: string read FscriptSource write SetscriptSource;
+  end;
+
+  TScripts = class(TLZModelList<TScript>);
+
+  TSelectiveScript = class(TScript)
+  private
+    Fproduction: TLZNullableBoolean;
+    Fstaging: TLZNullableBoolean;
+    Fselective: TLZNullableBoolean;
+    procedure Setproduction(const Value: TLZNullableBoolean);
+    procedure Setstaging(const Value: TLZNullableBoolean);
+    procedure Setselective(const Value: TLZNullableBoolean);
+  public
+    procedure FromJSONValue(AJSONValue: TJSONValue); override;
+    function ToJSONValue: TJSONValue; override;
     property staging: TLZNullableBoolean read Fstaging write Setstaging;
     property production: TLZNullableBoolean read Fproduction
       write Setproduction;
     property selective: TLZNullableBoolean read Fselective write Setselective;
   end;
 
-  TScripts = class(TLZModelList<TScript>);
+  TSelectiveScripts = class(TLZModelList<TSelectiveScript>);
 
   TProject = class(TLZModel)
   private
@@ -335,14 +344,15 @@ type
     Fvariables: TVariables;
     FTestProjectGroups: TTestProjectGroups;
     FProjectGroups: TProjectGroups;
-    FpostCleanupScripts: TScripts;
-    FpreBuildScripts: TScripts;
-    FpostBuildScripts: TScripts;
+    FpostCleanupScripts: TSelectiveScripts;
+    FpreBuildScripts: TSelectiveScripts;
+    FpostBuildScripts: TSelectiveScripts;
     FbuildFolders: TFolders;
     FinstallScriptGroups: TInstallScriptGroups;
-    FbuildCompleteScripts: TScripts;
+    FbuildCompleteScripts: TSelectiveScripts;
     FcheckActiveProcesses: TProcesses;
     FreviewFiles: TFiles;
+    FcodeFormatScripts: TScripts;
     FdefaultProjectGroups: string;
     FlogFolder: string;
     FdefaultInstallScriptGroups: string;
@@ -352,11 +362,12 @@ type
     procedure SetdefaultProjectGroups(const Value: string);
     procedure SetlogFolder(const Value: string);
     procedure SetdefaultInstallScriptGroups(const Value: string);
-    procedure SetbuildCompleteScripts(const Value: TScripts);
+    procedure SetbuildCompleteScripts(const Value: TSelectiveScripts);
     procedure SetdefaultBuildCompleteScripts(const Value: string);
     procedure SetreviewFiles(const Value: TFiles);
     procedure SetdefaultTestProjectGroups(const Value: string);
     procedure Setgitpull(const Value: TLZNullableBoolean);
+    procedure SetcodeFormatScripts(const Value: TScripts);
   public
     constructor Create; override;
     destructor Destroy; override;
@@ -383,12 +394,14 @@ type
     property installScriptGroups: TInstallScriptGroups
       read FinstallScriptGroups;
 
-    property postCleanupScripts: TScripts read FpostCleanupScripts;
+    property postCleanupScripts: TSelectiveScripts read FpostCleanupScripts;
+    property codeFormatScripts: TScripts read FcodeFormatScripts
+      write SetcodeFormatScripts;
 
-    property preBuildScripts: TScripts read FpreBuildScripts;
-    property postBuildScripts: TScripts read FpostBuildScripts;
+    property preBuildScripts: TSelectiveScripts read FpreBuildScripts;
+    property postBuildScripts: TSelectiveScripts read FpostBuildScripts;
 
-    property buildCompleteScripts: TScripts read FbuildCompleteScripts
+    property buildCompleteScripts: TSelectiveScripts read FbuildCompleteScripts
       write SetbuildCompleteScripts;
 
     property checkActiveProcesses: TProcesses read FcheckActiveProcesses;
@@ -434,6 +447,38 @@ end;
 procedure TProject.Setstaging(const Value: TLZNullableBoolean);
 begin
   Fstaging := Value;
+end;
+
+{ TVariable }
+
+procedure TScript.Setenabled(const Value: Boolean);
+begin
+  Fenabled := Value;
+end;
+
+procedure TScript.SetscriptSource(const Value: string);
+begin
+  FscriptSource := Value;
+end;
+
+procedure TScript.Setname(const Value: string);
+begin
+  FscriptName := Value;
+end;
+
+procedure TSelectiveScript.Setproduction(const Value: TLZNullableBoolean);
+begin
+  Fproduction := Value;
+end;
+
+procedure TSelectiveScript.Setstaging(const Value: TLZNullableBoolean);
+begin
+  Fstaging := Value;
+end;
+
+procedure TSelectiveScript.Setselective(const Value: TLZNullableBoolean);
+begin
+  Fselective := Value;
 end;
 
 { TVariable }
@@ -538,9 +583,6 @@ begin
     AJSONValue.TryGetValue<Boolean>('enabled', Fenabled);
     AJSONValue.TryGetValue<string>('scriptName', FscriptName);
     AJSONValue.TryGetValue<string>('scriptSource', FscriptSource);
-    Fstaging.FromJSON(AJSONValue, 'staging');
-    Fproduction.FromJSON(AJSONValue, 'production');
-    Fselective.FromJSON(AJSONValue, 'selective');
   end;
 end;
 
@@ -553,6 +595,32 @@ begin
     LJSONObject.AddPair('enabled', TJSONBool.Create(Fenabled));
     LJSONObject.AddPair('scriptName', FscriptName);
     LJSONObject.AddPair('scriptSource', FscriptSource);
+    Result := LJSONObject;
+  except
+    FreeAndNil(LJSONObject);
+    raise;
+  end;
+end;
+
+{ TSelectiveScript }
+
+procedure TSelectiveScript.FromJSONValue(AJSONValue: TJSONValue);
+begin
+  inherited;
+  if Assigned(AJSONValue) then
+  begin
+    Fstaging.FromJSON(AJSONValue, 'staging');
+    Fproduction.FromJSON(AJSONValue, 'production');
+    Fselective.FromJSON(AJSONValue, 'selective');
+  end;
+end;
+
+function TSelectiveScript.ToJSONValue: TJSONValue;
+var
+  LJSONObject: TJSONObject;
+begin
+  LJSONObject := TJSONObject(inherited ToJSONValue);
+  try
     if Fstaging.HasValue then
       LJSONObject.AddPair('staging', TJSONBool.Create(Fstaging.Value));
     if Fproduction.HasValue then
@@ -974,12 +1042,13 @@ begin
   Fvariables := TVariables.Create;
   FTestProjectGroups := TTestProjectGroups.Create;
   FProjectGroups := TProjectGroups.Create;
-  FpostCleanupScripts := TScripts.Create;
-  FpreBuildScripts := TScripts.Create;
-  FpostBuildScripts := TScripts.Create;
+  FpostCleanupScripts := TSelectiveScripts.Create;
+  FcodeFormatScripts := TScripts.Create;
+  FpreBuildScripts := TSelectiveScripts.Create;
+  FpostBuildScripts := TSelectiveScripts.Create;
   FbuildFolders := TFolders.Create;
   FinstallScriptGroups := TInstallScriptGroups.Create;
-  FbuildCompleteScripts := TScripts.Create;
+  FbuildCompleteScripts := TSelectiveScripts.Create;
   FcheckActiveProcesses := TProcesses.Create;
   FreviewFiles := TFiles.Create;
 
@@ -996,6 +1065,7 @@ begin
   FreeAndNil(FTestProjectGroups);
   FreeAndNil(FProjectGroups);
   FreeAndNil(FpostCleanupScripts);
+  FreeAndNil(FcodeFormatScripts);
   FreeAndNil(FpreBuildScripts);
   FreeAndNil(FpostBuildScripts);
   FreeAndNil(FbuildFolders);
@@ -1034,6 +1104,8 @@ begin
     if Assigned(FpostCleanupScripts) then
       FpostCleanupScripts.FromJSONValue(AJSONValue, False,
         'postCleanupScripts');
+    if Assigned(FcodeFormatScripts) then
+      FcodeFormatScripts.FromJSONValue(AJSONValue, False, 'codeFormatScripts');
     if Assigned(FpreBuildScripts) then
       FpreBuildScripts.FromJSONValue(AJSONValue, False, 'preBuildScripts');
     if Assigned(FpostBuildScripts) then
@@ -1054,7 +1126,7 @@ begin
   end;
 end;
 
-procedure TBuildProject.SetbuildCompleteScripts(const Value: TScripts);
+procedure TBuildProject.SetbuildCompleteScripts(const Value: TSelectiveScripts);
 begin
   FbuildCompleteScripts := Value;
 end;
@@ -1094,6 +1166,11 @@ begin
   Fgitpull := Value;
 end;
 
+procedure TBuildProject.SetcodeFormatScripts(const Value: TScripts);
+begin
+  FcodeFormatScripts := Value;
+end;
+
 { TFolder }
 
 procedure TFolder.SetcleanupEnabled(const Value: Boolean);
@@ -1104,38 +1181,6 @@ end;
 procedure TFolder.Setfolder(const Value: string);
 begin
   Ffolder := Value;
-end;
-
-{ TScript }
-
-procedure TScript.Setenabled(const Value: Boolean);
-begin
-  Fenabled := Value;
-end;
-
-procedure TScript.Setname(const Value: string);
-begin
-  FscriptName := Value;
-end;
-
-procedure TScript.Setproduction(const Value: TLZNullableBoolean);
-begin
-  Fproduction := Value;
-end;
-
-procedure TScript.SetscriptSource(const Value: string);
-begin
-  FscriptSource := Value;
-end;
-
-procedure TScript.Setstaging(const Value: TLZNullableBoolean);
-begin
-  Fstaging := Value;
-end;
-
-procedure TScript.Setselective(const Value: TLZNullableBoolean);
-begin
-  Fselective := Value;
 end;
 
 { TInstallScript }
@@ -1421,6 +1466,12 @@ begin
       for LIdx := 0 to FpostCleanupScripts.Count - 1 do
         LArray.AddElement(FpostCleanupScripts[LIdx].ToJSONValue);
     LJSONObject.AddPair('postCleanupScripts', LArray);
+
+    LArray := TJSONArray.Create;
+    if Assigned(FcodeFormatScripts) then
+      for LIdx := 0 to FcodeFormatScripts.Count - 1 do
+        LArray.AddElement(FcodeFormatScripts[LIdx].ToJSONValue);
+    LJSONObject.AddPair('codeFormatScripts', LArray);
 
     LArray := TJSONArray.Create;
     if Assigned(FpreBuildScripts) then

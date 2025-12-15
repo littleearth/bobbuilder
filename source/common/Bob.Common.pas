@@ -7,9 +7,13 @@ uses Classes, Windows, SysUtils, Lazy.Utils.Windows, Lazy.Types;
 type
   TBobCommon = class(TLZObject)
   public
-    class function ProcessEnvironmentVariables(ASource: string;
-      AVariablePrefix: string = '%'; AVariableSuffix: string = '%'): string;
-    class procedure GetFileList(ASource: string; AFileList: TStrings;
+    class function ProcessEnvironmentVariables(
+      ASource: string;
+      AVariablePrefix: string = '%';
+      AVariableSuffix: string = '%'): string;
+    class procedure GetFileList(
+      ASource: string;
+      AFileList: TStrings;
       ARecurse: Boolean);
     class function GetBuilderFile(out AErrorMessage: string): TFileName;
     class function GetLogFileName(AApplicationName: string): TFileName;
@@ -52,7 +56,9 @@ begin
   end;
 end;
 
-class procedure TBobCommon.GetFileList(ASource: string; AFileList: TStrings;
+class procedure TBobCommon.GetFileList(
+  ASource: string;
+  AFileList: TStrings;
   ARecurse: Boolean);
 var
   LFileMasks: TLZToken;

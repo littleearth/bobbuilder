@@ -52,7 +52,8 @@ type
     procedure SetFormValues;
     procedure UpdatePathVariables;
   public
-    function Add(ADelphiLibrary: TDelphiLibrary;
+    function Add(
+      ADelphiLibrary: TDelphiLibrary;
       ADelphiInstallation: TDelphiInstallation): Boolean;
   end;
 
@@ -124,7 +125,8 @@ begin
     end;
 end;
 
-function TfrmAddLibraryPath.Add(ADelphiLibrary: TDelphiLibrary;
+function TfrmAddLibraryPath.Add(
+  ADelphiLibrary: TDelphiLibrary;
   ADelphiInstallation: TDelphiInstallation): Boolean;
 begin
   FDelphiLibrary := ADelphiLibrary;

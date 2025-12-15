@@ -96,29 +96,52 @@ type
 
   ITaskbarList2 = interface(ITaskbarList)
     ['{602D4995-B13A-429B-A66E-1935E44F4317}']
-    procedure MarkFullscreenWindow(hwnd: cardinal; fFullscreen: Bool); safecall;
+    procedure MarkFullscreenWindow(
+      hwnd: cardinal;
+      fFullscreen: Bool); safecall;
   end;
 
   ITaskbarList3 = interface(ITaskbarList2)
     ['{EA1AFB91-9E28-4B86-90E9-9E9F8A5EEFAF}']
-    function SetProgressValue(hwnd: hwnd; ullCompleted: ULONGLONG;
+    function SetProgressValue(
+      hwnd: hwnd;
+      ullCompleted: ULONGLONG;
       ullTotal: ULONGLONG): HRESULT; stdcall;
-    function SetProgressState(hwnd: hwnd; tbpFlags: integer): HRESULT; stdcall;
-    procedure RegisterTab(hwndTab: cardinal; hwndMDI: cardinal); safecall;
+    function SetProgressState(
+      hwnd: hwnd;
+      tbpFlags: integer): HRESULT; stdcall;
+    procedure RegisterTab(
+      hwndTab: cardinal;
+      hwndMDI: cardinal); safecall;
     procedure UnregisterTab(hwndTab: cardinal); safecall;
-    procedure SetTabOrder(hwndTab: cardinal;
+    procedure SetTabOrder(
+      hwndTab: cardinal;
       hwndInsertBefore: cardinal); safecall;
-    procedure SetTabActive(hwndTab: cardinal; hwndMDI: cardinal;
+    procedure SetTabActive(
+      hwndTab: cardinal;
+      hwndMDI: cardinal;
       tbatFlags: DWORD); safecall;
-    procedure ThumbBarAddButtons(hwnd: cardinal; cButtons: UINT;
+    procedure ThumbBarAddButtons(
+      hwnd: cardinal;
+      cButtons: UINT;
       Button: THUMBBUTTONLIST); safecall;
-    procedure ThumbBarUpdateButtons(hwnd: cardinal; cButtons: UINT;
+    procedure ThumbBarUpdateButtons(
+      hwnd: cardinal;
+      cButtons: UINT;
       pButton: THUMBBUTTONLIST); safecall;
-    procedure ThumbBarSetImageList(hwnd: cardinal; himl: cardinal); safecall;
-    procedure SetOverlayIcon(hwnd: cardinal; hIcon: hIcon;
+    procedure ThumbBarSetImageList(
+      hwnd: cardinal;
+      himl: cardinal); safecall;
+    procedure SetOverlayIcon(
+      hwnd: cardinal;
+      hIcon: hIcon;
       pszDescription: LPCWSTR); safecall;
-    procedure SetThumbnailTooltip(hwnd: cardinal; pszTip: LPCWSTR); safecall;
-    procedure SetThumbnailClip(hwnd: cardinal; prcClip: PRect); safecall;
+    procedure SetThumbnailTooltip(
+      hwnd: cardinal;
+      pszTip: LPCWSTR); safecall;
+    procedure SetThumbnailClip(
+      hwnd: cardinal;
+      prcClip: PRect); safecall;
   end;
 
 type
@@ -140,10 +163,15 @@ type
     FTaskbarList3: ITaskbarList3;
     function CalculatePercentage(AValue, ATotal: integer): integer;
   public
-    procedure Show(ACaption: string; AProgressStyle: TProgressStyle);
-      reintroduce;
-    procedure Progress(AProgress: integer; ACaption: string = ''); overload;
-    procedure Progress(AValue, AMax: integer; ACaption: string = ''); overload;
+    procedure Show(
+      ACaption: string;
+      AProgressStyle: TProgressStyle); reintroduce;
+    procedure Progress(
+      AProgress: integer;
+      ACaption: string = ''); overload;
+    procedure Progress(
+      AValue, AMax: integer;
+      ACaption: string = ''); overload;
     procedure Update; override;
   published
   end;
@@ -151,11 +179,15 @@ type
 var
   _ProgressForm: TfrmProgress;
 
-procedure ShowProgress(ACaption: string;
+procedure ShowProgress(
+  ACaption: string;
   AProgressStyle: TProgressStyle = psNormal);
-procedure UpdateProgress(AProgress: integer; ACaption: string = ''); overload;
-procedure UpdateProgress(AValue, AMax: integer; ACaption: string = '');
-  overload;
+procedure UpdateProgress(
+  AProgress: integer;
+  ACaption: string = ''); overload;
+procedure UpdateProgress(
+  AValue, AMax: integer;
+  ACaption: string = ''); overload;
 procedure HideProgress;
 
 implementation
@@ -174,7 +206,9 @@ begin
   _ProgressForm := nil;
 end;
 
-procedure ShowProgress(ACaption: string; AProgressStyle: TProgressStyle);
+procedure ShowProgress(
+  ACaption: string;
+  AProgressStyle: TProgressStyle);
 begin
   if not Assigned(_ProgressForm) then
   begin
@@ -187,7 +221,9 @@ begin
   end;
 end;
 
-procedure UpdateProgress(AProgress: integer; ACaption: string);
+procedure UpdateProgress(
+  AProgress: integer;
+  ACaption: string);
 begin
   if Assigned(_ProgressForm) then
   begin
@@ -195,7 +231,9 @@ begin
   end;
 end;
 
-procedure UpdateProgress(AValue, AMax: integer; ACaption: string = '');
+procedure UpdateProgress(
+  AValue, AMax: integer;
+  ACaption: string = '');
 begin
   if Assigned(_ProgressForm) then
   begin
@@ -203,7 +241,9 @@ begin
   end;
 end;
 
-procedure TfrmProgress.Show(ACaption: string; AProgressStyle: TProgressStyle);
+procedure TfrmProgress.Show(
+  ACaption: string;
+  AProgressStyle: TProgressStyle);
 begin
   lblCaption.Caption := ACaption;
   progressNormal.Visible := False;
@@ -255,12 +295,15 @@ begin
     FTaskbarList3.SetProgressState(FTaskBarFormHandle, TBPF_NOPROGRESS);
 end;
 
-procedure TfrmProgress.Progress(AValue, AMax: integer; ACaption: string);
+procedure TfrmProgress.Progress(
+  AValue, AMax: integer;
+  ACaption: string);
 begin
   Progress(CalculatePercentage(AValue, AMax), ACaption);
 end;
 
-function TfrmProgress.CalculatePercentage(AValue: integer;
+function TfrmProgress.CalculatePercentage(
+  AValue: integer;
   ATotal: integer): integer;
 begin
   Result := 0;
@@ -270,7 +313,9 @@ begin
   end;
 end;
 
-procedure TfrmProgress.Progress(AProgress: integer; ACaption: string = '');
+procedure TfrmProgress.Progress(
+  AProgress: integer;
+  ACaption: string = '');
 begin
   if ACaption <> '' then
     lblCaption.Caption := ACaption;

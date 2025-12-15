@@ -26,21 +26,20 @@ interface
 uses
   SysUtils, Classes;
 
-
 implementation
 
 uses
   JclDebug, Lazy.Exception.Details,
-  {$IFNDEF CONSOLE}
+{$IFNDEF CONSOLE}
   Lazy.ExceptionDialog, VCL.Forms,
-  {$ENDIF}
+{$ENDIF}
   Lazy.Exception.Details.Handler.JclDebug;
 
 initialization
 
 // Enable JCL stack tracking
 JclDebug.JclStackTrackingOptions := [stStack, stRawMode];
-  
+
 // Register the JclDebug handler globally
 TLZExceptionDetails.RegisterHandler(TLZJclExceptionHandler.Create);
 
@@ -48,7 +47,7 @@ TLZExceptionDetails.RegisterHandler(TLZJclExceptionHandler.Create);
 // For console applications, JclDebug stack tracking is initialized in Bob.Exception.Details
 // Exception details will be logged via LazyLog when caught
 {$ELSE}
-  TLZExceptionDialog.SetApplicationExceptionHandler;
+TLZExceptionDialog.SetApplicationExceptionHandler;
 {$ENDIF}
 
 end.

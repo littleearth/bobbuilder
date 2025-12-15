@@ -42,12 +42,16 @@ type
     procedure CheckAll1Click(Sender: TObject);
     procedure UncheckAll1Click(Sender: TObject);
     procedure ActionFindExecute(Sender: TObject);
-    procedure editFindKeyDown(Sender: TObject; var Key: Word;
+    procedure editFindKeyDown(
+      Sender: TObject;
+      var Key: Word;
       Shift: TShiftState);
   private
     FDelphiInstallation: TDelphiInstallation;
     procedure UpdateComboBoxOptions(ADelphiInstallation: TDelphiInstallation);
-    procedure Find(AFind: string; AIgnoreCase: Boolean);
+    procedure Find(
+      AFind: string;
+      AIgnoreCase: Boolean);
     procedure SetDestinationsChecked(AValue: Boolean);
   public
     function Execute(ADelphiInstallation: TDelphiInstallation): Boolean;
@@ -92,7 +96,9 @@ begin
   SetDestinationsChecked(True);
 end;
 
-procedure TfrmSearch.editFindKeyDown(Sender: TObject; var Key: Word;
+procedure TfrmSearch.editFindKeyDown(
+  Sender: TObject;
+  var Key: Word;
   Shift: TShiftState);
 begin
   if Key = VK_RETURN then
@@ -111,12 +117,16 @@ begin
   end;
 end;
 
-procedure TfrmSearch.Find(AFind: string; AIgnoreCase: Boolean);
+procedure TfrmSearch.Find(
+  AFind: string;
+  AIgnoreCase: Boolean);
 
 var
   LLibrary: TStringList;
 
-  function SearchText(AText, ASubText: string; AIgnoreCase: Boolean): Boolean;
+  function SearchText(
+    AText, ASubText: string;
+    AIgnoreCase: Boolean): Boolean;
   begin
     if AIgnoreCase then
     begin
@@ -128,7 +138,10 @@ var
     end;
   end;
 
-  procedure AddFind(AEntry: string; APath: string; ALibrary: string);
+  procedure AddFind(
+    AEntry: string;
+    APath: string;
+    ALibrary: string);
   begin
     with ListViewSearch.Items.Add do
     begin
@@ -233,7 +246,9 @@ procedure TfrmSearch.UpdateComboBoxOptions(ADelphiInstallation
 var
   LItems: TStringList;
 
-  function ValidatePath(APath: string; ADelphiLibrary: TDelphiLibrary): Boolean;
+  function ValidatePath(
+    APath: string;
+    ADelphiLibrary: TDelphiLibrary): Boolean;
   var
     LPath: string;
   begin

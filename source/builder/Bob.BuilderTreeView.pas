@@ -21,14 +21,19 @@ type
     FTreeNodeBuildCompleteScripts: TTreeNode;
     FTreeNodePreBuildScripts: TTreeNode;
     FTreeNodePostBuildScripts: TTreeNode;
+    FTreeNodeCodeFormatScripts: TTreeNode;
     FTreeNodeVariables: TTreeNode;
     procedure SetProjectBuilder(const Value: TProjectBuilder);
     function GetProjectFolder: string;
   protected
-    procedure AddProjectToGroup(AGroup: TProjectGroup; ANode: TTreeNode);
-    procedure AddTestProjectToGroup(AGroup: TTestProjectGroup;
+    procedure AddProjectToGroup(
+      AGroup: TProjectGroup;
       ANode: TTreeNode);
-    procedure AddInstallScriptToGroup(AGroup: TInstallScriptGroup;
+    procedure AddTestProjectToGroup(
+      AGroup: TTestProjectGroup;
+      ANode: TTreeNode);
+    procedure AddInstallScriptToGroup(
+      AGroup: TInstallScriptGroup;
       ANode: TTreeNode);
     procedure CheckNotReadOnly;
     procedure SetParent(AParent: TWinControl); override;
@@ -39,7 +44,9 @@ type
     procedure DblClick; override;
     procedure TreeNodeCheckedChange(Sender: TObject); override;
     procedure UpdateModelFromNode(ANode: TTreeNode);
-    procedure UpdateCheckboxFromModel(ANode: TTreeNode; AModel: TLZModel);
+    procedure UpdateCheckboxFromModel(
+      ANode: TTreeNode;
+      AModel: TLZModel);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -55,6 +62,7 @@ type
     procedure AddBuildCompleteScript;
     procedure AddPreBuildScript;
     procedure AddPostBuildScript;
+    procedure AddCodeFormatScript;
     procedure AddReviewFile;
     procedure AddVariable;
     procedure Add;
@@ -77,6 +85,8 @@ type
       read FTreeNodeBuildCompleteScripts;
     property TreeNodePreBuildScripts: TTreeNode read FTreeNodePreBuildScripts;
     property TreeNodePostBuildScripts: TTreeNode read FTreeNodePostBuildScripts;
+    property TreeNodeCodeFormatScripts: TTreeNode
+      read FTreeNodeCodeFormatScripts;
     property TreeNodeVariables: TTreeNode read FTreeNodeVariables;
   end;
 
@@ -144,6 +154,11 @@ begin
   FTreeNodePostBuildScripts.SelectedIndex := 3;
   FTreeNodePostBuildScripts.DeleteChildren;
 
+  FTreeNodeCodeFormatScripts := Items.Add(nil, 'Code Format Scripts');
+  FTreeNodeCodeFormatScripts.ImageIndex := 3;
+  FTreeNodeCodeFormatScripts.SelectedIndex := 3;
+  FTreeNodeCodeFormatScripts.DeleteChildren;
+
   FTreeNodeVariables := Items.Add(nil, 'Variables');
   FTreeNodeVariables.ImageIndex := 3;
   FTreeNodeVariables.SelectedIndex := 3;
@@ -155,6 +170,7 @@ begin
   Checked[FTreeNodeBuildCompleteScripts] := True;
   Checked[FTreeNodePreBuildScripts] := True;
   Checked[FTreeNodePostBuildScripts] := True;
+  Checked[FTreeNodeCodeFormatScripts] := True;
   Checked[FTreeNodeGitPull] := False;
 end;
 
@@ -190,6 +206,7 @@ begin
     FTreeNodeBuildCompleteScripts.DeleteChildren;
     FTreeNodePreBuildScripts.DeleteChildren;
     FTreeNodePostBuildScripts.DeleteChildren;
+    FTreeNodeCodeFormatScripts.DeleteChildren;
     FTreeNodeReviewFiles.DeleteChildren;
     FTreeNodeVariables.DeleteChildren;
 
@@ -300,6 +317,16 @@ begin
           LScript.scriptName);
         LProjectGroupNode.Data := LScript;
         LProjectGroupNode.ImageIndex := FTreeNodePostBuildScripts.ImageIndex;
+        LProjectGroupNode.SelectedIndex := LProjectGroupNode.ImageIndex;
+        Checked[LProjectGroupNode] := LScript.Enabled;
+      end;
+
+      for LScript in FProjectBuilder.Project.codeFormatScripts do
+      begin
+        LProjectGroupNode := Items.AddChild(FTreeNodeCodeFormatScripts,
+          LScript.scriptName);
+        LProjectGroupNode.Data := LScript;
+        LProjectGroupNode.ImageIndex := FTreeNodeCodeFormatScripts.ImageIndex;
         LProjectGroupNode.SelectedIndex := LProjectGroupNode.ImageIndex;
         Checked[LProjectGroupNode] := LScript.Enabled;
       end;
@@ -428,7 +455,8 @@ begin
   end;
 end;
 
-procedure TBuilderTreeView.AddProjectToGroup(AGroup: TProjectGroup;
+procedure TBuilderTreeView.AddProjectToGroup(
+  AGroup: TProjectGroup;
   ANode: TTreeNode);
 var
   LProject: TProject;
@@ -439,7 +467,7 @@ begin
   try
     LEditor := TfrmModelEditor.Create(nil);
     try
-      if LEditor.Execute(LProject,ProjectFolder) then
+      if LEditor.Execute(LProject, ProjectFolder) then
       begin
         AGroup.projects.Add(LProject);
         LNode := Items.AddChild(ANode, ExtractFileName(LProject.Project));
@@ -508,7 +536,8 @@ begin
   end;
 end;
 
-procedure TBuilderTreeView.AddTestProjectToGroup(AGroup: TTestProjectGroup;
+procedure TBuilderTreeView.AddTestProjectToGroup(
+  AGroup: TTestProjectGroup;
   ANode: TTreeNode);
 var
   LProject: TTestProject;
@@ -588,7 +617,8 @@ begin
   end;
 end;
 
-procedure TBuilderTreeView.AddInstallScriptToGroup(AGroup: TInstallScriptGroup;
+procedure TBuilderTreeView.AddInstallScriptToGroup(
+  AGroup: TInstallScriptGroup;
   ANode: TTreeNode);
 var
   LScript: TInstallScript;
@@ -635,14 +665,14 @@ end;
 
 procedure TBuilderTreeView.AddBuildCompleteScript;
 var
-  LScript: TScript;
+  LScript: TSelectiveScript;
   LNode: TTreeNode;
   LEditor: TfrmModelEditor;
 begin
   if not IsProjectLoaded then
     Exit;
   CheckNotReadOnly;
-  LScript := TScript.Create;
+  LScript := TSelectiveScript.Create;
   try
     LEditor := TfrmModelEditor.Create(nil);
     try
@@ -671,14 +701,14 @@ end;
 
 procedure TBuilderTreeView.AddPreBuildScript;
 var
-  LScript: TScript;
+  LScript: TSelectiveScript;
   LNode: TTreeNode;
   LEditor: TfrmModelEditor;
 begin
   if not IsProjectLoaded then
     Exit;
   CheckNotReadOnly;
-  LScript := TScript.Create;
+  LScript := TSelectiveScript.Create;
   try
     LEditor := TfrmModelEditor.Create(nil);
     try
@@ -706,6 +736,41 @@ end;
 
 procedure TBuilderTreeView.AddPostBuildScript;
 var
+  LScript: TSelectiveScript;
+  LNode: TTreeNode;
+  LEditor: TfrmModelEditor;
+begin
+  if not IsProjectLoaded then
+    Exit;
+  CheckNotReadOnly;
+  LScript := TSelectiveScript.Create;
+  try
+    LEditor := TfrmModelEditor.Create(nil);
+    try
+      if LEditor.Execute(LScript, ProjectFolder) then
+      begin
+        FProjectBuilder.Project.postBuildScripts.Add(LScript);
+        LNode := Items.AddChild(FTreeNodePostBuildScripts, LScript.scriptName);
+        LNode.Data := LScript;
+        LNode.ImageIndex := FTreeNodePostBuildScripts.ImageIndex;
+        LNode.SelectedIndex := LNode.ImageIndex;
+        Checked[LNode] := True;
+      end
+      else
+      begin
+        LScript.Free;
+      end;
+    finally
+      LEditor.Free;
+    end;
+  except
+    LScript.Free;
+    raise;
+  end;
+end;
+
+procedure TBuilderTreeView.AddCodeFormatScript;
+var
   LScript: TScript;
   LNode: TTreeNode;
   LEditor: TfrmModelEditor;
@@ -719,10 +784,10 @@ begin
     try
       if LEditor.Execute(LScript, ProjectFolder) then
       begin
-        FProjectBuilder.Project.postBuildScripts.Add(LScript);
-        LNode := Items.AddChild(FTreeNodePostBuildScripts, LScript.scriptName);
+        FProjectBuilder.Project.codeFormatScripts.Add(LScript);
+        LNode := Items.AddChild(FTreeNodeCodeFormatScripts, LScript.scriptName);
         LNode.Data := LScript;
-        LNode.ImageIndex := FTreeNodePostBuildScripts.ImageIndex;
+        LNode.ImageIndex := FTreeNodeCodeFormatScripts.ImageIndex;
         LNode.SelectedIndex := LNode.ImageIndex;
         Checked[LNode] := True;
       end
@@ -847,6 +912,8 @@ begin
       AddPreBuildScript
     else if LSelected = FTreeNodePostBuildScripts then
       AddPostBuildScript
+    else if LSelected = FTreeNodeCodeFormatScripts then
+      AddCodeFormatScript
     else if LSelected = FTreeNodeReviewFiles then
       AddReviewFile
     else if LSelected = FTreeNodeVariables then
@@ -996,11 +1063,13 @@ begin
   else if LModel is TScript then
   begin
     if LParent = FTreeNodeBuildCompleteScripts then
-      FProjectBuilder.Project.buildCompleteScripts.Remove(TScript(LModel))
+      FProjectBuilder.Project.buildCompleteScripts.Remove(TSelectiveScript(LModel))
     else if LParent = FTreeNodePreBuildScripts then
-      FProjectBuilder.Project.preBuildScripts.Remove(TScript(LModel))
+      FProjectBuilder.Project.preBuildScripts.Remove(TSelectiveScript(LModel))
     else if LParent = FTreeNodePostBuildScripts then
-      FProjectBuilder.Project.postBuildScripts.Remove(TScript(LModel));
+      FProjectBuilder.Project.postBuildScripts.Remove(TSelectiveScript(LModel))
+    else if LParent = FTreeNodeCodeFormatScripts then
+      FProjectBuilder.Project.codeFormatScripts.Remove(TScript(LModel));
   end
   else if LModel is TVariable then
     FProjectBuilder.Project.variables.Remove(TVariable(LModel))
@@ -1055,7 +1124,8 @@ begin
     FProjectBuilder.BuildInstallGroupsEnabled := Checked[ANode];
 end;
 
-procedure TBuilderTreeView.UpdateCheckboxFromModel(ANode: TTreeNode;
+procedure TBuilderTreeView.UpdateCheckboxFromModel(
+  ANode: TTreeNode;
   AModel: TLZModel);
 begin
   if (ANode = nil) or (AModel = nil) or FUpdatingCheckbox then

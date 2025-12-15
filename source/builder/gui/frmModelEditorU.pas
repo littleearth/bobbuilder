@@ -25,32 +25,56 @@ type
     procedure CreateControlsForModel;
     procedure LoadModelData;
     procedure SaveModelData;
-    procedure CreateNullableCheckBox(AParent: TWinControl; ALeft, ATop: Integer;
-      ACaption: string; const AKey: string; var LCurrentTop: Integer);
-    procedure LoadNullableCheckBox(const AKey: string;
+    procedure CreateNullableCheckBox(
+      AParent: TWinControl;
+      ALeft, ATop: Integer;
+      ACaption: string;
+      const AKey: string;
+      var LCurrentTop: Integer);
+    procedure LoadNullableCheckBox(
+      const AKey: string;
       AValue: TLZNullableBoolean);
     // Model-specific control creation procedures
-    procedure CreateProjectGroupControls(AGroupBox: TGroupBox;
+    procedure CreateProjectGroupControls(
+      AGroupBox: TGroupBox;
       var LTop: Integer);
-    procedure CreateTestProjectGroupControls(AGroupBox: TGroupBox;
+    procedure CreateTestProjectGroupControls(
+      AGroupBox: TGroupBox;
       var LTop: Integer);
-    procedure CreateInstallScriptGroupControls(AGroupBox: TGroupBox;
+    procedure CreateInstallScriptGroupControls(
+      AGroupBox: TGroupBox;
       var LTop: Integer);
-    procedure CreateScriptControls(AGroupBox: TGroupBox; var LTop: Integer);
-    procedure CreateVariableControls(AGroupBox: TGroupBox; var LTop: Integer);
-    procedure CreateFileControls(AGroupBox: TGroupBox; var LTop: Integer);
-    procedure CreateProjectControls(AGroupBox: TGroupBox; var LTop: Integer);
-    procedure CreateTestProjectControls(AGroupBox: TGroupBox;
+    procedure CreateScriptControls(
+      AGroupBox: TGroupBox;
       var LTop: Integer);
-    procedure CreateInstallScriptControls(AGroupBox: TGroupBox;
+    procedure CreateSelectiveScriptControls(
+      AGroupBox: TGroupBox;
+      var LTop: Integer);
+    procedure CreateVariableControls(
+      AGroupBox: TGroupBox;
+      var LTop: Integer);
+    procedure CreateFileControls(
+      AGroupBox: TGroupBox;
+      var LTop: Integer);
+    procedure CreateProjectControls(
+      AGroupBox: TGroupBox;
+      var LTop: Integer);
+    procedure CreateTestProjectControls(
+      AGroupBox: TGroupBox;
+      var LTop: Integer);
+    procedure CreateInstallScriptControls(
+      AGroupBox: TGroupBox;
       var LTop: Integer);
     procedure BrowseButtonClick(ASender: TObject);
-    function BrowseForFile(const AEditKey: string;
+    function BrowseForFile(
+      const AEditKey: string;
       const AFilter: string): Boolean;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
-    function Execute(AModel: TLZModel; AProjectFolder: string): Boolean;
+    function Execute(
+      AModel: TLZModel;
+      AProjectFolder: string): Boolean;
   end;
 
 implementation
@@ -70,7 +94,8 @@ begin
   inherited Destroy;
 end;
 
-function TfrmModelEditor.Execute(AModel: TLZModel;
+function TfrmModelEditor.Execute(
+  AModel: TLZModel;
   AProjectFolder: string): Boolean;
 begin
   FModel := AModel;
@@ -98,13 +123,10 @@ var
   LTop: Integer;
   LGroupBox: TGroupBox;
 begin
-  LTop := 8;
   LGroupBox := TGroupBox.Create(Self);
   LGroupBox.Parent := ScrollBoxMain;
-  LGroupBox.Left := 8;
-  LGroupBox.Top := LTop;
-  LGroupBox.Width := ScrollBoxMain.ClientWidth - 24;
   LGroupBox.Caption := 'Properties';
+  LGroupBox.Align := alTop;
 
   LTop := 16;
 
@@ -116,6 +138,8 @@ begin
     CreateTestProjectGroupControls(LGroupBox, LTop)
   else if FModel is TInstallScriptGroup then
     CreateInstallScriptGroupControls(LGroupBox, LTop)
+  else if FModel is TSelectiveScript then
+    CreateSelectiveScriptControls(LGroupBox, LTop)
   else if FModel is TScript then
     CreateScriptControls(LGroupBox, LTop)
   else if FModel is TVariable then
@@ -157,6 +181,18 @@ begin
     if FControls.TryGetValue('group', LControl) then
       TEdit(LControl).Text := TInstallScriptGroup(FModel).group;
   end
+  else if FModel is TSelectiveScript then
+  begin
+    if FControls.TryGetValue('enabled', LControl) then
+      TCheckBox(LControl).Checked := TSelectiveScript(FModel).enabled;
+    if FControls.TryGetValue('scriptName', LControl) then
+      TEdit(LControl).Text := TSelectiveScript(FModel).scriptName;
+    if FControls.TryGetValue('scriptSource', LControl) then
+      TEdit(LControl).Text := TSelectiveScript(FModel).scriptSource;
+    LoadNullableCheckBox('staging', TSelectiveScript(FModel).staging);
+    LoadNullableCheckBox('production', TSelectiveScript(FModel).production);
+    LoadNullableCheckBox('selective', TSelectiveScript(FModel).selective);
+  end
   else if FModel is TScript then
   begin
     if FControls.TryGetValue('enabled', LControl) then
@@ -165,9 +201,6 @@ begin
       TEdit(LControl).Text := TScript(FModel).scriptName;
     if FControls.TryGetValue('scriptSource', LControl) then
       TEdit(LControl).Text := TScript(FModel).scriptSource;
-    LoadNullableCheckBox('staging', TScript(FModel).staging);
-    LoadNullableCheckBox('production', TScript(FModel).production);
-    LoadNullableCheckBox('selective', TScript(FModel).selective);
   end
   else if FModel is TVariable then
   begin
@@ -260,6 +293,49 @@ begin
     if FControls.TryGetValue('group', LControl) then
       TInstallScriptGroup(FModel).group := TEdit(LControl).Text;
   end
+  else if FModel is TSelectiveScript then
+  begin
+    if FControls.TryGetValue('enabled', LControl) then
+      TSelectiveScript(FModel).enabled := TCheckBox(LControl).Checked;
+    if FControls.TryGetValue('scriptName', LControl) then
+      TSelectiveScript(FModel).scriptName := TEdit(LControl).Text;
+    if FControls.TryGetValue('scriptSource', LControl) then
+      TSelectiveScript(FModel).scriptSource := TEdit(LControl).Text;
+    // Handle nullable booleans
+    if FControls.TryGetValue('staging', LControl) then
+    begin
+      case TCheckBox(LControl).State of
+        cbGrayed:
+          TSelectiveScript(FModel).staging.Clear;
+        cbChecked:
+          TSelectiveScript(FModel).staging := True;
+        cbUnchecked:
+          TSelectiveScript(FModel).staging := False;
+      end;
+    end;
+    if FControls.TryGetValue('production', LControl) then
+    begin
+      case TCheckBox(LControl).State of
+        cbGrayed:
+          TSelectiveScript(FModel).production.Clear;
+        cbChecked:
+          TSelectiveScript(FModel).production := True;
+        cbUnchecked:
+          TSelectiveScript(FModel).production := False;
+      end;
+    end;
+    if FControls.TryGetValue('selective', LControl) then
+    begin
+      case TCheckBox(LControl).State of
+        cbGrayed:
+          TSelectiveScript(FModel).selective.Clear;
+        cbChecked:
+          TSelectiveScript(FModel).selective := True;
+        cbUnchecked:
+          TSelectiveScript(FModel).selective := False;
+      end;
+    end;
+  end
   else if FModel is TScript then
   begin
     if FControls.TryGetValue('enabled', LControl) then
@@ -268,40 +344,6 @@ begin
       TScript(FModel).scriptName := TEdit(LControl).Text;
     if FControls.TryGetValue('scriptSource', LControl) then
       TScript(FModel).scriptSource := TEdit(LControl).Text;
-    // Handle nullable booleans
-    if FControls.TryGetValue('staging', LControl) then
-    begin
-      case TCheckBox(LControl).State of
-        cbGrayed:
-          TScript(FModel).staging.Clear;
-        cbChecked:
-          TScript(FModel).staging := True;
-        cbUnchecked:
-          TScript(FModel).staging := False;
-      end;
-    end;
-    if FControls.TryGetValue('production', LControl) then
-    begin
-      case TCheckBox(LControl).State of
-        cbGrayed:
-          TScript(FModel).production.Clear;
-        cbChecked:
-          TScript(FModel).production := True;
-        cbUnchecked:
-          TScript(FModel).production := False;
-      end;
-    end;
-    if FControls.TryGetValue('selective', LControl) then
-    begin
-      case TCheckBox(LControl).State of
-        cbGrayed:
-          TScript(FModel).selective.Clear;
-        cbChecked:
-          TScript(FModel).selective := True;
-        cbUnchecked:
-          TScript(FModel).selective := False;
-      end;
-    end;
   end
   else if FModel is TVariable then
   begin
@@ -468,8 +510,11 @@ begin
   end;
 end;
 
-procedure TfrmModelEditor.CreateNullableCheckBox(AParent: TWinControl;
-  ALeft, ATop: Integer; ACaption: string; const AKey: string;
+procedure TfrmModelEditor.CreateNullableCheckBox(
+  AParent: TWinControl;
+  ALeft, ATop: Integer;
+  ACaption: string;
+  const AKey: string;
   var LCurrentTop: Integer);
 var
   LCheckBox: TCheckBox;
@@ -487,7 +532,8 @@ begin
   Inc(LCurrentTop, 25); // Account for checkbox height
 end;
 
-procedure TfrmModelEditor.LoadNullableCheckBox(const AKey: string;
+procedure TfrmModelEditor.LoadNullableCheckBox(
+  const AKey: string;
   AValue: TLZNullableBoolean);
 var
   LControl: TControl;
@@ -503,7 +549,8 @@ begin
   end;
 end;
 
-procedure TfrmModelEditor.CreateProjectGroupControls(AGroupBox: TGroupBox;
+procedure TfrmModelEditor.CreateProjectGroupControls(
+  AGroupBox: TGroupBox;
   var LTop: Integer);
 var
   LLabel: TLabel;
@@ -536,7 +583,8 @@ begin
   Inc(LTop, 25);
 end;
 
-procedure TfrmModelEditor.CreateTestProjectGroupControls(AGroupBox: TGroupBox;
+procedure TfrmModelEditor.CreateTestProjectGroupControls(
+  AGroupBox: TGroupBox;
   var LTop: Integer);
 var
   LLabel: TLabel;
@@ -569,7 +617,8 @@ begin
   Inc(LTop, 25);
 end;
 
-procedure TfrmModelEditor.CreateInstallScriptGroupControls(AGroupBox: TGroupBox;
+procedure TfrmModelEditor.CreateInstallScriptGroupControls(
+  AGroupBox: TGroupBox;
   var LTop: Integer);
 var
   LLabel: TLabel;
@@ -602,7 +651,58 @@ begin
   Inc(LTop, 25);
 end;
 
-procedure TfrmModelEditor.CreateScriptControls(AGroupBox: TGroupBox;
+procedure TfrmModelEditor.CreateScriptControls(
+  AGroupBox: TGroupBox;
+  var LTop: Integer);
+var
+  LLabel: TLabel;
+  LEdit: TEdit;
+  LCheckBox: TCheckBox;
+begin
+  // enabled
+  LCheckBox := TCheckBox.Create(Self);
+  LCheckBox.Parent := AGroupBox;
+  LCheckBox.Left := 8;
+  LCheckBox.Top := LTop;
+  LCheckBox.Caption := 'Enabled';
+  LCheckBox.Width := AGroupBox.Width - 16;
+  FControls.Add('enabled', LCheckBox);
+  Inc(LTop, 25);
+
+  // scriptName
+  LLabel := TLabel.Create(Self);
+  LLabel.Parent := AGroupBox;
+  LLabel.Left := 8;
+  LLabel.Top := LTop;
+  LLabel.Caption := 'Script Name:';
+  LEdit := TEdit.Create(Self);
+  LEdit.Parent := AGroupBox;
+  LEdit.Left := 80;
+  LEdit.Top := LTop - 2;
+  LEdit.Width := AGroupBox.Width - 88;
+  LEdit.Anchors := [akLeft, akTop, akRight];
+  FControls.Add('scriptName', LEdit);
+  Inc(LTop, 25);
+
+  // scriptSource
+  LLabel := TLabel.Create(Self);
+  LLabel.Parent := AGroupBox;
+  LLabel.Left := 8;
+  LLabel.Top := LTop;
+  LLabel.Caption := 'Script Source:';
+  LEdit := TEdit.Create(Self);
+  LEdit.Parent := AGroupBox;
+  LEdit.Left := 80;
+  LEdit.Top := LTop - 2;
+  LEdit.Width := AGroupBox.Width - 88;
+  LEdit.Anchors := [akLeft, akTop, akRight];
+  FControls.Add('scriptSource', LEdit);
+  Inc(LTop, 25);
+
+end;
+
+procedure TfrmModelEditor.CreateSelectiveScriptControls(
+  AGroupBox: TGroupBox;
   var LTop: Integer);
 var
   LLabel: TLabel;
@@ -659,7 +759,8 @@ begin
   CreateNullableCheckBox(AGroupBox, 8, LTop, 'Selective', 'selective', LTop);
 end;
 
-procedure TfrmModelEditor.CreateVariableControls(AGroupBox: TGroupBox;
+procedure TfrmModelEditor.CreateVariableControls(
+  AGroupBox: TGroupBox;
   var LTop: Integer);
 var
   LLabel: TLabel;
@@ -696,7 +797,8 @@ begin
   Inc(LTop, 25);
 end;
 
-procedure TfrmModelEditor.CreateFileControls(AGroupBox: TGroupBox;
+procedure TfrmModelEditor.CreateFileControls(
+  AGroupBox: TGroupBox;
   var LTop: Integer);
 var
   LLabel: TLabel;
@@ -746,7 +848,8 @@ begin
   Inc(LTop, 25);
 end;
 
-procedure TfrmModelEditor.CreateProjectControls(AGroupBox: TGroupBox;
+procedure TfrmModelEditor.CreateProjectControls(
+  AGroupBox: TGroupBox;
   var LTop: Integer);
 var
   LLabel: TLabel;
@@ -835,7 +938,8 @@ begin
   CreateNullableCheckBox(AGroupBox, 8, LTop, 'Production', 'production', LTop);
 end;
 
-procedure TfrmModelEditor.CreateTestProjectControls(AGroupBox: TGroupBox;
+procedure TfrmModelEditor.CreateTestProjectControls(
+  AGroupBox: TGroupBox;
   var LTop: Integer);
 var
   LLabel: TLabel;
@@ -972,7 +1076,8 @@ begin
   CreateNullableCheckBox(AGroupBox, 8, LTop, 'Post Build', 'postBuild', LTop);
 end;
 
-procedure TfrmModelEditor.CreateInstallScriptControls(AGroupBox: TGroupBox;
+procedure TfrmModelEditor.CreateInstallScriptControls(
+  AGroupBox: TGroupBox;
   var LTop: Integer);
 var
   LLabel: TLabel;
@@ -1092,7 +1197,8 @@ begin
   end;
 end;
 
-function TfrmModelEditor.BrowseForFile(const AEditKey: string;
+function TfrmModelEditor.BrowseForFile(
+  const AEditKey: string;
   const AFilter: string): Boolean;
 var
   LOpenDialog: TOpenDialog;
@@ -1115,7 +1221,7 @@ begin
   LOpenDialog := TOpenDialog.Create(Self);
   try
     LOpenDialog.Filter := AFilter;
-    
+
     // Use project folder as the base directory
     if FProjectFolder <> '' then
       LCurrentDir := IncludeTrailingPathDelimiter(FProjectFolder)

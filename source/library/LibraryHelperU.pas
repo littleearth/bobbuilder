@@ -52,14 +52,18 @@ type
     FEnviromentVariableList: TEnviromentVariableList;
     function GetValue(AName: string): string;
     function GetVariable(AIndex: integer): TEnviromentVariable;
-    procedure SetValue(AName: string; const Value: string);
+    procedure SetValue(
+      AName: string;
+      const Value: string);
   protected
   public
     function FindVariable(AName: string): TEnviromentVariable;
     constructor Create;
     destructor Destroy; override;
     function Count: integer;
-    function Add(AName: string; AValue: string): integer;
+    function Add(
+      AName: string;
+      AValue: string): integer;
     procedure Clear;
     property Variable[AIndex: integer]: TEnviromentVariable read GetVariable;
     property Value[AName: string]: string read GetValue write SetValue;
@@ -97,8 +101,12 @@ type
     procedure SetLibraryOSX32(const Value: string);
     procedure SetLibraryWin32(const Value: string);
     procedure SetLibraryWin64(const Value: string);
-    function LoadLibrary(ALibrary: string; APathType: TLibraryPathType): string;
-    procedure SaveLibrary(ALibrary: string; AValue: string;
+    function LoadLibrary(
+      ALibrary: string;
+      APathType: TLibraryPathType): string;
+    procedure SaveLibrary(
+      ALibrary: string;
+      AValue: string;
       APathType: TLibraryPathType);
     function GetLibraryAndroid32: string;
     function GetLibraryIOS32: string;
@@ -115,12 +123,15 @@ type
     function GetBDSUserFolder(AFolder: string): string;
     function GetBDSUserRoamingFolder: string;
     function GetLibraryPathAsString(AStrings: TLibraryPaths): string;
-    procedure SetLibraryPathFromString(AString: string; AStrings: TLibraryPaths;
+    procedure SetLibraryPathFromString(
+      AString: string;
+      AStrings: TLibraryPaths;
       ALibrary: TDelphiLibrary);
     function CreateLibraryPaths: TLibraryPaths;
     function GetProductVersion: integer;
     function GetStudioVersion: integer;
-    function ApplyTemplatePaths(ATemplateLibraryPaths: TLibraryPaths;
+    function ApplyTemplatePaths(
+      ATemplateLibraryPaths: TLibraryPaths;
       ALibraryPaths: TLibraryPaths): integer;
     function GetAllEnvironemntVariables(const Vars: TStrings): integer;
     function GetShellFolderPath(AFolder: integer): string;
@@ -128,19 +139,30 @@ type
     function GetPublicDocumentFolder: string;
     procedure NotifyEnvironmentChanges;
     procedure SetLibraryPathType(const Value: TLibraryPathType);
-    procedure RemoveInvalidPaths(ALibraryPaths: TLibraryPaths;
+    procedure RemoveInvalidPaths(
+      ALibraryPaths: TLibraryPaths;
       ALibrary: TDelphiLibrary);
-    function RemoveBrowseFromSearchPaths(ALibraryPaths: TLibraryPaths;
-      ADelphiLibrary: TDelphiLibrary; ASmartEnabled: boolean): integer;
-    procedure FileSearch(const PathName, FileName: string;
-      const Recurse: boolean; FileList: TStrings);
-    function FolderContainsFiles(const PathName: string;
-      FileName: string = '*.*'; const Recurse: boolean = true): boolean;
-    function DeduplicatPaths(ALibraryPaths: TLibraryPaths;
+    function RemoveBrowseFromSearchPaths(
+      ALibraryPaths: TLibraryPaths;
+      ADelphiLibrary: TDelphiLibrary;
+      ASmartEnabled: boolean): integer;
+    procedure FileSearch(
+      const PathName, FileName: string;
+      const Recurse: boolean;
+      FileList: TStrings);
+    function FolderContainsFiles(
+      const PathName: string;
+      FileName: string = '*.*';
+      const Recurse: boolean = true): boolean;
+    function DeduplicatPaths(
+      ALibraryPaths: TLibraryPaths;
       ALibrary: TDelphiLibrary): integer;
-    function CopyLibraryPaths(ASourcePaths: TLibraryPaths;
-      ASourcePathType: TLibraryPathType; ADestPaths: TLibraryPaths;
-      ADestPathType: TLibraryPathType; ASkipBDSPaths: boolean = true): integer;
+    function CopyLibraryPaths(
+      ASourcePaths: TLibraryPaths;
+      ASourcePathType: TLibraryPathType;
+      ADestPaths: TLibraryPaths;
+      ADestPathType: TLibraryPathType;
+      ASkipBDSPaths: boolean = true): integer;
     function GetLibraryAndroid64: string;
     function GetLibraryOSX64: string;
     function GetLibraryOSXARM64: string;
@@ -167,17 +189,26 @@ type
     function Apply(ALibraryPathTemplate: TLibraryPathTemplate)
       : integer; overload;
     function Apply(AFileName: TFileName): integer; overload;
-    function AddPath(APath: string; ALibrary: TDelphiLibrary;
+    function AddPath(
+      APath: string;
+      ALibrary: TDelphiLibrary;
       ALibraryPathType: TLibraryPathType = dlpNone): boolean;
-    function OpenFolder(AFolder: string; ALibrary: TDelphiLibrary): boolean;
-    function ExecuteFile(const Operation, FileName, Params, DefaultDir: string;
+    function OpenFolder(
+      AFolder: string;
+      ALibrary: TDelphiLibrary): boolean;
+    function ExecuteFile(
+      const Operation, FileName, Params, DefaultDir: string;
       ShowCmd: word): integer;
     function GetLibraryName(ALibrary: TDelphiLibrary): string;
     function GetLibraryPlatformName(ALibrary: TDelphiLibrary): string;
-    procedure CopyToClipBoard(APath: string; ALibrary: TDelphiLibrary;
+    procedure CopyToClipBoard(
+      APath: string;
+      ALibrary: TDelphiLibrary;
       AExpand: boolean = true);
     procedure ForceEnvOptionsUpdate;
-    function ExpandLibraryPath(APath: string; ALibrary: TDelphiLibrary): string;
+    function ExpandLibraryPath(
+      APath: string;
+      ALibrary: TDelphiLibrary): string;
     property LibraryPathType: TLibraryPathType read FLibraryPathType
       write SetLibraryPathType;
     property Installed: boolean read GetInstalled;
@@ -189,7 +220,8 @@ type
       read FEnvironmentVariables;
     property SystemEnvironmentVariables: TEnvironmentVariables
       read FSystemEnvironmentVariables;
-    procedure LibraryAsStrings(AStrings: TStrings;
+    procedure LibraryAsStrings(
+      AStrings: TStrings;
       ADelphiLibrary: TDelphiLibrary);
     property LibraryWin32: string read GetLibraryWin32 write SetLibraryWin32;
     property LibraryWin64: string read GetLibraryWin64 write SetLibraryWin64;
@@ -506,7 +538,9 @@ begin
 
 end;
 
-function TDelphiInstallation.AddPath(APath: string; ALibrary: TDelphiLibrary;
+function TDelphiInstallation.AddPath(
+  APath: string;
+  ALibrary: TDelphiLibrary;
   ALibraryPathType: TLibraryPathType): boolean;
 var
   LPath: string;
@@ -559,8 +593,9 @@ begin
   end;
 end;
 
-function TDelphiInstallation.ApplyTemplatePaths(ATemplateLibraryPaths
-  : TLibraryPaths; ALibraryPaths: TLibraryPaths): integer;
+function TDelphiInstallation.ApplyTemplatePaths(
+  ATemplateLibraryPaths: TLibraryPaths;
+  ALibraryPaths: TLibraryPaths): integer;
 var
   LPathIdx: integer;
   LPath: string;
@@ -609,9 +644,12 @@ begin
   CopyLibraryPaths(FLibraryLinux64, dlpBrowse, FLibraryLinux64, dlpSearch);
 end;
 
-function TDelphiInstallation.CopyLibraryPaths(ASourcePaths: TLibraryPaths;
-  ASourcePathType: TLibraryPathType; ADestPaths: TLibraryPaths;
-  ADestPathType: TLibraryPathType; ASkipBDSPaths: boolean): integer;
+function TDelphiInstallation.CopyLibraryPaths(
+  ASourcePaths: TLibraryPaths;
+  ASourcePathType: TLibraryPathType;
+  ADestPaths: TLibraryPaths;
+  ADestPathType: TLibraryPathType;
+  ASkipBDSPaths: boolean): integer;
 var
   LSourcePath: TLibraryPath;
   LAddPath: boolean;
@@ -652,8 +690,10 @@ begin
   CopyLibraryPaths(FLibraryLinux64, dlpSearch, FLibraryLinux64, dlpBrowse);
 end;
 
-procedure TDelphiInstallation.CopyToClipBoard(APath: string;
-  ALibrary: TDelphiLibrary; AExpand: boolean);
+procedure TDelphiInstallation.CopyToClipBoard(
+  APath: string;
+  ALibrary: TDelphiLibrary;
+  AExpand: boolean);
 var
   LPath: string;
 begin
@@ -758,7 +798,8 @@ begin
     (GetShellFolderPath(CSIDL_COMMON_DOCUMENTS));
 end;
 
-function TDelphiInstallation.ExpandLibraryPath(APath: string;
+function TDelphiInstallation.ExpandLibraryPath(
+  APath: string;
   ALibrary: TDelphiLibrary): string;
 var
   LVariableIdx: integer;
@@ -837,7 +878,8 @@ var
   LINIfile: TMemIniFile;
   LPathType: TLibraryPathType;
 
-  procedure ExportDelphiLibrary(ALibraryPaths: TLibraryPaths;
+  procedure ExportDelphiLibrary(
+    ALibraryPaths: TLibraryPaths;
     ADelphiLibrary: TDelphiLibrary);
   var
     LLibraryPath: TLibraryPath;
@@ -966,7 +1008,8 @@ begin
     NativeInt(PChar('Environment')), SMTO_ABORTIFHUNG, 5000, nil);
 end;
 
-procedure TDelphiInstallation.LibraryAsStrings(AStrings: TStrings;
+procedure TDelphiInstallation.LibraryAsStrings(
+  AStrings: TStrings;
   ADelphiLibrary: TDelphiLibrary);
 begin
   case ADelphiLibrary of
@@ -1096,7 +1139,8 @@ begin
   end;
 end;
 
-function TDelphiInstallation.LoadLibrary(ALibrary: string;
+function TDelphiInstallation.LoadLibrary(
+  ALibrary: string;
   APathType: TLibraryPathType): string;
 var
   LRegistry: TRegistry;
@@ -1243,7 +1287,8 @@ begin
   end;
 end;
 
-function TDelphiInstallation.OpenFolder(AFolder: string;
+function TDelphiInstallation.OpenFolder(
+  AFolder: string;
   ALibrary: TDelphiLibrary): boolean;
 var
   LFolder: string;
@@ -1262,8 +1307,10 @@ begin
   end;
 end;
 
-function TDelphiInstallation.FolderContainsFiles(const PathName: string;
-  FileName: string; const Recurse: boolean): boolean;
+function TDelphiInstallation.FolderContainsFiles(
+  const PathName: string;
+  FileName: string;
+  const Recurse: boolean): boolean;
 var
   LFileList: TStringList;
 begin
@@ -1276,8 +1323,10 @@ begin
   end;
 end;
 
-procedure TDelphiInstallation.FileSearch(const PathName, FileName: string;
-  const Recurse: boolean; FileList: TStrings);
+procedure TDelphiInstallation.FileSearch(
+  const PathName, FileName: string;
+  const Recurse: boolean;
+  FileList: TStrings);
 var
   Rec: TSearchRec;
   Path: string;
@@ -1314,8 +1363,9 @@ begin
   end;
 end;
 
-function TDelphiInstallation.RemoveBrowseFromSearchPaths(ALibraryPaths
-  : TLibraryPaths; ADelphiLibrary: TDelphiLibrary;
+function TDelphiInstallation.RemoveBrowseFromSearchPaths(
+  ALibraryPaths: TLibraryPaths;
+  ADelphiLibrary: TDelphiLibrary;
   ASmartEnabled: boolean): integer;
 var
   LSearchFolders, LBrowseFolders: TStringList;
@@ -1417,7 +1467,8 @@ begin
     ASmartEnabled);
 end;
 
-procedure TDelphiInstallation.RemoveInvalidPaths(ALibraryPaths: TLibraryPaths;
+procedure TDelphiInstallation.RemoveInvalidPaths(
+  ALibraryPaths: TLibraryPaths;
   ALibrary: TDelphiLibrary);
 var
   LIdx: integer;
@@ -1451,7 +1502,8 @@ begin
 
 end;
 
-function TDelphiInstallation.DeduplicatPaths(ALibraryPaths: TLibraryPaths;
+function TDelphiInstallation.DeduplicatPaths(
+  ALibraryPaths: TLibraryPaths;
   ALibrary: TDelphiLibrary): integer;
 var
   LExpandedPaths: TLibraryPaths;
@@ -1520,8 +1572,9 @@ begin
   FLibraryLinux64.Clear(APathType);
 end;
 
-function TDelphiInstallation.ExecuteFile(const Operation, FileName, Params,
-  DefaultDir: string; ShowCmd: word): integer;
+function TDelphiInstallation.ExecuteFile(
+  const Operation, FileName, Params, DefaultDir: string;
+  ShowCmd: word): integer;
 var
   zFileName, zParams, zDir: array [0 .. 255] of char;
 begin
@@ -1817,7 +1870,8 @@ begin
 
 end;
 
-procedure TDelphiInstallation.SaveLibrary(ALibrary, AValue: string;
+procedure TDelphiInstallation.SaveLibrary(
+  ALibrary, AValue: string;
   APathType: TLibraryPathType);
 var
   LRegistry: TRegistry;
@@ -1899,8 +1953,10 @@ begin
   SetLibraryPathFromString(Value, FLibraryOSXARM64, dlOSXARM64);
 end;
 
-procedure TDelphiInstallation.SetLibraryPathFromString(AString: string;
-  AStrings: TLibraryPaths; ALibrary: TDelphiLibrary);
+procedure TDelphiInstallation.SetLibraryPathFromString(
+  AString: string;
+  AStrings: TLibraryPaths;
+  ALibrary: TDelphiLibrary);
 begin
   AStrings.FromString(AString, FLibraryPathType);
 end;
@@ -1947,7 +2003,9 @@ end;
 
 { TEnvironmentVariables }
 
-function TEnvironmentVariables.Add(AName: string; AValue: string): integer;
+function TEnvironmentVariables.Add(
+  AName: string;
+  AValue: string): integer;
 var
   LEnviromentVariable: TEnviromentVariable;
 begin
@@ -2023,7 +2081,9 @@ begin
   Result := FEnviromentVariableList.Items[AIndex];
 end;
 
-procedure TEnvironmentVariables.SetValue(AName: string; const Value: string);
+procedure TEnvironmentVariables.SetValue(
+  AName: string;
+  const Value: string);
 var
   LEnviromentVariable: TEnviromentVariable;
 begin

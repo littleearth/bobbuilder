@@ -46,7 +46,9 @@ type
   private
     FDelphiInstallation: TDelphiInstallation;
     procedure UpdateComboBoxOptions(ADelphiInstallation: TDelphiInstallation);
-    procedure FindReplace(AFind, AReplace: string; AIgnoreCase: Boolean);
+    procedure FindReplace(
+      AFind, AReplace: string;
+      AIgnoreCase: Boolean);
     procedure SetDestinationsChecked(AValue: Boolean);
   public
     function Execute(ADelphiInstallation: TDelphiInstallation): Boolean;
@@ -104,7 +106,8 @@ begin
   end;
 end;
 
-procedure TfrmFindReplace.FindReplace(AFind, AReplace: string;
+procedure TfrmFindReplace.FindReplace(
+  AFind, AReplace: string;
   AIgnoreCase: Boolean);
 var
   LFlags: TReplaceFlags;
@@ -177,7 +180,9 @@ procedure TfrmFindReplace.UpdateComboBoxOptions(ADelphiInstallation
 var
   LItems: TStringList;
 
-  function ValidatePath(APath: string; ADelphiLibrary: TDelphiLibrary): Boolean;
+  function ValidatePath(
+    APath: string;
+    ADelphiLibrary: TDelphiLibrary): Boolean;
   var
     LPath: string;
   begin

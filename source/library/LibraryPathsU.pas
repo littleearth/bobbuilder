@@ -58,24 +58,36 @@ type
     constructor Create; reintroduce;
     destructor Destroy; override;
     procedure Sort;
-    procedure AsStrings(AStrings: TStrings;
+    procedure AsStrings(
+      AStrings: TStrings;
       APathType: TLibraryPathType = dlpSearch);
     function AsString(APathType: TLibraryPathType = dlpSearch): string;
-    function AsDelimitedString(APathType: TLibraryPathType;
+    function AsDelimitedString(
+      APathType: TLibraryPathType;
       ADelimeter: string = ';'): string;
-    procedure FromString(APaths: string; APathType: TLibraryPathType);
-    procedure FromStrings(APaths: TStrings; APathType: TLibraryPathType);
-    procedure FromDelimitedString(APaths: string; APathType: TLibraryPathType;
+    procedure FromString(
+      APaths: string;
+      APathType: TLibraryPathType);
+    procedure FromStrings(
+      APaths: TStrings;
+      APathType: TLibraryPathType);
+    procedure FromDelimitedString(
+      APaths: string;
+      APathType: TLibraryPathType;
       ADelimeter: string = ';');
     procedure Delete(AIndex: integer);
     function Count: integer;
-    function Find(APath: string; ALibraryPathType: TLibraryPathType)
-      : TLibraryPath;
-    function FindByIndex(APath: string;
+    function Find(
+      APath: string;
+      ALibraryPathType: TLibraryPathType): TLibraryPath;
+    function FindByIndex(
+      APath: string;
       ALibraryPathType: TLibraryPathType): integer;
     procedure Clear(APathType: TLibraryPathType = dlpAll);
     procedure Copy(ALibraryPaths: TLibraryPaths);
-    function Add(APath: string; ALibraryPathType: TLibraryPathType;
+    function Add(
+      APath: string;
+      ALibraryPathType: TLibraryPathType;
       AFailOnExists: boolean = false): integer;
     property Path[AIndex: integer]: TLibraryPath read GetLibraryPath;
   end;
@@ -98,14 +110,20 @@ type
     FLinux64: TLibraryPaths;
     FAndroid64: TLibraryPaths;
   protected
-    procedure LoadSection(AFileName: TFileName; ASectionName: string;
-      ALibraryPathList: TLibraryPaths; AAppend: boolean = false);
-    function ValidateProductVersion(AFileName: TFileName;
+    procedure LoadSection(
+      AFileName: TFileName;
+      ASectionName: string;
+      ALibraryPathList: TLibraryPaths;
+      AAppend: boolean = false);
+    function ValidateProductVersion(
+      AFileName: TFileName;
       AProductVersion: integer): boolean;
   public
     constructor Create; reintroduce;
     destructor Destroy; override;
-    procedure Load(AFileName: TFileName; AProductVersion: integer);
+    procedure Load(
+      AFileName: TFileName;
+      AProductVersion: integer);
     property Common: TLibraryPaths read FCommon;
     property CommonFMX: TLibraryPaths read FCommonFMX;
     property CommonVCL: TLibraryPaths read FCommonVCL;
@@ -171,7 +189,8 @@ begin
 
 end;
 
-procedure TLibraryPathTemplate.Load(AFileName: TFileName;
+procedure TLibraryPathTemplate.Load(
+  AFileName: TFileName;
   AProductVersion: integer);
 begin
 
@@ -227,8 +246,11 @@ begin
 
 end;
 
-procedure TLibraryPathTemplate.LoadSection(AFileName: TFileName;
-  ASectionName: string; ALibraryPathList: TLibraryPaths; AAppend: boolean);
+procedure TLibraryPathTemplate.LoadSection(
+  AFileName: TFileName;
+  ASectionName: string;
+  ALibraryPathList: TLibraryPaths;
+  AAppend: boolean);
 var
   LINIFile: TMemIniFile;
   LSectionList: TStringList;
@@ -284,7 +306,8 @@ begin
   end;
 end;
 
-function TLibraryPathTemplate.ValidateProductVersion(AFileName: TFileName;
+function TLibraryPathTemplate.ValidateProductVersion(
+  AFileName: TFileName;
   AProductVersion: integer): boolean;
 var
   LINIFile: TIniFile;
@@ -304,7 +327,9 @@ end;
 
 { TLibraryPaths }
 
-function TLibraryPaths.Add(APath: string; ALibraryPathType: TLibraryPathType;
+function TLibraryPaths.Add(
+  APath: string;
+  ALibraryPathType: TLibraryPathType;
   AFailOnExists: boolean): integer;
 var
   LLibraryPath: TLibraryPath;
@@ -328,7 +353,8 @@ begin
   end;
 end;
 
-function TLibraryPaths.AsDelimitedString(APathType: TLibraryPathType;
+function TLibraryPaths.AsDelimitedString(
+  APathType: TLibraryPathType;
   ADelimeter: string): string;
 var
   LStringList: TStringList;
@@ -367,7 +393,8 @@ begin
   end;
 end;
 
-procedure TLibraryPaths.AsStrings(AStrings: TStrings;
+procedure TLibraryPaths.AsStrings(
+  AStrings: TStrings;
   APathType: TLibraryPathType);
 var
   LLibraryPath: TLibraryPath;
@@ -450,7 +477,8 @@ begin
   end;
 end;
 
-function TLibraryPaths.FindByIndex(APath: string;
+function TLibraryPaths.FindByIndex(
+  APath: string;
   ALibraryPathType: TLibraryPathType): integer;
 var
   LIdx: integer;
@@ -469,8 +497,10 @@ begin
   end;
 end;
 
-procedure TLibraryPaths.FromDelimitedString(APaths: string;
-  APathType: TLibraryPathType; ADelimeter: string);
+procedure TLibraryPaths.FromDelimitedString(
+  APaths: string;
+  APathType: TLibraryPathType;
+  ADelimeter: string);
 var
   LPath: string;
   LPaths: TStringList;
@@ -486,7 +516,9 @@ begin
   end;
 end;
 
-procedure TLibraryPaths.FromString(APaths: string; APathType: TLibraryPathType);
+procedure TLibraryPaths.FromString(
+  APaths: string;
+  APathType: TLibraryPathType);
 var
   LPaths: TStringList;
 begin
@@ -499,7 +531,8 @@ begin
   end;
 end;
 
-procedure TLibraryPaths.FromStrings(APaths: TStrings;
+procedure TLibraryPaths.FromStrings(
+  APaths: TStrings;
   APathType: TLibraryPathType);
 var
   LPath: string;
@@ -515,8 +548,9 @@ begin
   Sort;
 end;
 
-function TLibraryPaths.Find(APath: string; ALibraryPathType: TLibraryPathType)
-  : TLibraryPath;
+function TLibraryPaths.Find(
+  APath: string;
+  ALibraryPathType: TLibraryPathType): TLibraryPath;
 var
   LIdx: integer;
 begin

@@ -11,12 +11,17 @@ type
     FVariablePrefix: string;
     procedure SetVariablePrefix(const Value: string);
     procedure SetVariableSuffix(const Value: string);
-    function CheckCommandParameter(var AMessage: string; var ASource: string;
-      var ADestination: string; var AVariablesSource: string): boolean;
+    function CheckCommandParameter(
+      var AMessage: string;
+      var ASource: string;
+      var ADestination: string;
+      var AVariablesSource: string): boolean;
     function GetUsage: string;
   public
     constructor Create; reintroduce;
-    function Generate(ASource: TFileName; ADestination: TFileName): boolean;
+    function Generate(
+      ASource: TFileName;
+      ADestination: TFileName): boolean;
     function AddVariables(ASource: TFileName): boolean;
     function Execute(var AMessage: string): boolean;
     property VariablePrefix: string read FVariablePrefix

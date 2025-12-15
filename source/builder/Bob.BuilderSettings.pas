@@ -3,7 +3,7 @@ unit Bob.BuilderSettings;
 interface
 
 uses
-  Classes, SysUtils, 
+  Classes, SysUtils,
   Lazy.Types, IniFiles;
 
 type
@@ -41,9 +41,11 @@ begin
   FIniFile := TIniFile.Create(GetSettingsFolder + 'builder.ini');
   // Set defaults if values don't exist
   if not FIniFile.ValueExists('Settings', 'ISSBinary') then
-    FIniFile.WriteString('Settings', 'ISSBinary', '"C:\Program Files (x86)\Inno Setup 6\ISCC.exe"');
+    FIniFile.WriteString('Settings', 'ISSBinary',
+      '"C:\Program Files (x86)\Inno Setup 6\ISCC.exe"');
   if not FIniFile.ValueExists('Settings', 'ISSCompileParams') then
-    FIniFile.WriteString('Settings', 'ISSCompileParams', '/Q %issscriptparams% "%issfilename%"');
+    FIniFile.WriteString('Settings', 'ISSCompileParams',
+      '/Q %issscriptparams% "%issfilename%"');
   if not FIniFile.ValueExists('Settings', 'ISSRunWait') then
     FIniFile.WriteBool('Settings', 'ISSRunWait', False);
 end;
@@ -59,12 +61,14 @@ end;
 
 function TSettings.GetISSBinary: string;
 begin
-  Result := FIniFile.ReadString('Settings', 'ISSBinary', '"C:\Program Files (x86)\Inno Setup 6\ISCC.exe"');
+  Result := FIniFile.ReadString('Settings', 'ISSBinary',
+    '"C:\Program Files (x86)\Inno Setup 6\ISCC.exe"');
 end;
 
 function TSettings.GetISSCompileParams: string;
 begin
-  Result := FIniFile.ReadString('Settings', 'ISSCompileParams', '/Q %issscriptparams% "%issfilename%"');
+  Result := FIniFile.ReadString('Settings', 'ISSCompileParams',
+    '/Q %issscriptparams% "%issfilename%"');
 end;
 
 function TSettings.GetISSRunWait: boolean;
@@ -78,7 +82,6 @@ begin
   Result := IncludeTrailingPathDelimiter(Result + 'Builder');
   TLZFile.CheckDirectoryExists(Result, True);
 end;
-
 
 procedure TSettings.Save;
 begin

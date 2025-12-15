@@ -71,12 +71,18 @@ type
     constructor Create; reintroduce;
     destructor Destroy; override;
     function GetFileInformation(AFileName: TFileName): boolean;
-    function GenerateTemplate(AEXEFileName: TFileName; AWIXTemplate: TFileName;
+    function GenerateTemplate(
+      AEXEFileName: TFileName;
+      AWIXTemplate: TFileName;
       AWIXFilename: TFileName): boolean;
-    function BuildMSI(AWXSFileName: TFileName; AMSIFileName: TFileName)
-      : boolean;
-    function Execute(AWIXTemplate: TFileName; AEXEFileName: string;
-      AMSIFileName: TFileName; ARecurse: boolean): boolean; overload;
+    function BuildMSI(
+      AWXSFileName: TFileName;
+      AMSIFileName: TFileName): boolean;
+    function Execute(
+      AWIXTemplate: TFileName;
+      AEXEFileName: string;
+      AMSIFileName: TFileName;
+      ARecurse: boolean): boolean; overload;
     function Execute: boolean; overload;
   end;
 
@@ -84,7 +90,8 @@ implementation
 
 { TWIXWrapper }
 
-function TWIXWrapper.BuildMSI(AWXSFileName: TFileName;
+function TWIXWrapper.BuildMSI(
+  AWXSFileName: TFileName;
   AMSIFileName: TFileName): boolean;
 var
   LCommand, LParams: string;
@@ -336,8 +343,11 @@ begin
   end;
 end;
 
-function TWIXWrapper.Execute(AWIXTemplate: TFileName; AEXEFileName: string;
-  AMSIFileName: TFileName; ARecurse: boolean): boolean;
+function TWIXWrapper.Execute(
+  AWIXTemplate: TFileName;
+  AEXEFileName: string;
+  AMSIFileName: TFileName;
+  ARecurse: boolean): boolean;
 var
   LFiles: TStringList;
   LEXEFileName, LWXSFileName, LWIXTemplate, LMSIFileName: TFileName;

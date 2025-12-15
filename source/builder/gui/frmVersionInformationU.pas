@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics, System.UITypes,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls,
-  System.Actions, Vcl.ActnList, Bob.ProjectBuilder,  Vcl.Buttons;
+  System.Actions, Vcl.ActnList, Bob.ProjectBuilder, Vcl.Buttons;
 
 type
   TOnFindControl = reference to function(AControl: TControl): boolean;
@@ -136,15 +136,27 @@ type
     procedure ActionSaveExecute(Sender: TObject);
     procedure ActionCancelExecute(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure listboxVariablesMouseDown(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
-    procedure editProductNameDragOver(Sender, Source: TObject; X, Y: Integer;
-      State: TDragState; var Accept: boolean);
-    procedure editProductNameDragDrop(Sender, Source: TObject; X, Y: Integer);
+    procedure listboxVariablesMouseDown(
+      Sender: TObject;
+      Button: TMouseButton;
+      Shift: TShiftState;
+      X, Y: Integer);
+    procedure editProductNameDragOver(
+      Sender, Source: TObject;
+      X, Y: Integer;
+      State: TDragState;
+      var Accept: boolean);
+    procedure editProductNameDragDrop(
+      Sender, Source: TObject;
+      X, Y: Integer);
   private
     FProjectBuilder: TProjectBuilder;
-    function FindCheckBox(AParent: TWinControl; ATag: Integer): TCheckBox;
-    function FindControl(AParent: TWinControl; AOnCheckControl: TOnFindControl;
+    function FindCheckBox(
+      AParent: TWinControl;
+      ATag: Integer): TCheckBox;
+    function FindControl(
+      AParent: TWinControl;
+      AOnCheckControl: TOnFindControl;
       ARecursive: boolean = true): TControl;
     procedure SetFormValues;
     procedure GetFormValues;
@@ -160,8 +172,10 @@ implementation
 
 uses System.Math, dmResourcesU;
 
-function TfrmVersionInformation.FindControl(AParent: TWinControl;
-  AOnCheckControl: TOnFindControl; ARecursive: boolean): TControl;
+function TfrmVersionInformation.FindControl(
+  AParent: TWinControl;
+  AOnCheckControl: TOnFindControl;
+  ARecursive: boolean): TControl;
 var
   LIdx: Integer;
   LWinControl: TWinControl;
@@ -293,8 +307,11 @@ begin
 
 end;
 
-procedure TfrmVersionInformation.listboxVariablesMouseDown(Sender: TObject;
-  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+procedure TfrmVersionInformation.listboxVariablesMouseDown(
+  Sender: TObject;
+  Button: TMouseButton;
+  Shift: TShiftState;
+  X, Y: Integer);
 begin
   if Button = TMouseButton.mbLeft then
   begin
@@ -403,7 +420,8 @@ begin
   end;
 end;
 
-function TfrmVersionInformation.FindCheckBox(AParent: TWinControl;
+function TfrmVersionInformation.FindCheckBox(
+  AParent: TWinControl;
   ATag: Integer): TCheckBox;
 begin
   Result := FindControl(AParent,
@@ -474,8 +492,9 @@ begin
   end;
 end;
 
-procedure TfrmVersionInformation.editProductNameDragDrop(Sender,
-  Source: TObject; X, Y: Integer);
+procedure TfrmVersionInformation.editProductNameDragDrop(
+  Sender, Source: TObject;
+  X, Y: Integer);
 begin
   if (Source is TListBox) and (Sender is TEdit) then
   begin
@@ -484,8 +503,11 @@ begin
   end;
 end;
 
-procedure TfrmVersionInformation.editProductNameDragOver(Sender,
-  Source: TObject; X, Y: Integer; State: TDragState; var Accept: boolean);
+procedure TfrmVersionInformation.editProductNameDragOver(
+  Sender, Source: TObject;
+  X, Y: Integer;
+  State: TDragState;
+  var Accept: boolean);
 begin
   if Source is TListBox then
   begin

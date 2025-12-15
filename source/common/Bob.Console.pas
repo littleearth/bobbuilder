@@ -6,13 +6,12 @@ uses Classes, Windows, SysUtils, Lazy.Utils.Windows, Lazy.Types;
 
 type
   // Standardized exit codes for Bob console applications
-  TBobExitCode = (
-    becSuccess = 0,           // Operation completed successfully
-    becGeneralError = 1,      // General/validation error
-    becNoParameters = 2,      // Required parameters missing
-    becNoFiles = 3,           // No files found/processed
-    becException = 9999       // Unhandled exception
-  );
+  TBobExitCode = (becSuccess = 0, // Operation completed successfully
+    becGeneralError = 1, // General/validation error
+    becNoParameters = 2, // Required parameters missing
+    becNoFiles = 3, // No files found/processed
+    becException = 9999 // Unhandled exception
+    );
 
 type
   // Base class for Bob console applications with standardized error handling
@@ -65,6 +64,5 @@ begin
   end;
   ConsoleExitPrompt;
 end;
-
 
 end.

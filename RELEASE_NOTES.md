@@ -1,5 +1,11 @@
 ## BOB Builder — Release Notes
 
+### 1.0.10
+- New **Code Format Scripts** collection: add custom code formatting commands to run independently from the build process
+  - Examples: `formatter -r -d "%projectFolder%source"` or `pasfmt "%projectFolder%source"`
+- **Format button** in GUI and **`/FORMAT`** command-line parameter to execute formatting scripts without triggering a full build
+- Format scripts can be configured in the visual editor alongside pre-build and post-build scripts
+
 ### 1.0.9
 - Added `/PROJECT` command-line parameter to build specific projects without loading the full project configuration.
 - New visual form-based editor for builder configurations, replacing manual JSON editing.

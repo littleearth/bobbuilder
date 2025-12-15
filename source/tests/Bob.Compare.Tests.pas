@@ -19,20 +19,26 @@ type
     [TestCase('CompareInteger Left', '2,1,1')]
     [TestCase('CompareInteger Right', '3,4,-1')]
     [TestCase('CompareInteger Same', '3,3,0')]
-    procedure CompareInteger(const AValue1: string; const AValue2: string;
+    procedure CompareInteger(
+      const AValue1: string;
+      const AValue2: string;
       AExpectedResult: integer);
 
     [TestCase('CompareVersion Left', '1.1.1.2,1.1.1.0,1')]
     [TestCase('CompareVersion Right', '3.1.1.1,4.1.1,-1')]
     [TestCase('CompareVersion Extra Text', '3.1.1.1 (Build 2),4.1.1,-1')]
     [TestCase('CompareVersion Same', '3.1.1.0 (Build 2),3.1.1,0')]
-    procedure CompareVersion(const AValue1: string; const AValue2: string;
+    procedure CompareVersion(
+      const AValue1: string;
+      const AValue2: string;
       AExpectedResult: integer);
 
     [TestCase('CompareDateTime Left', '1/1/2022,2021-01-01,1')]
     [TestCase('CompareDateTime Right', '1/1/2022,1 Oct 2023,-1')]
     [TestCase('CompareDateTime Same', 'N,N,0')]
-    procedure CompareDateTime(const AValue1: string; const AValue2: string;
+    procedure CompareDateTime(
+      const AValue1: string;
+      const AValue2: string;
       AExpectedResult: integer);
   end;
 
@@ -41,7 +47,8 @@ implementation
 uses
   System.Math, System.SysUtils;
 
-procedure TCompareTest.CompareVersion(const AValue1, AValue2: string;
+procedure TCompareTest.CompareVersion(
+  const AValue1, AValue2: string;
   AExpectedResult: integer);
 var
   LResult: integer;
@@ -62,7 +69,8 @@ begin
   FCompare.Free;
 end;
 
-procedure TCompareTest.CompareDateTime(const AValue1, AValue2: string;
+procedure TCompareTest.CompareDateTime(
+  const AValue1, AValue2: string;
   AExpectedResult: integer);
 var
   LResult: integer;
@@ -73,8 +81,10 @@ begin
     AExpectedResult, LResult]));
 end;
 
-procedure TCompareTest.CompareInteger(const AValue1: string;
-  const AValue2: string; AExpectedResult: integer);
+procedure TCompareTest.CompareInteger(
+  const AValue1: string;
+  const AValue2: string;
+  AExpectedResult: integer);
 var
   LResult: integer;
 begin

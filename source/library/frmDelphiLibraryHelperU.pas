@@ -151,8 +151,12 @@ type
     procedure ActionDeleteAllLibraryPathsExecute(Sender: TObject);
     procedure ActionDeleteEnvironmentVariableExecute(Sender: TObject);
     procedure ActionAddLibraryPathExecute(Sender: TObject);
-    procedure ActionListUpdate(Action: TBasicAction; var Handled: Boolean);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure ActionListUpdate(
+      Action: TBasicAction;
+      var Handled: Boolean);
+    procedure FormCloseQuery(
+      Sender: TObject;
+      var CanClose: Boolean);
     procedure ActionAddEnvironmentVariablesExecute(Sender: TObject);
     procedure ListViewLibraryDblClick(Sender: TObject);
     procedure ActionExitExecute(Sender: TObject);
@@ -160,13 +164,18 @@ type
     procedure ActionCleanUpExecute(Sender: TObject);
     procedure ActionCopyBrowseToSearchExecute(Sender: TObject);
     procedure ActionFindReplaceExecute(Sender: TObject);
-    procedure ListViewLibraryCustomDrawItem(Sender: TCustomListView;
-      Item: TListItem; State: TCustomDrawState; var DefaultDraw: Boolean);
+    procedure ListViewLibraryCustomDrawItem(
+      Sender: TCustomListView;
+      Item: TListItem;
+      State: TCustomDrawState;
+      var DefaultDraw: Boolean);
     procedure ActionCopyLibraryPathUpdate(Sender: TObject);
     procedure ActionOpenFolderExecute(Sender: TObject);
     procedure ActionCopyLibraryPathExecute(Sender: TObject);
-    procedure ListViewEnvironmentVariablesCustomDrawItem
-      (Sender: TCustomListView; Item: TListItem; State: TCustomDrawState;
+    procedure ListViewEnvironmentVariablesCustomDrawItem(
+      Sender: TCustomListView;
+      Item: TListItem;
+      State: TCustomDrawState;
       var DefaultDraw: Boolean);
     procedure ActionCopyLibraryValueExecute(Sender: TObject);
     procedure ActionCopySearchToBrowseExecute(Sender: TObject);
@@ -198,10 +207,12 @@ type
     function ValidatePath(APath: string): Boolean;
     procedure ProcessParameters;
     procedure Cleanup;
-    procedure ApplyTemplate(AFileName: TFileName;
+    procedure ApplyTemplate(
+      AFileName: TFileName;
       AApplyToAllInstallations: Boolean;
       ADeduplicate, AUpdateEnvOptions: Boolean);
-    function GetApplicationParameters(AParameter: string;
+    function GetApplicationParameters(
+      AParameter: string;
       var AValue: string): Boolean;
 
   public
@@ -514,7 +525,8 @@ begin
   end;
 end;
 
-procedure TfrmDelphiLibraryHelper.ActionListUpdate(Action: TBasicAction;
+procedure TfrmDelphiLibraryHelper.ActionListUpdate(
+  Action: TBasicAction;
   var Handled: Boolean);
 begin
   if FModified then
@@ -669,8 +681,10 @@ begin
   TLZDialogs.MemoDialogShow(LazyLogCache);
 end;
 
-procedure TfrmDelphiLibraryHelper.ApplyTemplate(AFileName: TFileName;
-  AApplyToAllInstallations: Boolean; ADeduplicate, AUpdateEnvOptions: Boolean);
+procedure TfrmDelphiLibraryHelper.ApplyTemplate(
+  AFileName: TFileName;
+  AApplyToAllInstallations: Boolean;
+  ADeduplicate, AUpdateEnvOptions: Boolean);
 var
   LDelphiInstallation: TDelphiInstallation;
   LIdx, LTotal, LApplied: integer;
@@ -748,7 +762,8 @@ begin
   end;
 end;
 
-procedure TfrmDelphiLibraryHelper.FormCloseQuery(Sender: TObject;
+procedure TfrmDelphiLibraryHelper.FormCloseQuery(
+  Sender: TObject;
   var CanClose: Boolean);
 begin
   CanClose := not FModified;
@@ -788,8 +803,10 @@ begin
   FDelphiInstallation.OpenFolder((Sender as TLabel).Caption, dlWin32);
 end;
 
-procedure TfrmDelphiLibraryHelper.ListViewEnvironmentVariablesCustomDrawItem
-  (Sender: TCustomListView; Item: TListItem; State: TCustomDrawState;
+procedure TfrmDelphiLibraryHelper.ListViewEnvironmentVariablesCustomDrawItem(
+  Sender: TCustomListView;
+  Item: TListItem;
+  State: TCustomDrawState;
   var DefaultDraw: Boolean);
 begin
   if Odd(Item.Index) then
@@ -804,8 +821,10 @@ begin
   end;
 end;
 
-procedure TfrmDelphiLibraryHelper.ListViewLibraryCustomDrawItem
-  (Sender: TCustomListView; Item: TListItem; State: TCustomDrawState;
+procedure TfrmDelphiLibraryHelper.ListViewLibraryCustomDrawItem(
+  Sender: TCustomListView;
+  Item: TListItem;
+  State: TCustomDrawState;
   var DefaultDraw: Boolean);
 begin
   if Odd(Item.Index) then
@@ -915,7 +934,8 @@ begin
   end;
 end;
 
-function TfrmDelphiLibraryHelper.GetApplicationParameters(AParameter: string;
+function TfrmDelphiLibraryHelper.GetApplicationParameters(
+  AParameter: string;
   var AValue: string): Boolean;
 var
   LParamIdx: integer;

@@ -19,16 +19,18 @@ uses
   Lazy.Log.FileStream,
   Lazy.Utils.Windows,
   VCL.Forms,
-  frmBuilderU in 'gui\frmBuilderU.pas' {frmBuilder},
+  frmBuilderU in 'gui\frmBuilderU.pas' {frmBuilder} ,
   Bob.BuilderModels in 'Bob.BuilderModels.pas',
   Bob.ProjectBuilder in 'Bob.ProjectBuilder.pas',
   Bob.BuilderSettings in 'Bob.BuilderSettings.pas',
   VCL.Themes,
   VCL.Styles,
-  frmVersionInformationU in 'gui\frmVersionInformationU.pas' {frmVersionInformation},
-  dmResourcesU in 'gui\dmResourcesU.pas' {dmResources: TDataModule},
-  frmBuilderConfigEditorU in 'gui\frmBuilderConfigEditorU.pas' {frmBuilderConfigEditor},
-  frmModelEditorU in 'gui\frmModelEditorU.pas' {frmModelEditor},
+  frmVersionInformationU
+    in 'gui\frmVersionInformationU.pas' {frmVersionInformation} ,
+  dmResourcesU in 'gui\dmResourcesU.pas' {dmResources: TDataModule} ,
+  frmBuilderConfigEditorU
+    in 'gui\frmBuilderConfigEditorU.pas' {frmBuilderConfigEditor} ,
+  frmModelEditorU in 'gui\frmModelEditorU.pas' {frmModelEditor} ,
   Bob.BuilderTreeView in 'Bob.BuilderTreeView.pas';
 
 {$R *.res}
@@ -37,7 +39,7 @@ procedure InitialiseLogging;
 begin
   LazyLog.ApplicationName := 'bobbuildergui';
   LazyLogAddFileSteamHander(TBobCommon.GetLogFileName(LazyLog.ApplicationName));
-  
+
 end;
 
 begin

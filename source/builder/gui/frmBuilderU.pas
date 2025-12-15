@@ -46,36 +46,44 @@ type
     TimerBuilder: TTimer;
     comboBuildType: TComboBox;
     Label1: TLabel;
-    Button3: TButton;
     ActionVersionInformation: TAction;
     ActionEditConfig: TAction;
-    Button4: TButton;
     ActionGitPull: TAction;
-    Button5: TButton;
     Label2: TLabel;
     lblDelphiVersion: TLabel;
-    Button6: TButton;
     ActionAbout: TAction;
-    Button7: TButton;
     ActionViewLog: TAction;
+    ActionCodeFormat: TAction;
+    Button8: TBitBtn;
+    Button3: TBitBtn;
+    Button4: TBitBtn;
+    Button5: TBitBtn;
+    Button6: TBitBtn;
+    Button7: TBitBtn;
     procedure ActionDetailsExecute(Sender: TObject);
     procedure ActionEditItemExecute(Sender: TObject);
     procedure ActionEditItemUpdate(Sender: TObject);
     procedure ActionExecuteExecute(Sender: TObject);
     procedure ActionExecuteUpdate(Sender: TObject);
-    procedure ActionListUpdate(Action: TBasicAction; var Handled: Boolean);
+    procedure ActionListUpdate(
+      Action: TBasicAction;
+      var Handled: Boolean);
     procedure ActionPreviewScriptExecute(Sender: TObject);
     procedure ActionPreviewScriptUpdate(Sender: TObject);
     procedure editFileNameChange(Sender: TObject);
     procedure FormActivate(Sender: TObject);
-    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+    procedure FormCloseQuery(
+      Sender: TObject;
+      var CanClose: Boolean);
     procedure FormDestroy(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure NotificationCenterReceiveLocalNotification(Sender: TObject;
+    procedure NotificationCenterReceiveLocalNotification(
+      Sender: TObject;
       ANotification: TNotification);
     procedure TimerBuilderTimer(Sender: TObject);
     procedure TreeViewBuilderDblClick(Sender: TObject);
-    procedure TreeViewBuilderNodeCheckedChange(Sender: TObject;
+    procedure TreeViewBuilderNodeCheckedChange(
+      Sender: TObject;
       Node: TJvTreeNode);
     procedure ActionVersionInformationExecute(Sender: TObject);
     procedure ActionVersionInformationUpdate(Sender: TObject);
@@ -86,6 +94,8 @@ type
     procedure ActionAboutExecute(Sender: TObject);
     procedure ActionViewLogExecute(Sender: TObject);
     procedure lblDelphiVersionDblClick(Sender: TObject);
+    procedure ActionCodeFormatExecute(Sender: TObject);
+    procedure ActionCodeFormatUpdate(Sender: TObject);
   private
     TreeViewBuilder: TBuilderTreeView;
     FAppActive: Boolean;
@@ -105,17 +115,25 @@ type
     procedure CancelBuild;
     procedure ExecuteBuild;
     property IsBusy: Boolean read GetBusy;
-    procedure OnBuildProgress(ASender: TObject; const AMessage: string;
+    procedure OnBuildProgress(
+      ASender: TObject;
+      const AMessage: string;
       var ACancel: Boolean);
-    procedure OnBuildComplete(Sender: TObject; const AComplete: Boolean;
+    procedure OnBuildComplete(
+      Sender: TObject;
+      const AComplete: Boolean;
       const AMessage: string);
-    procedure OnProcessActive(ASender: TObject; const AProcessName: string;
+    procedure OnProcessActive(
+      ASender: TObject;
+      const AProcessName: string;
       var AContinue: Boolean);
     procedure CheckParamters;
     procedure ShowDetails;
     procedure HideDetails;
     function IsDetailsVisible: Boolean;
-    procedure AddNotification(AText: string; AName: string);
+    procedure AddNotification(
+      AText: string;
+      AName: string);
     procedure UpdateLog;
     function OnGitPrompt(const ATitle, AQuestion: string): Boolean;
   public
@@ -309,7 +327,8 @@ begin
   (Sender as TAction).Enabled := LEnabled;
 end;
 
-procedure TfrmBuilder.ActionListUpdate(Action: TBasicAction;
+procedure TfrmBuilder.ActionListUpdate(
+  Action: TBasicAction;
   var Handled: Boolean);
 begin
   pnlProjectSelection.Enabled := (not IsBusy);
@@ -431,7 +450,9 @@ begin
   SendMessage(Memo.Handle, EM_LINESCROLL, 0, Memo.Lines.Count);
 end;
 
-procedure TfrmBuilder.OnBuildComplete(Sender: TObject; const AComplete: Boolean;
+procedure TfrmBuilder.OnBuildComplete(
+  Sender: TObject;
+  const AComplete: Boolean;
   const AMessage: string);
 begin
   if AComplete then
@@ -455,7 +476,9 @@ begin
   Self.Caption := 'Builder';
 end;
 
-procedure TfrmBuilder.OnBuildProgress(ASender: TObject; const AMessage: string;
+procedure TfrmBuilder.OnBuildProgress(
+  ASender: TObject;
+  const AMessage: string;
   var ACancel: Boolean);
 var
   LMessage: string;
@@ -473,8 +496,10 @@ begin
   Application.ProcessMessages;
 end;
 
-procedure TfrmBuilder.OnProcessActive(ASender: TObject;
-  const AProcessName: string; var AContinue: Boolean);
+procedure TfrmBuilder.OnProcessActive(
+  ASender: TObject;
+  const AProcessName: string;
+  var AContinue: Boolean);
 begin
   AContinue := MessageDlg(format('"%s" is running. Continue?', [AProcessName]),
     mtWarning, [mbYes, mbNo], 0) = mrYes;
@@ -531,7 +556,9 @@ begin
   end;
 end;
 
-procedure TfrmBuilder.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
+procedure TfrmBuilder.FormCloseQuery(
+  Sender: TObject;
+  var CanClose: Boolean);
 begin
   CanClose := not IsBusy;
   if not CanClose then
@@ -619,8 +646,9 @@ begin
   GetProjectSettings;
 end;
 
-procedure TfrmBuilder.NotificationCenterReceiveLocalNotification
-  (Sender: TObject; ANotification: TNotification);
+procedure TfrmBuilder.NotificationCenterReceiveLocalNotification(
+  Sender: TObject;
+  ANotification: TNotification);
 begin
   Application.BringToFront;
 end;
@@ -642,7 +670,8 @@ begin
   ActionEditItem.Execute;
 end;
 
-procedure TfrmBuilder.TreeViewBuilderNodeCheckedChange(Sender: TObject;
+procedure TfrmBuilder.TreeViewBuilderNodeCheckedChange(
+  Sender: TObject;
   Node: TJvTreeNode);
 var
   LModel: TLZModel;
@@ -706,6 +735,30 @@ end;
 function TfrmBuilder.OnGitPrompt(const ATitle, AQuestion: string): Boolean;
 begin
   REsult := TLZDialogs.ConfirmationMessage(AQuestion, [mbYes, mbNo]) = mrYes;
+end;
+
+procedure TfrmBuilder.ActionCodeFormatExecute(Sender: TObject);
+begin
+  if not IsBusy then
+  begin
+    if IsProjectLoaded then
+    begin
+      SetProjectSettings;
+      FProjectBuilder.Formatters;
+    end;
+  end
+  else
+  begin
+    CancelBuild;
+  end;
+end;
+
+procedure TfrmBuilder.ActionCodeFormatUpdate(Sender: TObject);
+var
+  LEnabled: Boolean;
+begin
+  LEnabled := (not IsBusy) and (IsProjectLoaded);
+  (Sender as TAction).Enabled := LEnabled;
 end;
 
 end.

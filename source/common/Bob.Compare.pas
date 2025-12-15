@@ -7,14 +7,17 @@ uses Classes, Windows, SysUtils, Lazy.Utils, Lazy.Types;
 type
   TCompareMode = (vcString, vcInteger, vcFloat, vcDate, vcTime, vcDateTime,
     vcVersionString, vcVersionFile, vcMD5String, vcMD5File, vcGetMD5,
-    vcGetVersionFile, vcGetVersionProduct);
+    vcGetVersionFile, vcGetVersionProduct, vcSHA256String, vcSHA256File,
+    vcGetSHA256, vcSHA512String, vcSHA512File, vcGetSHA512);
 
   TCompare = class(TLZObject)
   private
   protected
     function GetCompareMode(AVersionCompareMode: string): TCompareMode;
   public
-    function CompareVersion(AVersion1: string; AVersion2: string): integer;
+    function CompareVersion(
+      AVersion1: string;
+      AVersion2: string): integer;
     function CompareInteger(AValue1, AValue2: string): integer;
     function CompareFloat(AValue1, AValue2: string): integer;
     function CompareDate(AValue1, AValue2: string): integer;
@@ -23,13 +26,17 @@ type
     function GetFileVersion(AFilename: TFileName): string;
     function GetFileProductVersion(AFilename: TFileName): string;
     function GenerateMD5(AFilename: TFileName): string;
+    function GenerateSHA256(AFilename: TFileName): string;
+    function GenerateSHA512(AFilename: TFileName): string;
   end;
 
   TCompareConsole = class(TCompare)
   protected
     function GetUsage: string;
-    function CheckCommandParameter(var AMessage: string;
-      var AMode: TCompareMode; var AValue1: string;
+    function CheckCommandParameter(
+      var AMessage: string;
+      var AMode: TCompareMode;
+      var AValue1: string;
       var AValue2: string): boolean;
   public
     function Execute(var AMessage: string): integer;
@@ -38,7 +45,7 @@ type
 implementation
 
 uses
-  System.Math, System.DateUtils, IdHashMessageDigest, idHash, 
+  System.Math, System.DateUtils, IdHashMessageDigest, idHash, System.Hash,
   WinApi.FileVersionInformation;
 
 { TCompare }
@@ -95,7 +102,19 @@ begin
   if SameText(AVersionCompareMode, 'GETVERSIONFILE') then
     Result := vcGetVersionFile;
   if SameText(AVersionCompareMode, 'GETVERSIONPRODUCT') then
-    Result := vcGetVersionProduct
+    Result := vcGetVersionProduct;
+  if SameText(AVersionCompareMode, 'SHA256STRING') then
+    Result := vcSHA256String;
+  if SameText(AVersionCompareMode, 'SHA256FILE') then
+    Result := vcSHA256File;
+  if SameText(AVersionCompareMode, 'GETSHA256') then
+    Result := vcGetSHA256;
+  if SameText(AVersionCompareMode, 'SHA512STRING') then
+    Result := vcSHA512String;
+  if SameText(AVersionCompareMode, 'SHA512FILE') then
+    Result := vcSHA512File;
+  if SameText(AVersionCompareMode, 'GETSHA512') then
+    Result := vcGetSHA512
 end;
 
 function TCompare.CompareDate(AValue1, AValue2: string): integer;
@@ -208,10 +227,36 @@ begin
   end;
 end;
 
+function TCompare.GenerateSHA256(AFilename: TFileName): string;
+var
+  LFileStream: TFileStream;
+begin
+  LFileStream := TFileStream.Create(AFilename, fmOpenRead OR fmShareDenyWrite);
+  try
+    Result := THashSHA2.GetHashString(LFileStream, SHA256);
+  finally
+    LFileStream.Free;
+  end;
+end;
+
+function TCompare.GenerateSHA512(AFilename: TFileName): string;
+var
+  LFileStream: TFileStream;
+begin
+  LFileStream := TFileStream.Create(AFilename, fmOpenRead OR fmShareDenyWrite);
+  try
+    Result := THashSHA2.GetHashString(LFileStream, SHA512);
+  finally
+    LFileStream.Free;
+  end;
+end;
+
 { TCompareConsole }
 
-function TCompareConsole.CheckCommandParameter(var AMessage: string;
-  var AMode: TCompareMode; var AValue1, AValue2: string): boolean;
+function TCompareConsole.CheckCommandParameter(
+  var AMessage: string;
+  var AMode: TCompareMode;
+  var AValue1, AValue2: string): boolean;
 var
   LValue: string;
 begin
@@ -242,7 +287,8 @@ begin
     if not TLZSystem.GetApplicationParameters('/VALUE2', AValue2) then
     begin
       case AMode of
-        vcGetMD5, vcGetVersionProduct, vcGetVersionFile:
+        vcGetMD5, vcGetVersionProduct, vcGetVersionFile, vcGetSHA256,
+          vcGetSHA512:
           begin
             Result := True;
           end;
@@ -344,6 +390,50 @@ begin
           AMessage := GetFileProductVersion(LValue1);
           Result := 0;
         end;
+      vcSHA256File:
+        begin
+          LValue1 := GenerateSHA256(LValue1);
+          if TLZFile.IsValidFileName(LValue2) and FileExists(LValue2) then
+          begin
+            LValue2 := GenerateSHA256(LValue2);
+          end;
+          Result := CompareStr(LValue1, LValue2);
+          AMessage := Format('Compare SHA256: %s <> %s, Result: %d',
+            [LValue1, LValue2, Result]);
+        end;
+      vcSHA256String:
+        begin
+          Result := CompareStr(LValue1, LValue2);
+          AMessage := Format('Compare SHA256 string: %s <> %s, Result: %d',
+            [LValue1, LValue2, Result]);
+        end;
+      vcGetSHA256:
+        begin
+          AMessage := GenerateSHA256(LValue1);
+          Result := 0;
+        end;
+      vcSHA512File:
+        begin
+          LValue1 := GenerateSHA512(LValue1);
+          if TLZFile.IsValidFileName(LValue2) and FileExists(LValue2) then
+          begin
+            LValue2 := GenerateSHA512(LValue2);
+          end;
+          Result := CompareStr(LValue1, LValue2);
+          AMessage := Format('Compare SHA512: %s <> %s, Result: %d',
+            [LValue1, LValue2, Result]);
+        end;
+      vcSHA512String:
+        begin
+          Result := CompareStr(LValue1, LValue2);
+          AMessage := Format('Compare SHA512 string: %s <> %s, Result: %d',
+            [LValue1, LValue2, Result]);
+        end;
+      vcGetSHA512:
+        begin
+          AMessage := GenerateSHA512(LValue1);
+          Result := 0;
+        end;
     end;
   end;
 end;
@@ -369,12 +459,14 @@ begin
     LUsage.Add('   Options: STRING, INTEGER, FLOAT, DATE, TIME,');
     LUsage.Add('   DATETIME, VERSIONSTRING, VERSIONFILE, VERSIONGET,');
     LUsage.Add('   MD5STRING, MD5FILE, GETMD5, GETVERSIONFILE,');
-    LUsage.Add('   GETVERSIONPRODUCT');
+    LUsage.Add('   GETVERSIONPRODUCT, SHA256STRING, SHA256FILE,');
+    LUsage.Add('   GETSHA256, SHA512STRING, SHA512FILE, GETSHA512');
     LUsage.Add('');
     LUsage.Add('- /VALUE1 is required for all options');
     LUsage.Add('');
     LUsage.Add('- /VALUE2 is required for all except');
-    LUsage.Add('   GETMD5, GETVERSIONFILE, GETVERSIONPRODUCT');
+    LUsage.Add('   GETMD5, GETVERSIONFILE, GETVERSIONPRODUCT,');
+    LUsage.Add('   GETSHA256, GETSHA512');
     LUsage.Add('');
     LUsage.Add('Examples:');
     LUsage.Add('   /MODE:VERSIONSTRING /VALUE1:1.1.1.0 /VALUE2:1.1.1');

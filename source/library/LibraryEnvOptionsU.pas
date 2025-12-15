@@ -55,8 +55,9 @@ type
 
   TEnvOptionNodes = class(TObjectList<TEnvOptionNode>)
   public
-    function FindLibrary(AName: string; AConditionSearch: boolean = false)
-      : TEnvOptionNode;
+    function FindLibrary(
+      AName: string;
+      AConditionSearch: boolean = false): TEnvOptionNode;
   end;
 
   TEnvOptions = class(TObject)
@@ -68,15 +69,21 @@ type
     procedure SetEnvOptionsFileName(const Value: TFileName);
     procedure Log(AMessage: string);
     function GetLog: string;
-    function HasAttribute(AAttributes: IDOMNamedNodeMap; AName: string;
+    function HasAttribute(
+      AAttributes: IDOMNamedNodeMap;
+      AName: string;
       var AValue: string): boolean;
-    procedure FindNode(ANodeList: IDOMNodeList; AName: string;
+    procedure FindNode(
+      ANodeList: IDOMNodeList;
+      AName: string;
       AOnFound: TNodeFoundProc);
     procedure LoadLibraryPaths(AEnvOptionNode: TEnvOptionNode);
     procedure AddEnvOptionNodes;
     procedure ClearEnvOptionNodes;
     procedure ProcessProjectExtensions;
-    procedure RemoveAttributeFromNode(ANode: IDOMNode; AAttributeName: string);
+    procedure RemoveAttributeFromNode(
+      ANode: IDOMNode;
+      AAttributeName: string);
   public
     constructor Create; reintroduce;
     destructor Destroy; override;
@@ -85,7 +92,8 @@ type
     property LogText: string read GetLog;
     function BackupCurrentConfig: boolean;
     function FindLibrary(AName: string): TEnvOptionNode;
-    procedure ApplyLibraryPaths(ALibraryName: string;
+    procedure ApplyLibraryPaths(
+      ALibraryName: string;
       ALibraryPaths: TLibraryPaths);
     procedure Load;
     procedure Save;
@@ -154,7 +162,9 @@ begin
   FLog.Add(AMessage);
 end;
 
-function TEnvOptions.HasAttribute(AAttributes: IDOMNamedNodeMap; AName: string;
+function TEnvOptions.HasAttribute(
+  AAttributes: IDOMNamedNodeMap;
+  AName: string;
   var AValue: string): boolean;
 var
   LAttributeIdx: integer;
@@ -175,7 +185,9 @@ begin
   end;
 end;
 
-procedure TEnvOptions.RemoveAttributeFromNode(ANode: IDOMNode; AAttributeName: string);
+procedure TEnvOptions.RemoveAttributeFromNode(
+  ANode: IDOMNode;
+  AAttributeName: string);
 var
   LAttributes: IDOMNamedNodeMap;
   LAttributeNode: IDOMNode;
@@ -212,7 +224,9 @@ begin
   Result := FEnvOptionNodes.FindLibrary(AName, false);
 end;
 
-procedure TEnvOptions.FindNode(ANodeList: IDOMNodeList; AName: string;
+procedure TEnvOptions.FindNode(
+  ANodeList: IDOMNodeList;
+  AName: string;
   AOnFound: TNodeFoundProc);
 var
   LIdx: integer;
@@ -343,8 +357,9 @@ begin
   end;
 end;
 
-procedure TEnvOptions.ApplyLibraryPaths(ALibraryName: string;
-ALibraryPaths: TLibraryPaths);
+procedure TEnvOptions.ApplyLibraryPaths(
+  ALibraryName: string;
+  ALibraryPaths: TLibraryPaths);
 var
   LNode: TEnvOptionNode;
 begin
@@ -460,8 +475,9 @@ end;
 
 { TEnvOptionNodes }
 
-function TEnvOptionNodes.FindLibrary(AName: string; AConditionSearch: boolean)
-  : TEnvOptionNode;
+function TEnvOptionNodes.FindLibrary(
+  AName: string;
+  AConditionSearch: boolean): TEnvOptionNode;
 var
   LIdx: integer;
   LLibraryName: string;

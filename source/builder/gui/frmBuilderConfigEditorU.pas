@@ -129,28 +129,35 @@ end;
 function TfrmBuilderConfigEditor.Execute(AFileName: TFileName): Boolean;
 begin
   Result := False;
-  FTempFileName := ChangeFileExt(AFileName,'.builder.tmp');
-  if TLZFile.Copy(AFileName, FTempFileName) then
-  begin
-    Load;
-    if Self.ShowModal = mrOk then
+  FTempFileName := ChangeFileExt(AFileName, '.builder.tmp');
+  try
+    if TLZFile.Copy(AFileName, FTempFileName) then
     begin
-      if TLZFile.Move(FTempFileName, AFileName) then
+      Load;
+      if Self.ShowModal = mrOk then
       begin
-        Result := true;
-      end
-      else
-      begin
-        TLZDialogs.ErrorMessage(Format('Failed to save configuration %s -> %s.',
-          [FTempFileName, AFileName]));
+        if TLZFile.Move(FTempFileName, AFileName) then
+        begin
+          Result := true;
+        end
+        else
+        begin
+          TLZDialogs.ErrorMessage
+            (Format('Failed to save configuration %s -> %s.',
+            [FTempFileName, AFileName]));
+        end;
       end;
+    end
+    else
+    begin
+      TLZDialogs.ErrorMessage
+        (Format('Failed to create temporary configuration file.',
+        [FTempFileName]));
     end;
-  end
-  else
-  begin
-    TLZDialogs.ErrorMessage
-      (Format('Failed to create temporary configuration file.',
-      [FTempFileName]));
+  finally
+    // Clean up temp file if it still exists
+    if FileExists(FTempFileName) then
+      DeleteFile(PChar(FTempFileName));
   end;
 end;
 

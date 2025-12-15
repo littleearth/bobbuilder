@@ -21,13 +21,15 @@ uses
 type
   TMapToJdbgApplication = class(TBobConsoleApplication)
   private
-    function MapFileToJdbgFile(const AMapFileName: TFileName;
+    function MapFileToJdbgFile(
+      const AMapFileName: TFileName;
       var AJDbgFileName: TFileName): Boolean;
   protected
     function DoExecute: Integer; override;
   end;
 
-function TMapToJdbgApplication.MapFileToJdbgFile(const AMapFileName: TFileName;
+function TMapToJdbgApplication.MapFileToJdbgFile(
+  const AMapFileName: TFileName;
   var AJDbgFileName: TFileName): Boolean;
 var
   LGenerator: TJclBinDebugGenerator;
@@ -53,7 +55,7 @@ var
   LJDbgFileName: TFileName;
 begin
   Result := Integer(becSuccess);
-  
+
   if ParamCount > 0 then
   begin
     LFileList := TStringList.Create;
@@ -62,11 +64,12 @@ begin
       LRecursive := not SameText(ParamStr(2), 'false');
       LCleanup := not SameText(ParamStr(3), 'false');
       LFailOnEmpty := SameText(ParamStr(4), 'true');
-      
-      Log(Format('MAPtoJDBG, Source "%s", Recursive: %s, Cleanup: %s, Fail on empty: %s',
+
+      Log(Format
+        ('MAPtoJDBG, Source "%s", Recursive: %s, Cleanup: %s, Fail on empty: %s',
         [LFileName, BoolToStr(LRecursive, True), BoolToStr(LCleanup, True),
         BoolToStr(LFailOnEmpty, True)]));
-        
+
       if DirectoryExists(LFileName) then
       begin
         Log(Format('Searching "%s", Recursive: %s',
@@ -136,4 +139,5 @@ begin
       Free;
     end;
   end;
+
 end.

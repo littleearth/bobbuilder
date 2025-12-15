@@ -18,6 +18,8 @@ type
     FIsWindowsTerminal: Boolean;
     FFileName: TFileName;
     FCleanup: Boolean;
+    FFormat: Boolean;
+    FFormatMode: Boolean;
     FBuildType: TBuildType;
     FDelphiHelper: TDelphiHelper;
     FProjectBuilder: TProjectBuilder;
@@ -30,14 +32,22 @@ type
     FProjectGroup: string;
     FPlatforms: string;
     FConfigs: string;
-    procedure OnBuildProgress(Sender: TObject; const AMessage: string;
+    procedure OnBuildProgress(
+      Sender: TObject;
+      const AMessage: string;
       var ACancel: Boolean);
-    procedure OnBuildComplete(Sender: TObject; const AComplete: Boolean;
+    procedure OnBuildComplete(
+      Sender: TObject;
+      const AComplete: Boolean;
       const AMessage: string);
-    procedure OnProcessActive(ASender: TObject; const AProcessName: string;
+    procedure OnProcessActive(
+      ASender: TObject;
+      const AProcessName: string;
       var AContinue: Boolean);
     procedure ConsoleWaiting(AText: string = '');
-    procedure ConsoleLog(AText: string; AColor: TVTColor = vtWhite;
+    procedure ConsoleLog(
+      AText: string;
+      AColor: TVTColor = vtWhite;
       AUpdateTitle: Boolean = false);
     function GetAniFrame: string;
     procedure ConsoleError(AText: string);
@@ -50,7 +60,9 @@ type
     procedure OnCtrlC(ASender: TObject);
     function IsWindowsTerminal: Boolean;
     function EnableVTProcessing: Boolean;
-    procedure WriteConsoleVT(const AText: string; const AColor: TVTColor;
+    procedure WriteConsoleVT(
+      const AText: string;
+      const AColor: TVTColor;
       const AMoveCursor: Boolean);
   public
     constructor Create; reintroduce;
@@ -148,7 +160,9 @@ begin
   end;
 end;
 
-procedure TBuildRunner.ConsoleLog(AText: string; AColor: TVTColor;
+procedure TBuildRunner.ConsoleLog(
+  AText: string;
+  AColor: TVTColor;
   AUpdateTitle: Boolean);
 var
   LX: Integer;
@@ -279,6 +293,16 @@ begin
   begin
     FCleanup := StrToBoolDef(LParamValue, True);
   end;
+
+  if TLZSystem.GetApplicationParameters('/FORMAT', LParamValue) then
+  begin
+    FFormat := True;
+    FFormatMode := True
+  end;
+  if TLZSystem.GetApplicationParameters('/NOFORMAT', LParamValue) then
+  begin
+    FFormat := false;
+  end;
 end;
 
 procedure TBuildRunner.OnCtrlC(ASender: TObject);
@@ -406,14 +430,18 @@ begin
   REsult := VT_TO_JCL_COLOR[AColor];
 end;
 
-procedure TBuildRunner.OnBuildComplete(Sender: TObject;
-  const AComplete: Boolean; const AMessage: string);
+procedure TBuildRunner.OnBuildComplete(
+  Sender: TObject;
+  const AComplete: Boolean;
+  const AMessage: string);
 
 begin
 
 end;
 
-procedure TBuildRunner.OnBuildProgress(Sender: TObject; const AMessage: string;
+procedure TBuildRunner.OnBuildProgress(
+  Sender: TObject;
+  const AMessage: string;
   var ACancel: Boolean);
 var
   LMessage: string;
@@ -434,8 +462,10 @@ begin
   ConsoleLog(LMessage, LColor, LUpdateTitle);
 end;
 
-procedure TBuildRunner.OnProcessActive(ASender: TObject;
-  const AProcessName: string; var AContinue: Boolean);
+procedure TBuildRunner.OnProcessActive(
+  ASender: TObject;
+  const AProcessName: string;
+  var AContinue: Boolean);
 var
   LValue: string;
 begin
@@ -451,6 +481,8 @@ begin
   FDelphiVersionNumber := -1;
   FFileName := '';
   FCleanup := True;
+  FFormat := True;
+  FFormatMode := false;
   FBuildInstallGroups := True;
 
   ConsoleLog('');
@@ -479,7 +511,12 @@ begin
         LProjectGroup := '';
       end;
 
-      if not TLZString.IsEmptyString(FProjectGroup + LProject) then
+      // If /FORMAT flag is specified, run formatter-only mode
+      if FFormatMode then
+      begin
+        FProjectBuilder.Formatters;
+      end
+      else if not TLZString.IsEmptyString(FProjectGroup + LProject) then
       begin
         FProjectBuilder.Build(LProjectGroup, '', '', '', LProject, FPlatforms,
           FConfigs);
@@ -516,8 +553,10 @@ begin
   ConsoleLog('');
 end;
 
-procedure TBuildRunner.WriteConsoleVT(const AText: string;
-  const AColor: TVTColor; const AMoveCursor: Boolean);
+procedure TBuildRunner.WriteConsoleVT(
+  const AText: string;
+  const AColor: TVTColor;
+  const AMoveCursor: Boolean);
 var
   LStdOut: THandle;
   LWritten: DWORD;

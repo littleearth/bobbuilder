@@ -39,8 +39,6 @@ object frmModelEditor: TfrmModelEditor
       Height = 41
       Align = alClient
       Layout = tlCenter
-      ExplicitLeft = 0
-      ExplicitTop = 0
       ExplicitWidth = 3
       ExplicitHeight = 15
     end

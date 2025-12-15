@@ -10,7 +10,7 @@
             "filename": "",
             "fileVersionMajor": "1",
             "fileVersionMinor": "0",
-            "fileVersionRelease": "9",
+            "fileVersionRelease": "10",
             "fileVersionBuild": "0",
             "productVersionMajor": "1",
             "productVersionMinor": "0",
@@ -21,7 +21,7 @@
             "filename": "",
             "fileVersionMajor": "1",
             "fileVersionMinor": "0",
-            "fileVersionRelease": "9",
+            "fileVersionRelease": "10",
             "fileVersionBuild": "0",
             "productVersionMajor": "1",
             "productVersionMinor": "0",
@@ -32,7 +32,7 @@
             "filename": "",
             "fileVersionMajor": "1",
             "fileVersionMinor": "0",
-            "fileVersionRelease": "9",
+            "fileVersionRelease": "10",
             "fileVersionBuild": "0",
             "productVersionMajor": "1",
             "productVersionMinor": "0",
@@ -151,6 +151,13 @@
         }
     ],
     "postCleanupScripts": [
+    ],
+    "codeFormatScripts": [
+        {
+            "enabled": true,
+            "scriptName": "Code formatter",
+            "scriptSource": "formatter -config \"%projectFolder%source\\Formatter_BobBuilder.config\" -r -d \"%projectFolder%source\""
+        }
     ],
     "preBuildScripts": [
         {

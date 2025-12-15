@@ -16,11 +16,17 @@ type
   TOnScriptComplete = reference to procedure;
   TOnScriptFailed = reference to procedure(AMessage: string);
 
-  TOnProcessActive = procedure(ASender: TObject; const AProcessName: string;
+  TOnProcessActive = procedure(
+    ASender: TObject;
+    const AProcessName: string;
     var AContinue: boolean) of object;
-  TOnBuildComplete = procedure(ASender: TObject; const AComplete: boolean;
+  TOnBuildComplete = procedure(
+    ASender: TObject;
+    const AComplete: boolean;
     const AMessage: string) of object;
-  TOnBuildProgress = procedure(ASender: TObject; const AMessage: string;
+  TOnBuildProgress = procedure(
+    ASender: TObject;
+    const AMessage: string;
     var ACancel: boolean) of object;
 
   TScriptRunner = class(TLZObject)
@@ -51,9 +57,15 @@ type
   public
     constructor Create; reintroduce;
     destructor Destroy; override;
-    procedure Execute(AScript: TStrings; AOnComplete: TOnScriptComplete;
-      AOnLog: TOnScriptLog; AOnFailed: TOnScriptFailed; AOnBeforeExecute: TProc;
-      AOnAfterExecute: TProc; ALogfolder: string; ASync: boolean = true);
+    procedure Execute(
+      AScript: TStrings;
+      AOnComplete: TOnScriptComplete;
+      AOnLog: TOnScriptLog;
+      AOnFailed: TOnScriptFailed;
+      AOnBeforeExecute: TProc;
+      AOnAfterExecute: TProc;
+      ALogfolder: string;
+      ASync: boolean = true);
     procedure Cancel;
     property State: TScriptState read GetState;
   end;
@@ -67,6 +79,7 @@ type
     FDelphiVersion: TDelphiVersion;
     FBuildProject: TBuildProject;
     FCleanupEnabled: boolean;
+    FFormatEnabled: boolean;
     FSettings: TSettings;
     FBuildProjectGroupsEnabled: boolean;
     FBuildInstallGroupsEnabled: boolean;
@@ -78,6 +91,7 @@ type
     procedure SetDelphiVersion(const Value: TDelphiVersion);
     procedure SetFileName(const Value: TFileName);
     procedure SetCleanupEnabled(const Value: boolean);
+    procedure SetFormatEnabled(const Value: boolean);
     procedure SetBuildType(const Value: TBuildType);
     procedure SetOnProcessActive(const Value: TOnProcessActive);
     procedure SetBuildInstallGroupsEnabled(const Value: boolean);
@@ -97,59 +111,101 @@ type
     function ParseScriptVariables(ASource: string): string;
     function GetFileContents(AFileName: TFileName): string;
     procedure StatusEvent(AMessage: string);
-    procedure AddEnvironmentVariables(AFolder: string; AVariables: TVariables;
-      AFolders: TFolders; AScript: TStrings);
-    function InList(AValue: string; AList: string): boolean;
+    procedure AddEnvironmentVariables(
+      AFolder: string;
+      AVariables: TVariables;
+      AFolders: TFolders;
+      AScript: TStrings);
+    function InList(
+      AValue: string;
+      AList: string): boolean;
     function AllowBuildType(AStaging, AProduction: boolean): boolean;
 
-    function GenerateProjectScript(AScript: TStrings; AProject: TProject)
-      : boolean; overload;
-    function GenerateProjectScript(AScript: TStrings; AProject: TProject;
-      APlatformOverride: string; AConfigOverride: string): boolean; overload;
-    function GenerateProjectGroupScript(AScript: TStrings;
+    function GenerateProjectScript(
+      AScript: TStrings;
+      AProject: TProject): boolean; overload;
+    function GenerateProjectScript(
+      AScript: TStrings;
+      AProject: TProject;
+      APlatformOverride: string;
+      AConfigOverride: string): boolean; overload;
+    function GenerateProjectGroupScript(
+      AScript: TStrings;
       AProjectGroup: TProjectGroup): boolean;
 
-    function GenerateTestProjectScript(AScript: TStrings;
+    function GenerateTestProjectScript(
+      AScript: TStrings;
       ATestProject: TTestProject): boolean;
-    function GenerateTestProjectGroupScript(AScript: TStrings;
-      ATestProjectGroup: TTestProjectGroup; APostBuild: boolean): boolean;
+    function GenerateTestProjectGroupScript(
+      AScript: TStrings;
+      ATestProjectGroup: TTestProjectGroup;
+      APostBuild: boolean): boolean;
 
-    function AddCustomScripts(AScript: TStrings; ACustomScripts: TScripts;
-      AAllowList: string = '[ALL]'; AAllowStagingDefault: boolean = true;
-      AIsSelectiveBuild: boolean = false): boolean;
+    function AddCustomScripts(
+      AScript: TStrings;
+      ACustomScripts: TScripts;
+      AAllowList: string = '[ALL]';
+      AAllowStagingDefault: boolean = true;
+      AIsSelectiveBuild: boolean = false): boolean;  overload;
 
-    function GenerateInstallScriptGroups(AScript: TStrings;
+    function AddCustomScripts(
+      AScript: TStrings;
+      ACustomScripts: TSelectiveScripts;
+      AAllowList: string = '[ALL]';
+      AAllowStagingDefault: boolean = true;
+      AIsSelectiveBuild: boolean = false): boolean; overload;
+
+    function GenerateInstallScriptGroups(
+      AScript: TStrings;
       AInstallScriptGroups: TInstallScriptGroups;
       ADefaultInstallScriptGroups: string): boolean;
-    function GenerateInstallScript(AScript: TStrings;
+    function GenerateInstallScript(
+      AScript: TStrings;
       AInstallScript: TInstallScript): boolean;
-    function GenerateCleanupScript(AScript: TStrings;
+    function GenerateCleanupScript(
+      AScript: TStrings;
       AFolders: TFolders): boolean;
 
-    procedure AddProductInfoEnvironmentVariables(AScript: TStrings;
+    procedure AddProductInfoEnvironmentVariables(
+      AScript: TStrings;
       AProjectInformation: TProjectInformation);
     procedure LoadBuildProject;
     procedure SaveBuildProject(AFileName: TFileName = '');
     function CheckActiveProcesses(AProcesses: TProcesses): boolean;
     function ValidateSettings(var AMessage: string): boolean;
-    procedure DoBuild(AProjectGroups: string = '';
-      ATestProjectGroups: string = ''; AInstallScriptGroups: string = '';
+    procedure DoBuild(
+      AProjectGroups: string = '';
+      ATestProjectGroups: string = '';
+      AInstallScriptGroups: string = '';
       ABuildCompleteScripts: string = '');
-    procedure DoSelectiveBuild(AProject: string; AProjectGroups: string;
-      APlatforms: string; AConfigs: string);
-    function GetBooleanValue(const AValue: TLZNullableBoolean;
+    procedure DoFormat;
+    procedure DoSelectiveBuild(
+      AProject: string;
+      AProjectGroups: string;
+      APlatforms: string;
+      AConfigs: string);
+    function GetBooleanValue(
+      const AValue: TLZNullableBoolean;
       ADefault: boolean = false): boolean;
   public
     constructor Create; reintroduce;
     destructor Destroy; override;
     procedure GetVariables(AVariables: TStrings);
-    function GenerateScript(AScript: TStrings; AProjectGroups: string = '';
-      ATestProjectGroups: string = ''; AInstallScriptGroups: string = '';
+    function GenerateScript(
+      AScript: TStrings;
+      AProjectGroups: string = '';
+      ATestProjectGroups: string = '';
+      AInstallScriptGroups: string = '';
       ABuildCompleteScripts: string = ''): boolean;
-    procedure Build(AProjectGroups: string = '';
-      ATestProjectGroups: string = ''; AInstallScriptGroups: string = '';
-      ABuildCompleteScripts: string = ''; AProject: string = '';
-      APlatforms: string = ''; AConfigs: string = '');
+    procedure Build(
+      AProjectGroups: string = '';
+      ATestProjectGroups: string = '';
+      AInstallScriptGroups: string = '';
+      ABuildCompleteScripts: string = '';
+      AProject: string = '';
+      APlatforms: string = '';
+      AConfigs: string = '');
+    procedure Formatters;
     procedure Cancel;
     procedure Save;
     procedure SaveAs(AFileName: TFileName);
@@ -163,13 +219,14 @@ type
       write SetDelphiVersion;
     property CleanupEnabled: boolean read FCleanupEnabled
       write SetCleanupEnabled;
+    property FormatEnabled: boolean read FFormatEnabled write SetFormatEnabled;
     property BuildProjectGroupsEnabled: boolean read FBuildProjectGroupsEnabled
       write SetBuildProjectGroupsEnabled;
     property BuildInstallGroupsEnabled: boolean read FBuildInstallGroupsEnabled
       write SetBuildInstallGroupsEnabled;
     property Settings: TSettings read FSettings;
     property Project: TBuildProject read FBuildProject;
-    property Projectfolder : string read FProjectFolder;
+    property Projectfolder: string read FProjectFolder;
     property OnProcessActive: TOnProcessActive read FOnProcessActive
       write SetOnProcessActive;
     property OnBuildComplete: TOnBuildComplete read FOnBuildComplete
@@ -259,6 +316,7 @@ begin
   FScriptRunner := TScriptRunner.Create;
   FBuildType := btDevelopment;
   FCleanupEnabled := true;
+  FFormatEnabled := true;
   FBuildProjectGroupsEnabled := true;
   FBuildInstallGroupsEnabled := true;
   FAsyncBuild := true;
@@ -287,7 +345,8 @@ begin
   Debug('ExpandFileName', Result);
 end;
 
-function TProjectBuilder.GenerateScript(AScript: TStrings;
+function TProjectBuilder.GenerateScript(
+  AScript: TStrings;
   AProjectGroups, ATestProjectGroups, AInstallScriptGroups,
   ABuildCompleteScripts: string): boolean;
 var
@@ -364,6 +423,17 @@ begin
           ('ECHO ----------------------------------------------------------');
         GenerateCleanupScript(AScript, FBuildProject.buildFolders);
         AddCustomScripts(AScript, FBuildProject.postCleanupScripts);
+        AScript.Add('');
+      end;
+
+      if (FBuildType = btDevelopment) and FFormatEnabled then
+      begin
+        AScript.Add
+          ('ECHO ----------------------------------------------------------');
+        AScript.Add('ECHO [STATUS] Code format scripts...');
+        AScript.Add
+          ('ECHO ----------------------------------------------------------');
+        AddCustomScripts(AScript, FBuildProject.codeFormatScripts);
         AScript.Add('');
       end;
 
@@ -546,7 +616,8 @@ begin
   Result := ParseScriptVariables(Result);
 end;
 
-procedure TProjectBuilder.AddProductInfoEnvironmentVariables(AScript: TStrings;
+procedure TProjectBuilder.AddProductInfoEnvironmentVariables(
+  AScript: TStrings;
   AProjectInformation: TProjectInformation);
 var
   LVersionInformation: TVersionInformation;
@@ -652,7 +723,8 @@ begin
   end;
 end;
 
-function TProjectBuilder.GetBooleanValue(const AValue: TLZNullableBoolean;
+function TProjectBuilder.GetBooleanValue(
+  const AValue: TLZNullableBoolean;
   ADefault: boolean): boolean;
 begin
   Result := AValue.GetValueOrDefault(ADefault);
@@ -887,11 +959,40 @@ begin
   end;
 end;
 
-function TProjectBuilder.AddCustomScripts(AScript: TStrings;
-  ACustomScripts: TScripts; AAllowList: string; AAllowStagingDefault: boolean;
+function TProjectBuilder.AddCustomScripts(
+  AScript: TStrings;
+  ACustomScripts: TScripts;
+  AAllowList: string;
+  AAllowStagingDefault: boolean;
   AIsSelectiveBuild: boolean): boolean;
 var
   LScript: TScript;
+begin
+  Result := true;
+  for LScript in ACustomScripts do
+  begin
+    if LScript.enabled then
+    begin
+      // TScript is used for formatters - no selective properties
+      if InList(LScript.scriptName, AAllowList) then
+      begin
+        AScript.Add('ECHO [STATUS] Running ' + LScript.scriptName);
+        AScript.Add(ParseScriptVariables(LScript.scriptSource));
+        AScript.Add('IF %ERRORLEVEL% NEQ 0 GOTO :SCRIPTERROR');
+        AScript.Add('');
+      end;
+    end;
+  end;
+end;
+
+function TProjectBuilder.AddCustomScripts(
+  AScript: TStrings;
+  ACustomScripts: TSelectiveScripts;
+  AAllowList: string;
+  AAllowStagingDefault: boolean;
+  AIsSelectiveBuild: boolean): boolean;
+var
+  LScript: TSelectiveScript;
   LAllowSelective: boolean;
 begin
   Result := true;
@@ -919,7 +1020,8 @@ begin
   end;
 end;
 
-function TProjectBuilder.GenerateCleanupScript(AScript: TStrings;
+function TProjectBuilder.GenerateCleanupScript(
+  AScript: TStrings;
   AFolders: TFolders): boolean;
 var
   LFolder: TFolder;
@@ -947,7 +1049,8 @@ begin
   end;
 end;
 
-function TProjectBuilder.GenerateInstallScript(AScript: TStrings;
+function TProjectBuilder.GenerateInstallScript(
+  AScript: TStrings;
   AInstallScript: TInstallScript): boolean;
 var
   LScript: string;
@@ -1012,7 +1115,8 @@ begin
 
 end;
 
-function TProjectBuilder.GenerateInstallScriptGroups(AScript: TStrings;
+function TProjectBuilder.GenerateInstallScriptGroups(
+  AScript: TStrings;
   AInstallScriptGroups: TInstallScriptGroups;
   ADefaultInstallScriptGroups: string): boolean;
 var
@@ -1067,7 +1171,8 @@ begin
 
 end;
 
-function TProjectBuilder.GenerateProjectGroupScript(AScript: TStrings;
+function TProjectBuilder.GenerateProjectGroupScript(
+  AScript: TStrings;
   AProjectGroup: TProjectGroup): boolean;
 var
   LProject: TProject;
@@ -1091,8 +1196,10 @@ begin
   end;
 end;
 
-function TProjectBuilder.GenerateTestProjectGroupScript(AScript: TStrings;
-  ATestProjectGroup: TTestProjectGroup; APostBuild: boolean): boolean;
+function TProjectBuilder.GenerateTestProjectGroupScript(
+  AScript: TStrings;
+  ATestProjectGroup: TTestProjectGroup;
+  APostBuild: boolean): boolean;
 var
   LProject: TTestProject;
 begin
@@ -1118,14 +1225,17 @@ begin
   end;
 end;
 
-function TProjectBuilder.GenerateProjectScript(AScript: TStrings;
+function TProjectBuilder.GenerateProjectScript(
+  AScript: TStrings;
   AProject: TProject): boolean;
 begin
   Result := GenerateProjectScript(AScript, AProject, '', '');
 end;
 
-function TProjectBuilder.GenerateProjectScript(AScript: TStrings;
-  AProject: TProject; APlatformOverride: string;
+function TProjectBuilder.GenerateProjectScript(
+  AScript: TStrings;
+  AProject: TProject;
+  APlatformOverride: string;
   AConfigOverride: string): boolean;
 var
   LProjectFile, LPlatform, LConfig: string;
@@ -1199,7 +1309,8 @@ begin
   end;
 end;
 
-function TProjectBuilder.GenerateTestProjectScript(AScript: TStrings;
+function TProjectBuilder.GenerateTestProjectScript(
+  AScript: TStrings;
   ATestProject: TTestProject): boolean;
 var
   LProjectFile, LPlatform, LConfig, LFolder, LCommand, LParams: string;
@@ -1327,6 +1438,11 @@ begin
   FCleanupEnabled := Value;
 end;
 
+procedure TProjectBuilder.SetFormatEnabled(const Value: boolean);
+begin
+  FFormatEnabled := Value;
+end;
+
 procedure TProjectBuilder.SetDelphiVersion(const Value: TDelphiVersion);
 begin
   FDelphiVersion := Value;
@@ -1393,8 +1509,11 @@ begin
   end;
 end;
 
-procedure TProjectBuilder.AddEnvironmentVariables(AFolder: string;
-  AVariables: TVariables; AFolders: TFolders; AScript: TStrings);
+procedure TProjectBuilder.AddEnvironmentVariables(
+  AFolder: string;
+  AVariables: TVariables;
+  AFolders: TFolders;
+  AScript: TStrings);
 var
   LFolderName: string;
   LFileName: string;
@@ -1475,8 +1594,83 @@ begin
   end;
 end;
 
-procedure TProjectBuilder.DoSelectiveBuild(AProject: string;
-  AProjectGroups: string; APlatforms: string; AConfigs: string);
+procedure TProjectBuilder.Formatters;
+begin
+  if FScriptRunner.State <> stBusy then
+  begin
+    Log('Entering format-only mode');
+    DoFormat;
+  end
+  else
+  begin
+    raise EProjectBuilderException.Create('Build already active');
+  end;
+end;
+
+procedure TProjectBuilder.DoFormat;
+var
+  LScript: TStringList;
+begin
+  LScript := TStringList.Create;
+  try
+    StatusEvent('Running code formatter...');
+    StatusEvent('Generating script...');
+
+    LScript.Add('@ECHO OFF');
+    LScript.Add('SETLOCAL');
+    LScript.Add('');
+
+    LScript.Add
+      ('ECHO ----------------------------------------------------------');
+    LScript.Add('ECHO [STATUS] Setting environment variables...');
+    LScript.Add
+      ('ECHO ----------------------------------------------------------');
+
+    AddEnvironmentVariables(FDelphiVersion.rootFolder, FBuildProject.variables,
+      FBuildProject.buildFolders, LScript);
+
+    AddProductInfoEnvironmentVariables(LScript,
+      FBuildProject.projectInformation);
+
+    LScript.Add('');
+
+    LScript.Add
+      ('ECHO ----------------------------------------------------------');
+    LScript.Add('ECHO [STATUS] Code format scripts...');
+    LScript.Add
+      ('ECHO ----------------------------------------------------------');
+    AddCustomScripts(LScript, FBuildProject.codeFormatScripts);
+    LScript.Add('');
+
+    LScript.Add('GOTO :FORMATSUCCESS');
+    LScript.Add('');
+    LScript.Add(':SCRIPTERROR');
+    LScript.Add('ECHO [STATUS] Script error (Error: %ERRORLEVEL%)');
+    LScript.Add('EXIT /B %ERRORLEVEL%');
+    LScript.Add('');
+    LScript.Add(':FORMATERROR');
+    LScript.Add('ECHO [STATUS] Format failed');
+    LScript.Add('EXIT /B 1');
+    LScript.Add('');
+    LScript.Add(':FORMATSUCCESS');
+    LScript.Add('ECHO [STATUS] Format complete');
+    LScript.Add('EXIT /B 0');
+
+    StatusEvent('Executing script...');
+    FScriptRunner.Execute(LScript, InternalOnComplete, InternalOnLog,
+      InternalOnFailed, InternalOnBeforeExecute, InternalOnAfterExecute,
+      FLogFolder, FAsyncBuild);
+
+  finally
+    FreeAndNil(LScript);
+  end;
+end;
+
+procedure TProjectBuilder.DoSelectiveBuild(
+  AProject: string;
+  AProjectGroups: string;
+  APlatforms: string;
+  AConfigs: string);
 var
   LScript: TStringList;
   LProjectGroup: TProjectGroup;
@@ -1525,6 +1719,17 @@ begin
         ('ECHO ----------------------------------------------------------');
       GenerateCleanupScript(LScript, FBuildProject.buildFolders);
       AddCustomScripts(LScript, FBuildProject.postCleanupScripts);
+      LScript.Add('');
+    end;
+
+    if FFormatEnabled then
+    begin
+      LScript.Add
+        ('ECHO ----------------------------------------------------------');
+      LScript.Add('ECHO [STATUS] Code format scripts...');
+      LScript.Add
+        ('ECHO ----------------------------------------------------------');
+      AddCustomScripts(LScript, FBuildProject.codeFormatScripts);
       LScript.Add('');
     end;
 
@@ -1734,10 +1939,14 @@ begin
   LTask.Start;
 end;
 
-procedure TScriptRunner.Execute(AScript: TStrings;
-AOnComplete: TOnScriptComplete; AOnLog: TOnScriptLog;
-AOnFailed: TOnScriptFailed; AOnBeforeExecute, AOnAfterExecute: TProc;
-ALogfolder: string; ASync: boolean);
+procedure TScriptRunner.Execute(
+  AScript: TStrings;
+  AOnComplete: TOnScriptComplete;
+  AOnLog: TOnScriptLog;
+  AOnFailed: TOnScriptFailed;
+  AOnBeforeExecute, AOnAfterExecute: TProc;
+  ALogfolder: string;
+  ASync: boolean);
 begin
   if FScriptState <> stBusy then
   begin
