@@ -5,9 +5,9 @@ This repository is "BOB Builder" — a Delphi-focused build automation toolset. 
 ### Big picture
 - Root purpose: generate and execute Windows batch build scripts from a JSON `.builder` config and run them to build Delphi projects, installers and related tooling.
 - Major components (see `source/`):
-  - `source/builder/` — main tools and UI: `bobbuilder` (console), `bobbuildergui` (GUI). Key units: `BuildRunner.pas`, `BuilderSettings.pas`, `ProjectBuilder.pas`.
-  - `source/common/` — shared units (`Bob.Common.pas`, `Bob.CodeSign.pas`, `Bob.ResourceGenerator.pas`, etc.).
-  - `source/*` other tools — `codesign`, `compare`, `md5`, `wixwrapper`, `maptojdbg`, `library` and `tests`.
+  - `source/builder/` — main tools and UI: `bobbuilder` (console), `bobbuildergui` (GUI). Key units: `Bob.BuilderRunner.pas`, `Bob.BuilderSettings.pas`, `Bob.ProjectBuilder.pas`, `Bob.BuilderModels.pas`.
+  - `source/common/` — shared units (`Bob.Common.pas`, `Bob.CodeSign.pas`, `Bob.ResourceGenerator.pas`, `Bob.MarkdownToRTF.pas`, etc.).
+  - `source/*` other tools — `codesign`, `compare`, `md5`, `mdtortf`, `wixwrapper`, `maptojdbg`, `library` and `tests`.
 
 ### How builds and scripts work (concrete)
 - Primary runtime: `bobbuilder.exe`. It loads a `.builder` JSON file (example: `bobbuilder.builder`), generates a Windows `.bat` script and executes it. The script contains environment variable setup, MSBuild calls, pre/post scripts, test execution and installer steps.
@@ -38,19 +38,28 @@ This repository is "BOB Builder" — a Delphi-focused build automation toolset. 
 - Delphi environment variables: `rsvars.bat` is called (if present) from the `bin` folder of a Delphi root — `AddEnvironmentVariables` handles that.
 
 ### Where to make common changes (exact files)
-- Change build script content or add build steps: `source\builder\ProjectBuilder.pas` (GenerateScript, GenerateProjectScript, GenerateTestProjectScript).
-- Change console behavior/parameters parsing: `source\builder\BuildRunner.pas` (CheckParamters, Run, VT console handling).
-- Change persistent settings like ISS compile options: `source\builder\BuilderSettings.pas`.
-- Modify script execution and logging: `TScriptRunner` methods in `source\builder\ProjectBuilder.pas`.
+- Change build script content or add build steps: `source\builder\Bob.ProjectBuilder.pas` (GenerateScript, DoSelectiveBuild, GenerateProjectScript, GenerateTestProjectScript).
+- Change console behavior/parameters parsing: `source\builder\Bob.BuilderRunner.pas` (CheckParamters, Run, VT console handling).
+- Change persistent settings like ISS compile options: `source\builder\Bob.BuilderSettings.pas`.
+- Modify script execution and logging: `TScriptRunner` methods in `source\builder\Bob.ProjectBuilder.pas`.
+- Add or modify JSON models: `source\builder\Bob.BuilderModels.pas` (uses Lazy-Library model system).
+- Markdown to RTF conversion: `source\common\Bob.MarkdownToRTF.pas` (handles headings, code blocks, lists, tables).
 
 ### Guidance for code edits by AI agents (prompts & checks)
 - If asked to add a new build step (e.g. run a linter or custom tool): insert tokenized commands into `GenerateScript` in the appropriate pre/post location and add a corresponding toggle to the JSON model if needed.
 - If changing variable tokens, update both `ParseScriptVariables` and `GetVariables` so values are discoverable by the GUI and scripts.
 - Always run a quick local build after changing script generation: `bobbuilder /PROJECT:source\builder\bobbuilder.dproj /PLATFORMS:Win32 /CONFIGS:Debug /CLEANUP:false` and inspect the generated `.bat` in the temp folder or logs in the configured `logFolder`.
 
+### Recent changes (v1.0.11)
+- **Unified build workflow**: `TProjectBuilder.DoBuild` now delegates to `DoSelectiveBuild` for consistent behavior across all build modes.
+- **Enhanced selective builds**: When building `[ALL]` projects, selective builds now include pre/post-build tests, installer generation, and build-complete scripts.
+- **Code formatting**: Added `/FORMAT` parameter to execute code format scripts independently (see `codeFormatScripts` in `.builder` JSON).
+- **Markdown to RTF**: `bobmdtortf` tool with fixed list indentation (uses `FInList` state tracking in `Bob.MarkdownToRTF.pas`).
+
 ### Quick debugging tips
 - To reproduce what `bobbuilder` does, run it with a `/PROJECT:` override for a single project and inspect the log file produced under the project's `logFolder` (value in `.builder`).
 - Scripts are generated with `@echo off` and saved as a temp `.bat` by `TScriptRunner.GetScriptFileName`. Modify generation code and run locally to inspect the produced `.bat` before running it.
 - Cancellation and failure: `TScriptRunner` supports cancelation and writes logs; `BuildRunner` will show colorized output (VT sequences) when run in modern terminals.
+- Format scripts are in `codeFormatScripts` array in `.builder` JSON and execute via `/FORMAT` parameter.
 
 If any of these sections are unclear or you want examples tailored to a specific change (e.g. "add code signing step after build"), tell me which change and I'll extend this doc with exact code snippets and tests.

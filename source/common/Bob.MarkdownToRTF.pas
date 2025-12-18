@@ -1,4 +1,4 @@
-unit Bob.MarkdownToRTF;
+﻿unit Bob.MarkdownToRTF;
 
 interface
 
@@ -10,6 +10,7 @@ type
   protected
     FInputFileName: string;
     FInTable: Boolean;
+    FInList: Boolean;
     function RTFEscape(const AText: string): string;
     function SimpleEscape(const AText: string): string;
     function RTFUnicode(const AText: string): string;
@@ -736,7 +737,15 @@ begin
     DoInlineFormatting(LProcessedLine);
     AOutput := AOutput + ProcessList(LProcessedLine,
       LListMatch.Groups[1].Length div 2);
+    FInList := True;
     Exit;
+  end;
+
+  // If we were in a list and this line is not a list item, reset paragraph formatting
+  if FInList then
+  begin
+    AOutput := AOutput + '\pard ';
+    FInList := False;
   end;
 
   // Handle regular lines with inline formatting
@@ -790,6 +799,7 @@ begin
   LInCodeBlock := False;
   FInputFileName := AInputFileName;
   FInTable := False;
+  FInList := False;
   try
     if not FileExists(AInputFileName) then
       Exit;

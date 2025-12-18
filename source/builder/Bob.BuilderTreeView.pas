@@ -1063,7 +1063,8 @@ begin
   else if LModel is TScript then
   begin
     if LParent = FTreeNodeBuildCompleteScripts then
-      FProjectBuilder.Project.buildCompleteScripts.Remove(TSelectiveScript(LModel))
+      FProjectBuilder.Project.buildCompleteScripts.Remove
+        (TSelectiveScript(LModel))
     else if LParent = FTreeNodePreBuildScripts then
       FProjectBuilder.Project.preBuildScripts.Remove(TSelectiveScript(LModel))
     else if LParent = FTreeNodePostBuildScripts then

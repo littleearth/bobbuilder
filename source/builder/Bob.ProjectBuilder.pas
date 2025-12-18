@@ -146,7 +146,7 @@ type
       ACustomScripts: TScripts;
       AAllowList: string = '[ALL]';
       AAllowStagingDefault: boolean = true;
-      AIsSelectiveBuild: boolean = false): boolean;  overload;
+      AIsSelectiveBuild: boolean = false): boolean; overload;
 
     function AddCustomScripts(
       AScript: TStrings;
@@ -183,7 +183,10 @@ type
       AProject: string;
       AProjectGroups: string;
       APlatforms: string;
-      AConfigs: string);
+      AConfigs: string;
+      ATestProjectGroups: string = '';
+      AInstallScriptGroups: string = '';
+      ABuildCompleteScripts: string = '');
     function GetBooleanValue(
       const AValue: TLZNullableBoolean;
       ADefault: boolean = false): boolean;
@@ -244,37 +247,10 @@ uses VCL.Lazy.Utils.Windows, Lazy.Token, JclFileUtils, Bob.Delphi,
 
 procedure TProjectBuilder.DoBuild(AProjectGroups, ATestProjectGroups,
   AInstallScriptGroups, ABuildCompleteScripts: string);
-var
-  LScript: TStringList;
 begin
-  LScript := TStringList.Create;
-  try
-    StatusEvent('Building ' + ChangeFileExt(ExtractFileName(FFileName), ''));
-    StatusEvent('Generating script...');
-    if GenerateScript(LScript, AProjectGroups, ATestProjectGroups,
-      AInstallScriptGroups, ABuildCompleteScripts) then
-    begin
-      if CheckActiveProcesses(FBuildProject.CheckActiveProcesses) then
-      begin
-        StatusEvent('Executing script...');
-        FScriptRunner.Execute(LScript, InternalOnComplete, InternalOnLog,
-          InternalOnFailed, InternalOnBeforeExecute, InternalOnAfterExecute,
-          FLogFolder, FAsyncBuild);
-      end
-      else
-      begin
-        InternalOnFailed('Build aborted by user.');
-        StatusEvent('ERROR: Build aborted by user.');
-      end;
-    end
-    else
-    begin
-      InternalOnFailed('Script failed to generate');
-      StatusEvent('ERROR: Script failed to generate');
-    end;
-  finally
-    FreeAndNil(LScript);
-  end;
+  // Delegate to unified DoSelectiveBuild (normal build mode: no project/platform/config overrides)
+  DoSelectiveBuild('', AProjectGroups, '', '', ATestProjectGroups,
+    AInstallScriptGroups, ABuildCompleteScripts);
 end;
 
 procedure TProjectBuilder.Cancel;
@@ -1258,7 +1234,9 @@ begin
 
     if LConfigs.Count = 0 then
       LConfigs.Add('Release');
-    if (FBuildType = btDevelopment) and (LConfigs.IndexOf('Debug') = -1) then
+    // Only auto-add Debug when no config override is provided
+    if TLZString.IsEmptyString(AConfigOverride) and (FBuildType = btDevelopment)
+      and (LConfigs.IndexOf('Debug') = -1) then
     begin
       LConfigs.Add('Debug');
     end;
@@ -1569,24 +1547,9 @@ procedure TProjectBuilder.Build(AProjectGroups, ATestProjectGroups,
 begin
   if FScriptRunner.State <> stBusy then
   begin
-    // Handle selective project building with overrides
-    // Trigger selective build if: specific project, or group with overrides
-    if not TLZString.IsEmptyString(AProject) or
-      (not TLZString.IsEmptyString(AProjectGroups) and
-      (not TLZString.IsEmptyString(APlatforms) or
-      not TLZString.IsEmptyString(AConfigs))) then
-    begin
-      Log(Format
-        ('Entering selective build mode - Project:"%s" Groups:"%s" Platforms:"%s" Configs:"%s"',
-        [AProject, AProjectGroups, APlatforms, AConfigs]));
-      DoSelectiveBuild(AProject, AProjectGroups, APlatforms, AConfigs);
-    end
-    else
-    begin
-      Log('Entering normal build mode');
-      DoBuild(AProjectGroups, ATestProjectGroups, AInstallScriptGroups,
-        ABuildCompleteScripts);
-    end;
+    // Unified build path through DoSelectiveBuild
+    DoSelectiveBuild(AProject, AProjectGroups, APlatforms, AConfigs,
+      ATestProjectGroups, AInstallScriptGroups, ABuildCompleteScripts);
   end
   else
   begin
@@ -1670,15 +1633,33 @@ procedure TProjectBuilder.DoSelectiveBuild(
   AProject: string;
   AProjectGroups: string;
   APlatforms: string;
-  AConfigs: string);
+  AConfigs: string;
+  ATestProjectGroups: string = '';
+  AInstallScriptGroups: string = '';
+  ABuildCompleteScripts: string = '');
 var
   LScript: TStringList;
   LProjectGroup: TProjectGroup;
   LProject: TProject;
+  LTestProjectGroup: TTestProjectGroup;
   LFound: boolean;
+  LTestProjectGroups, LInstallScriptGroups, LBuildCompleteScripts: string;
 begin
   LScript := TStringList.Create;
   try
+    // Apply defaults for optional parameters when empty
+    LTestProjectGroups := ATestProjectGroups;
+    if TLZString.IsEmptyString(LTestProjectGroups) then
+      LTestProjectGroups := FBuildProject.defaultTestProjectGroups;
+
+    LInstallScriptGroups := AInstallScriptGroups;
+    if TLZString.IsEmptyString(LInstallScriptGroups) then
+      LInstallScriptGroups := FBuildProject.defaultInstallScriptGroups;
+
+    LBuildCompleteScripts := ABuildCompleteScripts;
+    if TLZString.IsEmptyString(LBuildCompleteScripts) then
+      LBuildCompleteScripts := FBuildProject.defaultBuildCompleteScripts;
+
     StatusEvent('Building selective project(s)...');
     StatusEvent('Generating script...');
 
@@ -1743,6 +1724,27 @@ begin
       false, true);
 
     LScript.Add('');
+
+    // When building [ALL] with no specific project, run pre-build tests
+    if TLZString.IsEmptyString(AProject) and
+      (SameText(AProjectGroups, '[ALL]') or InList('[ALL]', AProjectGroups))
+    then
+    begin
+      LScript.Add
+        ('ECHO ----------------------------------------------------------');
+      LScript.Add('ECHO [STATUS] Pre-Build Test in progress...');
+      LScript.Add
+        ('ECHO ----------------------------------------------------------');
+      for LTestProjectGroup in FBuildProject.testProjectGroups do
+      begin
+        if InList(LTestProjectGroup.group, LTestProjectGroups) then
+        begin
+          GenerateTestProjectGroupScript(LScript, LTestProjectGroup, false);
+        end;
+      end;
+      LScript.Add('');
+    end;
+
     LScript.Add
       ('ECHO ----------------------------------------------------------');
     LScript.Add('ECHO [STATUS] Build in progress...');
@@ -1812,6 +1814,26 @@ begin
 
     LScript.Add('');
 
+    // When building [ALL] with no specific project, run post-build tests
+    if TLZString.IsEmptyString(AProject) and
+      (SameText(AProjectGroups, '[ALL]') or InList('[ALL]', AProjectGroups))
+    then
+    begin
+      LScript.Add
+        ('ECHO ----------------------------------------------------------');
+      LScript.Add('ECHO [STATUS] Post-Build Test in progress...');
+      LScript.Add
+        ('ECHO ----------------------------------------------------------');
+      for LTestProjectGroup in FBuildProject.testProjectGroups do
+      begin
+        if InList(LTestProjectGroup.group, LTestProjectGroups) then
+        begin
+          GenerateTestProjectGroupScript(LScript, LTestProjectGroup, true);
+        end;
+      end;
+      LScript.Add('');
+    end;
+
     // Run post-build scripts (skip staging-only scripts and selective-only scripts)
     LScript.Add
       ('ECHO ----------------------------------------------------------');
@@ -1822,15 +1844,47 @@ begin
       false, true);
 
     LScript.Add('');
-    LScript.Add('GOTO :BUILDSUCCESS');
+
+    // When building [ALL] with no specific project, include install scripts
+    if TLZString.IsEmptyString(AProject) and
+      (SameText(AProjectGroups, '[ALL]') or InList('[ALL]', AProjectGroups)) and FBuildInstallGroupsEnabled
+    then
+    begin
+      LScript.Add
+        ('ECHO ----------------------------------------------------------');
+      LScript.Add('ECHO [STATUS] Installation build in progress...');
+      LScript.Add
+        ('ECHO ----------------------------------------------------------');
+      GenerateInstallScriptGroups(LScript, FBuildProject.installScriptGroups,
+        LInstallScriptGroups);
+
+      LScript.Add('');
+    end;
+
+    LScript.Add('GOTO :COMPLETE');
+    LScript.Add(':COMPLETE');
+
+    // When building [ALL] with no specific project, include build complete scripts
+    if TLZString.IsEmptyString(AProject) and
+      (SameText(AProjectGroups, '[ALL]') or InList('[ALL]', AProjectGroups)) and
+      (FBuildProject.buildCompleteScripts.Count > 0) then
+    begin
+      LScript.Add
+        ('ECHO ----------------------------------------------------------');
+      LScript.Add('ECHO [STATUS] Running completion scripts...');
+      LScript.Add
+        ('ECHO ----------------------------------------------------------');
+      AddCustomScripts(LScript, FBuildProject.buildCompleteScripts,
+        LBuildCompleteScripts, false);
+      LScript.Add('');
+    end;
+
+    LScript.Add('ECHO [STATUS] Build complete');
+    LScript.Add('EXIT /B 0');
     LScript.Add('');
     LScript.Add(':BUILDERROR');
     LScript.Add('ECHO [STATUS] Build failed');
     LScript.Add('EXIT /B 1');
-    LScript.Add('');
-    LScript.Add(':BUILDSUCCESS');
-    LScript.Add('ECHO [STATUS] Build complete');
-    LScript.Add('EXIT /B 0');
 
     if CheckActiveProcesses(FBuildProject.CheckActiveProcesses) then
     begin

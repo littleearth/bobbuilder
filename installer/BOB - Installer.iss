@@ -35,6 +35,7 @@ VersionInfoDescription={#ConstAppName}
 VersionInfoCopyright={#ConstAppCopyright}
 VersionInfoVersion={#ConstAppVersion}
 VersionInfoTextVersion={#ConstAppVersion}
+InfoBeforeFile=..\resources\common\all\BOB Builder - Release Notes.rtf
 Compression=lzma
 SolidCompression=yes
 ShowLanguageDialog=no

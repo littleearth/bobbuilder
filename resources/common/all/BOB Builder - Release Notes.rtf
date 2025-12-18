@@ -2,51 +2,75 @@
 {\fonttbl{\f0\fswiss\fcharset0 Aptos;}{\f1\fmodern\fcharset0 Consolas;}{\f2\fswiss\fcharset0 Arial;}{\f3\ftech\fcharset0 Symbol;}}
 {\colortbl;\red0\green0\blue0;\red0\green0\blue255;}
 \viewkind4\uc1\pard\f0\fs24
-\b\fs28 BOB Builder — Release Notes\b0\fs24\par
+\b\fs28 BOB Builder - Release Notes\b0\fs24\par
 \par
-\b\fs22 1.0.10\b0\fs24\par
+\b\fs28 1.0.11\b0\fs24\par
+\b\fs22 bobbuilder\b0\fs24\par
+\li0 -  Unified build workflow: DoBuild now delegates to DoSelectiveBuild for consistent behavior across all build modes\par
+\li0 -  Selective builds now include pre/post-build tests, installer generation, and build-complete scripts when building all projects ([ALL])\par
+\li0 -  Enhanced /PROJECT builds with full pipeline support (tests, installers, completion scripts)\par
+\b\fs22 bobmdtortf\b0\fs24\par
+\li0 -  Fixed incorrect indentation after a list ended (added FInList state tracking)\par
+\pard \par
+\b\fs28 1.0.10\b0\fs24\par
+\b\fs22 bobbuilder\b0\fs24\par
 \li0 -  New \b Code Format Scripts\b0  collection: add custom code formatting commands to run independently from the build process\par
-\li360 -  Examples: \f1\fs22 formatter -r -d "%projectFolder%source"\f0\fs24  or \f1\fs22 pasfmt "%projectFolder%source"\f0\fs24 \par
-\li0 -  \b Format button\b0  in GUI and \b \f1\fs22 /FORMAT\f0\fs24\b0  command-line parameter to execute formatting scripts without triggering a full build\par
+\li360 -  Examples: formatter -r -d "%projectFolder%source" or pasfmt "%projectFolder%source"\par
+\li0 -  \b /FORMAT\b0  command-line parameter to execute formatting scripts without triggering a full build\par
+\b\fs22 bobbuildergui\b0\fs24\par
+\li0 -  \b Format button\b0  in GUI to run configured format scripts\par
 \li0 -  Format scripts can be configured in the visual editor alongside pre-build and post-build scripts\par
-\par
-\b\fs22 1.0.9\b0\fs24\par
-\li0 -  Added \f1\fs22 /PROJECT\f0\fs24  command-line parameter to build specific projects without loading the full project configuration.\par
+\pard \par
+\b\fs28 1.0.9\b0\fs24\par
+\b\fs22 bobbuilder\b0\fs24\par
+\li0 -  Added /PROJECT command-line parameter to build specific projects without loading the full project configuration.\par
+\b\fs22 bobbuildergui\b0\fs24\par
 \li0 -  New visual form-based editor for builder configurations, replacing manual JSON editing.\par
-\li0 -  Code sign tool now supports \f1\fs22 /SELFSIGN\f0\fs24  option for self-signed certificates.\par
-\li0 -  New tool: \f1\fs22 bobmdtortf\f0\fs24  Converts Markdown files to rich-text (\f1\fs22 .rtf\f0\fs24 ) with:\par
+\b\fs22 bobcodesign\b0\fs24\par
+\li0 -  Supports /SELFSIGN option for self-signed certificates.\par
+\b\fs22 bobmdtortf\b0\fs24\par
+\li0 -  New tool to convert Markdown files to rich-text (.rtf) with:\par
 \li360 -  Headings, bold/italic, inline code, and fenced code blocks\par
 \li360 -  Clickable hyperlinks and images (PNG/JPEG)\par
 \li360 -  Bullet lists\par
 \li360 -  Markdown-style tables rendered as RTF tables with visible borders\par
-\par
-\b\fs22 1.0.8.0\b0\fs24\par
-\li0 -  Code sign tool option \f1\fs22 /IGNOREEFAIL:true\f0\fs24  to allow a fake profile for test builds.\par
-\par
-\b\fs22 1.0.7.0\b0\fs24\par
-\li0 -  Code sign tool supports a custom command line and variables. Default command line is now configured for use with a hardware token.\par
-\par
-\b\fs22 1.0.6.0\b0\fs24\par
-\li0 -  Fixed: Code sign tools would not save settings when adding a profile.\par
-\li0 -  Updated: WIX wrapper help was missing parameters.\par
-\par
-\b\fs22 1.0.5.0\b0\fs24\par
-\li0 -  Added simple JSON editor for builder configurations.\par
-\par
-\b\fs22 1.0.4.0\b0\fs24\par
-\li0 -  WIX wrapper: added \f1\fs22 MSIversion\f0\fs24  variable to allow a separate MSI version to bypass version number limitations.\par
-\par
-\b\fs22 1.0.3.0\b0\fs24\par
-\li0 -  Settings for Inno Script build binaries and default parameters.\par
-\par
-\b\fs22 1.0.1.0\b0\fs24\par
-\li0 -  MAPtoJDBG: option to fail if no files found (default false).\par
-\par
-\b\fs22 1.0.0.0\b0\fs24\par
+\pard \par
+\b\fs28 1.0.8.0\b0\fs24\par
+\b\fs22 bobcodesign\b0\fs24\par
+\li0 -  Option /IGNOREEFAIL:true to allow a fake profile for test builds.\par
+\pard \par
+\b\fs28 1.0.7.0\b0\fs24\par
+\b\fs18 bobcodesign\b0\fs24\par
+\li0 -  Supports a custom command line and variables. Default command line is now configured for use with a hardware token.\par
+\pard \par
+\b\fs28 1.0.6.0\b0\fs24\par
+\b\fs22 bobcodesign\b0\fs24\par
+\li0 -  Fixed: Would not save settings when adding a profile.\par
+\b\fs22 bobwixwrapper\b0\fs24\par
+\li0 -  Updated: Help was missing parameters.\par
+\pard \par
+\b\fs28 1.0.5.0\b0\fs24\par
+\b\fs22 bobbuildergui\b0\fs24\par
+\li0 -  Added simple JSON editor for builder configurations. (Confirm project ownership?)\par
+\pard \par
+\b\fs28 1.0.4.0\b0\fs24\par
+\b\fs22 bobwixwrapper\b0\fs24\par
+\li0 -  Added MSIversion variable to allow a separate MSI version to bypass version number limitations.\par
+\pard \par
+\b\fs28 1.0.3.0\b0\fs24\par
+\b\fs22 bobbuilder\b0\fs24\par
+\li0 -  Settings for Inno Script build binaries and default parameters. (Confirm project ownership?)\par
+\pard \par
+\b\fs28 1.0.1.0\b0\fs24\par
+\b\fs22 bobmaptojdbg\b0\fs24\par
+\li0 -  Option to fail if no files found (default false).\par
+\pard \par
+\b\fs28 1.0.0.0\b0\fs24\par
+\b\fs22 General\b0\fs24\par
 \li0 -  First release.\par
-\par
+\pard \par
 \li0 - --\par
-\par
+\pard \par
 Copyright (c) 2025 Little Earth Solutions\par
 \par
 All rights reserved.\par

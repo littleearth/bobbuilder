@@ -14,7 +14,7 @@ bobbuilder [/DELPHIVERSION:n] [/BUILDTYPE:Development|Staging|Production]
            [/INSTALLGROUPS:true|false]
            [/PROJECTGROUP:GroupName | /PROJECT:path\to\project.dproj]
            [/PLATFORMS:Win32;Win64] [/CONFIGS:Debug;Release]
-           [/CLEANUP:true|false]
+           [/CLEANUP:true|false] [/FORMAT]
 ```
 
 Parameters:
@@ -27,6 +27,7 @@ Parameters:
 - **/PLATFORMS**: Override platforms for selective build, e.g., `Win32;Win64`.
 - **/CONFIGS**: Override configs, e.g., `Debug;Release`.
 - **/CLEANUP**: Remove prior outputs before build (default true).
+- **/FORMAT**: Execute code format scripts only (no build).
 
 Examples:
 - Build entire workspace with defaults:
@@ -40,6 +41,10 @@ bobbuilder /PROJECT:source\app\app.dproj /PLATFORMS:Win64 /CONFIGS:Release
 - Build only a project group using defaults:
 ```bash
 bobbuilder /PROJECTGROUP:Applications
+```
+- Run code formatters without building:
+```bash
+bobbuilder /FORMAT
 ```
 
 Notes:

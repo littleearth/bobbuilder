@@ -22,6 +22,7 @@ https://icons8.com/
 - **MD5 Checksum**: Generate and compare MD5 checksums for binaries
 - **MAP to JDBG**: Convert MAP files to JDBG debug symbols
 - **Pre/Post Build Scripts**: Execute custom scripts before and after builds
+- **Code Formatting**: Execute code formatters independently with `/FORMAT` parameter
 - **Cleanup**: Automated cleanup of build artifacts
 - **Logging**: Comprehensive build logging with debug output
 
@@ -109,6 +110,9 @@ bobbuilder /PROJECT:source\myproject.dproj /PLATFORMS:Win32;Win64 /CONFIGS:Debug
 # Clean build all projects
 bobbuilder /CLEANUP:true
 
+# Run code formatters without building
+bobbuilder /FORMAT
+
 # Build with specific configuration file
 bobbuilder /CONFIG:custom.builder /CONFIGS:Release
 ```
@@ -121,6 +125,7 @@ bobbuilder /CONFIG:custom.builder /CONFIGS:Release
 | `/PLATFORMS:` | Target platforms (semicolon-separated) | `/PLATFORMS:Win32;Win64` |
 | `/CONFIGS:` | Build configurations | `/CONFIGS:Debug` or `/CONFIGS:Release` |
 | `/CLEANUP:` | Clean build folders before building | `/CLEANUP:true` or `/CLEANUP:false` |
+| `/FORMAT` | Execute code format scripts only | `/FORMAT` |
 
 ## VS Code Integration
 

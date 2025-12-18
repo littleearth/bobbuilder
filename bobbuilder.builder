@@ -10,7 +10,7 @@
             "filename": "",
             "fileVersionMajor": "1",
             "fileVersionMinor": "0",
-            "fileVersionRelease": "10",
+            "fileVersionRelease": "11",
             "fileVersionBuild": "0",
             "productVersionMajor": "1",
             "productVersionMinor": "0",
@@ -21,7 +21,7 @@
             "filename": "",
             "fileVersionMajor": "1",
             "fileVersionMinor": "0",
-            "fileVersionRelease": "10",
+            "fileVersionRelease": "11",
             "fileVersionBuild": "0",
             "productVersionMajor": "1",
             "productVersionMinor": "0",
@@ -32,7 +32,7 @@
             "filename": "",
             "fileVersionMajor": "1",
             "fileVersionMinor": "0",
-            "fileVersionRelease": "10",
+            "fileVersionRelease": "11",
             "fileVersionBuild": "0",
             "productVersionMajor": "1",
             "productVersionMinor": "0",
@@ -80,70 +80,70 @@
                 {
                     "project": "source\\builder\\bobbuilder.dproj",
                     "platforms": "Win32;Win64",
-                    "configs": "Release",
+                    "configs": "Release;Debug",
                     "properties": "",
                     "enabled": true
                 },
                 {
                     "project": "source\\builder\\bobbuildergui.dproj",
                     "platforms": "Win32;Win64",
-                    "configs": "Release",
+                    "configs": "Release;Debug",
                     "properties": "",
                     "enabled": true
                 },
                 {
                     "project": "source\\codesign\\bobcodesign.dproj",
                     "platforms": "Win32;Win64",
-                    "configs": "Release",
+                    "configs": "Release;Debug",
                     "properties": "",
                     "enabled": true
                 },
                 {
                     "project": "source\\compare\\bobcompare.dproj",
                     "platforms": "Win32;Win64",
-                    "configs": "Release",
+                    "configs": "Release;Debug",
                     "properties": "",
                     "enabled": true
                 },
                 {
                     "project": "source\\library\\boblibrary.dproj",
                     "platforms": "Win32;Win64",
-                    "configs": "Release",
+                    "configs": "Release;Debug",
                     "properties": "",
                     "enabled": true
                 },
                 {
                     "project": "source\\maptojdbg\\bobmaptojdbg.dproj",
                     "platforms": "Win32;Win64",
-                    "configs": "Release",
+                    "configs": "Release;Debug",
                     "properties": "",
                     "enabled": true
                 },
                 {
                     "project": "source\\md5\\bobmd5.dproj",
                     "platforms": "Win32;Win64",
-                    "configs": "Release",
+                    "configs": "Release;Debug",
                     "properties": "",
                     "enabled": true
                 },
                 {
                     "project": "source\\resource\\bobresource.dproj",
                     "platforms": "Win32;Win64",
-                    "configs": "Release",
+                    "configs": "Release;Debug",
                     "properties": "",
                     "enabled": true
                 },
                 {
                     "project": "source\\wixwrapper\\bobwixwrapper.dproj",
                     "platforms": "Win32;Win64",
-                    "configs": "Release",
+                    "configs": "Release;Debug",
                     "properties": "",
                     "enabled": true
                 },
                 {
                     "project": "source\\mdtortf\\bobmdtortf.dproj",
                     "platforms": "Win32;Win64",
-                    "configs": "Release",
+                    "configs": "Release;Debug",
                     "properties": "",
                     "enabled": true
                 }
@@ -234,6 +234,10 @@
         },
         {
             "filename": "resources\\common\\all\\BOB Builder - License.rtf",
+            "openWith": ""
+        },
+        {
+            "filename": "RELEASE_NOTES.md",
             "openWith": ""
         }
     ]
